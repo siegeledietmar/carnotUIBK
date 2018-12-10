@@ -1,6 +1,3 @@
-%% add carnotUIBK (DO NOT MODIFY)
-addpath('../../carnotUIBK_v1.3.2')
-
 clear
 clc
 
@@ -53,7 +50,7 @@ if SIMULATE
     building.variant_gains = 1;         % Excel
     building.variant_boundary = 1;      % Excel
     building.variant_thermalzone = 1;   % Excel
-    building.variant_hvac = 1;          % Excel: with PKOM4 und Kaskadenlüftung
+    building.variant_hvac = 1;          % Excel: with PKOM4 und KaskadenlÃ¼ftung
     
     % change model specific parameters if wished (MODIFY)
     building.preruntime = 30*24*3600;
