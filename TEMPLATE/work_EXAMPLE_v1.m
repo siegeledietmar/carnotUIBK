@@ -7,7 +7,7 @@ name_build_obj = 'building_EXAMPLE';
 
 %% parameters which allows you to automatize a run (MODIFY)
 MODIFY = 0;
-SIMULATE = 1;
+SIMULATE = 0;
 
 %% run4simulink (DO NOT MODIFY)
 run4simulink
@@ -33,8 +33,7 @@ if MODIFY
     % choose the import mode (MODIFY)
     % import_mode: 'gbXML' ... import of gbXML file
     %              'excel' ... import of Excel file
-    %              'PHPP'  ... import of PHPP   !ATTENTION! write also the
-    %                name of the excel file (it should be a excel template)
+    %              'PHPP'  ... import of PHPP
     import_mode = 'excel';
     
     % creates or modies the variants (DO NOT MODIFY)

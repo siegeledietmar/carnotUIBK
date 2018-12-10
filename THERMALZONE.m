@@ -282,7 +282,8 @@ classdef THERMALZONE
             if exist(vollpfad, 'file')
                 warning('Existing Excel file used.')
             else
-                error('Excel file not existing!')
+                warning('Excel file not existing, using template!')
+                copyfile('building_TEMPLATE.xlsx',name_xls);
             end
 
             % modify excel for write weather
@@ -745,23 +746,24 @@ classdef THERMALZONE
                 A_tot = 0;  
                 for ii = 1:size(obj.zone(jj).matrix_wd,1)
                     if (strcmp(obj.zone(jj).matrix_wd{ii,3}, obj.zone(jj).name))
+%                     if (strcmp(obj.zone(jj).matrix_wd{ii,3}, 'INTERNAL'))
+                        disp('INTERNAL')
                         A_tot = A_tot + 2*obj.zone(jj).matrix_wd{ii,2};
                     else
                         A_tot = A_tot + obj.zone(jj).matrix_wd{ii,2};
                     end
                 end
+                
                 for ii = 1:size(obj.zone(jj).matrix_wd,1)
-                    if (strcmp(obj.zone(jj).matrix_wd{ii,3}, obj.zone(jj).name))
-                        obj.zone(jj).matrix_wd{ii,11} = obj.zone(jj).matrix_wd{ii,2}/(A_tot);
-                    else
-                        obj.zone(jj).matrix_wd{ii,11} = obj.zone(jj).matrix_wd{ii,2}/A_tot;
+                    obj.zone(jj).matrix_wd{ii,11} = obj.zone(jj).matrix_wd{ii,2}/A_tot;
+                    
+                    switch obj.zone(jj).matrix_wd{ii,3}
+                        case 'INTERNAL'
+                            obj.zone(jj).matrix_wd{ii,11} = obj.zone(jj).matrix_wd{ii,11} / 2;
                     end
                 end
             end
-%             size(obj.zone(ii).matrix_wi)
-%             obj.zone(ii).matrix_wi{jj,13}
-%             size(obj.zone(ii).matrix_wi{jj,13})
-
+            
             for ii = 1:length(obj.zone)
                 for jj = 1:size(obj.zone(ii).matrix_wi,1)
                     time_factor = obj.zone(ii).matrix_wi{jj,13};
@@ -769,23 +771,6 @@ classdef THERMALZONE
                     obj.zone(ii).win_factor_seq{jj}  = [time_factor' seq_factor'];
                 end
             end
-%                     time_months = [0 31 59 90 120 151 181 212 243 273 304 334]*24*3600;
-%                     time_factor = [];
-%                     seq_factor_ = [];
-%                     seq_factor_ = [obj.zone(ii).matrix_wi{jj,13} obj.zone(ii).matrix_wi{jj,13} obj.zone(ii).matrix_wi{jj,13} (obj.zone(ii).matrix_wi{jj,13}+obj.zone(ii).matrix_wi{jj,14})/2 obj.zone(ii).matrix_wi{jj,14} obj.zone(ii).matrix_wi{jj,14} obj.zone(ii).matrix_wi{jj,14} obj.zone(ii).matrix_wi{jj,14} obj.zone(ii).matrix_wi{jj,14} obj.zone(ii).matrix_wi{jj,13} obj.zone(ii).matrix_wi{jj,13} obj.zone(ii).matrix_wi{jj,13}];
-%                 	seq_factor = [];
-%                     for ll = -1:building.maxruntime
-%                         if ll == building.maxruntime
-%                             time_factor= [time_factor time_months+ll*365*24*3600 365*24*3600*(building.maxruntime+1)];
-%                             seq_factor = [seq_factor seq_factor_ seq_factor_(1)];
-%                         else
-%                             time_factor = [time_factor time_months+ll*365*24*3600];
-%                             seq_factor = [seq_factor seq_factor_];
-%                         end
-%                     end
-%                     obj.zone(ii).win_factor_seq{jj}  = [time_factor' seq_factor'];
-%                 end
-%             end
         end
         
         function obj = add_intersection(obj, number, name, zones)

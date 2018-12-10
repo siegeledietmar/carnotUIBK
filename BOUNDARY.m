@@ -291,7 +291,8 @@ classdef BOUNDARY
             if exist(vollpfad, 'file')
                 warning('Existing Excel file used.')
             else
-                error('Excel file not existing!')
+                warning('Excel file not existing, using template!')
+                copyfile('building_TEMPLATE.xlsx',name_xls);
             end
 
             % modify excel for write weather

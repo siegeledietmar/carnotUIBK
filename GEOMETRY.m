@@ -308,7 +308,8 @@ classdef GEOMETRY
             if exist(vollpfad, 'file')
                 warning('Existing Excel file used.')
             else
-                error('Excel file not existing!')
+                warning('Excel file not existing, using template!')
+                copyfile('building_TEMPLATE.xlsx',name_xls);
             end
 
             % modify excel for write weather
@@ -338,16 +339,27 @@ classdef GEOMETRY
                        
                        %definition wall_orientation
                        if wall_pfad.orientation_slope == 90
-                           switch wall_pfad.orientation_azimuth
-                               case {0, 360}
-                                   wall_orientation{wall_count} = 'S';
-                               case {180, -180}
-                                   wall_orientation{wall_count} = 'N';
-                               case {270, -90}
-                                   wall_orientation{wall_count} = 'W';
-                               case 90
-                                   wall_orientation{wall_count} = 'E';
+%                            switch wall_pfad.orientation_azimuth
+%                                case {-45:45, 315:405}
+%                                    wall_orientation{wall_count} = 'S';
+%                                case {135:225, -225:-135}
+%                                    wall_orientation{wall_count} = 'N';
+%                                case {225:315, -135:-45}
+%                                    wall_orientation{wall_count} = 'W';
+%                                case 45:135
+%                                    wall_orientation{wall_count} = 'E';
+%                            end
+                           
+                           if (wall_pfad.orientation_azimuth>=-45 && wall_pfad.orientation_azimuth<45) || (wall_pfad.orientation_azimuth>=315 && wall_pfad.orientation_azimuth<=405)
+                               wall_orientation{wall_count} = 'S';
+                           elseif (wall_pfad.orientation_azimuth>=135 && wall_pfad.orientation_azimuth<225) || (wall_pfad.orientation_azimuth>=-225 && wall_pfad.orientation_azimuth<-135)
+                               wall_orientation{wall_count} = 'N';
+                           elseif (wall_pfad.orientation_azimuth>=225 && wall_pfad.orientation_azimuth<315) || (wall_pfad.orientation_azimuth>=-135 && wall_pfad.orientation_azimuth<-45)
+                               wall_orientation{wall_count} = 'W';
+                           elseif (wall_pfad.orientation_azimuth>=45 && wall_pfad.orientation_azimuth<135)
+                               wall_orientation{wall_count} = 'E';
                            end
+                           
                            
                        elseif wall_pfad.orientation_slope == 180 || wall_pfad.orientation_slope==-180
                             wall_orientation{wall_count} = 'ceil';
@@ -359,7 +371,7 @@ classdef GEOMETRY
                        
                        val = sum(strcmp(wall_orientation,wall_orientation{wall_count}));
                        
-                       %definition n_wall
+                       % definition n_wall
                        n_wall(wall_count) = val;
                        
                        matrix_to_write_wall(wall_count,:) = [{wall_pfad.name} {building.geometry(variant_geometry).room(ii).name} ...
