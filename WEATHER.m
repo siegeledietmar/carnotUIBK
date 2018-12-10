@@ -50,6 +50,7 @@ classdef WEATHER
     
     properties
         name = '';                  % name of the weather
+        path = '';                  % path to weather file
         time_value = 0;
         latitude = 0;               % 1 latitude [°]   
         longitude = 0;              % 2 longitude [°]
@@ -75,7 +76,7 @@ classdef WEATHER
     end
     
     methods
-        function obj = WEATHER(name, time_value, zenith, azimuth, latitude, longitude, latitude_timezone, radiation_beam_normal, radiation_diffuse_horizontal, t_ambient, t_sky, rh, precip, cloud, p, vw, wdir, incidence, tetap, tetas, Idirect_surface, Idiffuse_surface)
+        function obj = WEATHER(name, time_value, zenith, azimuth, latitude, longitude, latitude_timezone, radiation_beam_normal, radiation_diffuse_horizontal, t_ambient, t_sky, rh, precip, cloud, p, vw, wdir, incidence, tetap, tetas, Idirect_surface, Idiffuse_surface, path)
             obj.name = name;
             obj.time_value = time_value;
             obj.zenith = zenith;
@@ -97,7 +98,8 @@ classdef WEATHER
             obj.tetap = tetap;
             obj.tetas = tetas;
             obj.Idirect_surface = Idirect_surface;
-            obj.Idiffuse_surface = Idiffuse_surface;        
+            obj.Idiffuse_surface = Idiffuse_surface;
+            obj.path = path;
             
         end
         

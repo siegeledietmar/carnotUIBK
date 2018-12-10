@@ -193,6 +193,8 @@ function building = ini_building_automatic(building, modify, import_mode, name_X
         elseif strcmp(import_mode,'PHPP')
             building.geometry(building.variant_geometry) = GEOMETRY();
             building = building.add_variant_geometry(building.variant_geometry, building.geometry(building.variant_geometry).geometry_from_PHPP(building.PHPP.name, building.PHPP.language, building.PHPP.version, building.PHPP.choice_modelconswall, building));
+            % 13-11-2018 Eleonora Leonardi
+            building.geometry.geometry_to_excel(building.EXCEL.name, building, building.variant_geometry);
         end
     end
     
@@ -213,8 +215,9 @@ function building = ini_building_automatic(building, modify, import_mode, name_X
             cons = cons.construction_from_PHPP(building.PHPP.name, building.PHPP.language, building.PHPP.version, building.PHPP.choice_modelconswall);
             cons = cons.constructionwindow_from_PHPP(building.PHPP.name, building.PHPP.language, building.PHPP.version);
             cons = cons.constructiontbUA_from_PHPP(building.PHPP.name, building.PHPP.language, building.PHPP.version);
-            cons = cons.add_structure_from_PHPP(building.PHPP.name, building.PHPP.language, building.PHPP.version, 0.94, 0.60, 0.65, building.PHPP.choice_modelconswall);
             building = building.add_variant_construction(building.variant_construction, cons);
+            % 13-11-2018 Eleonora Leonardi
+            building.construction.construction_to_excel(building.EXCEL.name, building, building.variant_construction);
         end
     end
     
@@ -231,6 +234,8 @@ function building = ini_building_automatic(building, modify, import_mode, name_X
             intgain = intgain.gain_from_PHPP(building.PHPP.name, building.PHPP.language, building.PHPP.version);
             intgain = intgain.assign_gain_to_zone('Person_W/m²_from_PHPP', 1);
             building = building.add_variant_gains(building.variant_gains, intgain);
+            % 13-11-2018 Eleonora Leonardi
+            building.gains.gains_to_excel(building.EXCEL.name, building, building.variant_gains);
         end
     end
     
@@ -252,6 +257,8 @@ function building = ini_building_automatic(building, modify, import_mode, name_X
             thzo = thzo.add_zone(1, 'building', {'whole_building'}, model_room);
             thzo = thzo.add_cpspectozone_setorientimp(building.PHPP.name, building.PHPP.language, building.PHPP.version, 1, building.PHPP.orientation_important);
             building = building.add_variant_thermalzone(building.variant_thermalzone, thzo);
+            % 13-11-2018 Eleonora Leonardi
+            building.thermalzone.zone_to_excel(building.EXCEL.name, building, building.variant_thermalzone);
         end
     end
     
@@ -274,6 +281,8 @@ function building = ini_building_automatic(building, modify, import_mode, name_X
             boun = boun.add_weather_from_file(building, building.PHPP.weather.file, building.PHPP.weather.name, building.PHPP.weather.latitude, building.PHPP.weather.longitude, building.PHPP.weather.ref_median);
             boun = boun.complete_ground_and_neighbour(building);
             building = building.add_variant_boundary(building.variant_boundary, boun);
+            % 13-11-2018 Eleonora Leonardi
+            building.boundary.ground_neighbour_weather_to_excel(building.EXCEL.name, building, building.variant_boundary);
         end
     end
     
