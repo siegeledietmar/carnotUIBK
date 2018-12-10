@@ -30,8 +30,13 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 ## Contact
 University of Innsbruck
+
 Unit for Energy Efficient Building
+
 Dipl.-Ing. Dietmar Siegele, BSc MSc
+
 Technikerstraße 13, AT-020 Innsbruck
+
 Telefon  +43 512 507-63614
+
 E-Mail    dietmar.siegele@uibk.ac.at
