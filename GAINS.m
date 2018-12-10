@@ -209,6 +209,118 @@ classdef GAINS
             end
         end
         
+        function obj = gains_to_excel(obj, name_xls, building, variant_gains)
+            
+            vollpfad = [pwd '\' name_xls]
+            
+            if exist(vollpfad, 'file')
+                warning('Existing Excel file used.')
+            else
+                error('Excel file not existing!')
+            end
+
+            % modify excel for write weather
+            Excel = actxserver('Excel.Application');
+            Excel.Workbooks.Open(vollpfad);
+            warning('Excel file opened for writing! Do not interrupt this script!')
+
+            % to delete the raws of the excel
+            xlswrite1(name_xls,{''},'Gains','A4:B100')
+            
+            xlswrite1(name_xls,{''},'Gains','E4:F33')
+            xlswrite1(name_xls,{''},'Gains','H4:AE33')
+            
+            xlswrite1(name_xls,{''},'Gains','E38:F52')
+            xlswrite1(name_xls,{''},'Gains','H38:AE52')
+            
+            xlswrite1(name_xls,{''},'Gains','E57:F71')
+            xlswrite1(name_xls,{''},'Gains','H57:AE71')
+            
+            xlswrite1(name_xls,{''},'Gains','E76:F90')
+            xlswrite1(name_xls,{''},'Gains','H76:AE90')
+            
+            
+            count_people = 0;
+            count_light = 0;
+            count_electr = 0;
+            count_moist = 0;
+            
+            for ii = 1:size(building.gains(variant_gains).gain,2)
+                model = building.gains(variant_gains).gain(ii).model;
+                
+                switch model
+                    case 0 % people
+                        count_people = count_people+1;
+                        
+                        name_people{count_people*2-1} = building.gains(variant_gains).gain(ii).name;
+                        type_people{count_people*2-1} = building.gains(variant_gains).gain(ii).type;
+
+                        if type_people{count_people*2-1} == 2
+                            if building.gains(variant_gains).gain(ii).values1 == 24
+                                values1_people(count_people*2-1,1:24) = building.gains(variant_gains).gain(ii).values1;
+                            else
+                                values1_people(count_people*2-1,1:24) = building.gains(variant_gains).gain(ii).values1(1);
+                            end
+                            matrix_to_write_people(count_people*2-1,:) = [{building.gains(variant_gains).gain(ii).name} {building.gains(variant_gains).gain(ii).type} {'values 1'} {values1_people(count_people*2-1,1)} {values1_people(count_people*2-1,2)} {values1_people(count_people*2-1,3)} {values1_people(count_people*2-1,4)} {values1_people(count_people*2-1,5)} {values1_people(count_people*2-1,6)} {values1_people(count_people*2-1,7)} {values1_people(count_people*2-1,8)} {values1_people(count_people*2-1,9)} {values1_people(count_people*2-1,10)} {values1_people(count_people*2-1,11)} {values1_people(count_people*2-1,12)} {values1_people(count_people*2-1,13)} {values1_people(count_people*2-1,14)} {values1_people(count_people*2-1,15)} {values1_people(count_people*2-1,16)} {values1_people(count_people*2-1,17)} {values1_people(count_people*2-1,18)} {values1_people(count_people*2-1,19)} {values1_people(count_people*2-1,20)} {values1_people(count_people*2-1,21)} {values1_people(count_people*2-1,22)} {values1_people(count_people*2-1,23)} {values1_people(count_people*2-1,24)}];
+                            matrix_to_write_people(count_people*2,:) = [{''} {''} {'values 2'} {''} {''} {''} {''} {''} {''} {''} {''} {''} {''} {''} {''} {''} {''} {''} {''} {''} {''} {''} {''} {''} {''} {''} {''}];
+                        else
+                            if building.gains(variant_gains).gain(ii).values1 == 24
+                                values1_people(count_people*2-1,1:24) = building.gains(variant_gains).gain(ii).values1(1:24);
+                                values1_people(count_people*2,1:24) = building.gains(variant_gains).gain(ii).values2(1:24);
+                            else
+                                values1_people(count_people*2-1,1:24) = building.gains(variant_gains).gain(ii).values1(1);
+                                values1_people(count_people*2,1:24) = building.gains(variant_gains).gain(ii).values2(1);
+                            end
+                            
+                            matrix_to_write_people(count_people*2-1,:) = [{building.gains(variant_gains).gain(ii).name} {building.gains(variant_gains).gain(ii).type} {'values 1'} {values1_people(count_people*2-1,1)} {values1_people(count_people*2-1,2)} {values1_people(count_people*2-1,3)} {values1_people(count_people*2-1,4)} {values1_people(count_people*2-1,5)} {values1_people(count_people*2-1,6)} {values1_people(count_people*2-1,7)} {values1_people(count_people*2-1,8)} {values1_people(count_people*2-1,9)} {values1_people(count_people*2-1,10)} {values1_people(count_people*2-1,11)} {values1_people(count_people*2-1,12)} {values1_people(count_people*2-1,13)} {values1_people(count_people*2-1,14)} {values1_people(count_people*2-1,15)} {values1_people(count_people*2-1,16)} {values1_people(count_people*2-1,17)} {values1_people(count_people*2-1,18)} {values1_people(count_people*2-1,19)} {values1_people(count_people*2-1,20)} {values1_people(count_people*2-1,21)} {values1_people(count_people*2-1,22)} {values1_people(count_people*2-1,23)} {values1_people(count_people*2-1,24)}];
+                            matrix_to_write_people(count_people*2,:) = [{''} {''} {'values 2'} {values1_people(count_people*2,1)} {values1_people(count_people*2,2)} {values1_people(count_people*2,3)} {values1_people(count_people*2,4)} {values1_people(count_people*2,5)} {values1_people(count_people*2,6)} {values1_people(count_people*2,7)} {values1_people(count_people*2,8)} {values1_people(count_people*2,9)} {values1_people(count_people*2,10)} {values1_people(count_people*2,11)} {values1_people(count_people*2,12)} {values1_people(count_people*2,13)} {values1_people(count_people*2,14)} {values1_people(count_people*2,15)} {values1_people(count_people*2,16)} {values1_people(count_people*2,17)} {values1_people(count_people*2,18)} {values1_people(count_people*2,19)} {values1_people(count_people*2,20)} {values1_people(count_people*2,21)} {values1_people(count_people*2,22)} {values1_people(count_people*2,23)} {values1_people(count_people*2,24)}];
+                        end
+                        
+                    case 1 % light
+                        count_light = count_light+1;
+                        values1_light(count_light,1:24) = building.gains(variant_gains).gain(ii).values1;
+                        matrix_to_write_light(count_light,:) = [{building.gains(variant_gains).gain(ii).name} {building.gains(variant_gains).gain(ii).type} {'values 1'} {values1_light(count_light,1)} {values1_light(count_light,2)} {values1_light(count_light,3)} {values1_light(count_light,4)} {values1_light(count_light,5)} {values1_light(count_light,6)} {values1_light(count_light,7)} {values1_light(count_light,8)} {values1_light(count_light,9)} {values1_light(count_light,10)} {values1_light(count_light,11)} {values1_light(count_light,12)} {values1_light(count_light,13)} {values1_light(count_light,14)} {values1_light(count_light,15)} {values1_light(count_light,16)} {values1_light(count_light,17)} {values1_light(count_light,18)} {values1_light(count_light,19)} {values1_light(count_light,20)} {values1_light(count_light,21)} {values1_light(count_light,22)} {values1_light(count_light,23)} {values1_light(count_light,24)}];
+                        
+                    case 2 % electricity
+                        count_electr = count_electr+1;
+                        values1_electr(count_electr,1:24) = building.gains(variant_gains).gain(ii).values1;
+                        matrix_to_write_electr(count_electr,:) = [{building.gains(variant_gains).gain(ii).name} {building.gains(variant_gains).gain(ii).type} {'values 1'} {values1_electr(count_electr,1)} {values1_electr(count_electr,2)} {values1_electr(count_electr,3)} {values1_electr(count_electr,4)} {values1_electr(count_electr,5)} {values1_electr(count_electr,6)} {values1_electr(count_electr,7)} {values1_electr(count_electr,8)} {values1_electr(count_electr,9)} {values1_electr(count_electr,10)} {values1_electr(count_electr,11)} {values1_electr(count_electr,12)} {values1_electr(count_electr,13)} {values1_electr(count_electr,14)} {values1_electr(count_electr,15)} {values1_electr(count_electr,16)} {values1_electr(count_electr,17)} {values1_electr(count_electr,18)} {values1_electr(count_electr,19)} {values1_electr(count_electr,20)} {values1_electr(count_electr,21)} {values1_electr(count_electr,22)} {values1_electr(count_electr,23)} {values1_electr(count_electr,24)}];
+                        
+                    case 3 % moisture
+                        count_moist = count_moist+1;
+                        values1_moist(count_moist,1:24) = building.gains(variant_gains).gain(ii).values1;
+                        matrix_to_write_moist(count_moist,:) = [{building.gains(variant_gains).gain(ii).name} {building.gains(variant_gains).gain(ii).type} {'values 1'} {values1_moist(count_moist,1)} {values1_moist(count_moist,2)} {values1_moist(count_moist,3)} {values1_moist(count_moist,4)} {values1_moist(count_moist,5)} {values1_moist(count_moist,6)} {values1_moist(count_moist,7)} {values1_moist(count_moist,8)} {values1_moist(count_moist,9)} {values1_moist(count_moist,10)} {values1_moist(count_moist,11)} {values1_moist(count_moist,12)} {values1_moist(count_moist,13)} {values1_moist(count_moist,14)} {values1_moist(count_moist,15)} {values1_moist(count_moist,16)} {values1_moist(count_moist,17)} {values1_moist(count_moist,18)} {values1_moist(count_moist,19)} {values1_moist(count_moist,20)} {values1_moist(count_moist,21)} {values1_moist(count_moist,22)} {values1_moist(count_moist,23)} {values1_moist(count_moist,24)}];
+                end                
+            end
+            if exist('matrix_to_write_people') ~=  0
+               xlswrite1(name_xls,matrix_to_write_people,'Gains',['E4:AE' num2str(count_people*2+3)]) 
+            end
+            if exist('matrix_to_write_light') ~=  0
+               xlswrite1(name_xls,matrix_to_write_light,'Gains',['E38:AE' num2str(count_light+37)])
+            end
+            if exist('matrix_to_write_electr') ~=  0
+               xlswrite1(name_xls,matrix_to_write_electr,'Gains',['E57:AE' num2str(count_electr+56)]) 
+            end
+            if exist('matrix_to_write_moist') ~=  0
+               xlswrite1(name_xls,matrix_to_write_moist,'Gains',['E76:AE' num2str(count_moist+75)])
+            end
+            
+            count_gaintozone = 0;
+            
+            for jj=1:size(building.gains(variant_gains).gain_to_zone,2)
+                count_gaintozone = count_gaintozone +1;
+                matrix_to_write_gaintozone(count_gaintozone,:) = [{building.gains(variant_gains).gain_to_zone(jj).name_gains} {building.gains(variant_gains).gain_to_zone(jj).number_of_zone}];
+            end
+            
+            xlswrite1(name_xls,matrix_to_write_gaintozone,'Gains',['A4:B' num2str(count_gaintozone+3)])
+            
+            Excel.ActiveWorkbook.Save
+            Excel.Quit
+            Excel.delete
+            clear Excel
+            warning('Excel file closed!')
+        end
+        
         function gain = get_gain(obj, name)
             % to get the gain
             % 1 ... name of the gain

@@ -275,6 +275,49 @@ classdef THERMALZONE
             end
         end
         
+        function obj = zone_to_excel(obj, name_xls, building,variant_thermalzone)
+            
+            vollpfad = [pwd '\' name_xls]
+            
+            if exist(vollpfad, 'file')
+                warning('Existing Excel file used.')
+            else
+                error('Excel file not existing!')
+            end
+
+            % modify excel for write weather
+            Excel = actxserver('Excel.Application');
+            Excel.Workbooks.Open(vollpfad);
+            warning('Excel file opened for writing! Do not interrupt this script!')
+
+            % to delete the raws of the excel
+            xlswrite1(name_xls,{''},'Zones','A3:CE12')
+            
+            count_thzone = 0;
+            
+            for ii=1:size(building.thermalzone(variant_thermalzone).zone,2)
+                if isnan(building.thermalzone(variant_thermalzone).zone(ii).heated_volume)
+                else
+                    count_thzone = count_thzone+1;
+                    thzone_pfad = building.thermalzone(variant_thermalzone).zone(ii);
+                    rooms = cell(1,70);
+                    for jj = 1:size(thzone_pfad.rooms,2)
+                        rooms(1,jj) = thzone_pfad.rooms(1,jj);
+                    end
+                	matrix_to_write_zone(ii,:) = [{count_thzone} {thzone_pfad.name} rooms {thzone_pfad.model} {thzone_pfad.orientation_important} {thzone_pfad.t_ini} {thzone_pfad.phi_ini} {thzone_pfad.CO2_ini} {thzone_pfad.VOC_ini} {thzone_pfad.cp_spec} {thzone_pfad.timeconstant} {['[' num2str(thzone_pfad.profile_Tc) ']']} {['[' num2str(thzone_pfad.profile_Tr) ']']} {['[' num2str(thzone_pfad.profile_timevalues/(24*3600)) ']*24*3600']}];  
+               
+                end
+                
+            end
+            xlswrite1(name_xls,matrix_to_write_zone,'Zones',['A3:CE' num2str(count_thzone+2)]) 
+            
+            Excel.ActiveWorkbook.Save
+            Excel.Quit
+            Excel.delete
+            clear Excel
+            warning('Excel file closed!')
+        end
+        
         function obj = zone_from_XML(obj, name_XML)
             building_xml = xml2struct(name_XML);
             name_XML = building_xml.gbXML;
@@ -368,7 +411,6 @@ classdef THERMALZONE
                 ind_sum_wi = 1;
                 for kk = 1:length(obj.zone(ind).rooms)
                 	room(kk) = geometry.get_room(obj.zone(ind).rooms(kk));
-                    
                     % fill in the matrix with the value for each wall
                     for ll = 1:length(room(kk).wall)
                         area = calc_area(room(kk).wall(ll));
@@ -396,7 +438,6 @@ classdef THERMALZONE
                         obj.zone(ind).matrix_wd{ind_sum,18} = room(kk).wall(ll).control_i; % control_i
                         obj.zone(ind).matrix_wd{ind_sum,19} = room(kk).name;
                         ind_sum = ind_sum+1;
-                        
                         % fill in the matrix with the value for each door
                         for mm = 1:length(room(kk).wall(ll).doors)
                             area = calc_area(room(kk).wall(ll).doors(mm));
@@ -465,7 +506,6 @@ classdef THERMALZONE
                     end
                 end  
                 ttt = [];
-                
                 % to set the internal walls
                 for oo = 1:size(obj.zone(ind).matrix_wd,1)
                     ttt(oo) = oo;
@@ -504,7 +544,6 @@ classdef THERMALZONE
                 ttt = [];
                 uu = 1;
                 canc =[];
-                
                 % sum the areas of the walls that have the same
                 % characteristics
                 for oo = 1:size(obj.zone(ind).matrix_wd,1)
@@ -557,7 +596,6 @@ classdef THERMALZONE
                 ttt = [];
                 uu = 1;
                 canc =[];
-                
                 % sum the areas of the windows that have the same
                 % characteristics
                 for oo = 1:size(obj.zone(ind).matrix_wi,1)
@@ -703,29 +741,27 @@ classdef THERMALZONE
                     count = count+1;
                 end
                 
-                % TODO BUG
                 % calculate solar_factor
                 A_tot = 0;  
                 for ii = 1:size(obj.zone(jj).matrix_wd,1)
                     if (strcmp(obj.zone(jj).matrix_wd{ii,3}, obj.zone(jj).name))
-%                     if (strcmp(obj.zone(jj).matrix_wd{ii,3}, 'INTERNAL'))
-                        disp('INTERNAL')
                         A_tot = A_tot + 2*obj.zone(jj).matrix_wd{ii,2};
                     else
                         A_tot = A_tot + obj.zone(jj).matrix_wd{ii,2};
                     end
                 end
-                
                 for ii = 1:size(obj.zone(jj).matrix_wd,1)
-                    obj.zone(jj).matrix_wd{ii,11} = obj.zone(jj).matrix_wd{ii,2}/A_tot;
-                    
-                    switch obj.zone(jj).matrix_wd{ii,3}
-                        case 'INTERNAL'
-                            obj.zone(jj).matrix_wd{ii,11} = obj.zone(jj).matrix_wd{ii,11} / 2;
+                    if (strcmp(obj.zone(jj).matrix_wd{ii,3}, obj.zone(jj).name))
+                        obj.zone(jj).matrix_wd{ii,11} = obj.zone(jj).matrix_wd{ii,2}/(A_tot);
+                    else
+                        obj.zone(jj).matrix_wd{ii,11} = obj.zone(jj).matrix_wd{ii,2}/A_tot;
                     end
                 end
             end
-            
+%             size(obj.zone(ii).matrix_wi)
+%             obj.zone(ii).matrix_wi{jj,13}
+%             size(obj.zone(ii).matrix_wi{jj,13})
+
             for ii = 1:length(obj.zone)
                 for jj = 1:size(obj.zone(ii).matrix_wi,1)
                     time_factor = obj.zone(ii).matrix_wi{jj,13};
@@ -733,6 +769,23 @@ classdef THERMALZONE
                     obj.zone(ii).win_factor_seq{jj}  = [time_factor' seq_factor'];
                 end
             end
+%                     time_months = [0 31 59 90 120 151 181 212 243 273 304 334]*24*3600;
+%                     time_factor = [];
+%                     seq_factor_ = [];
+%                     seq_factor_ = [obj.zone(ii).matrix_wi{jj,13} obj.zone(ii).matrix_wi{jj,13} obj.zone(ii).matrix_wi{jj,13} (obj.zone(ii).matrix_wi{jj,13}+obj.zone(ii).matrix_wi{jj,14})/2 obj.zone(ii).matrix_wi{jj,14} obj.zone(ii).matrix_wi{jj,14} obj.zone(ii).matrix_wi{jj,14} obj.zone(ii).matrix_wi{jj,14} obj.zone(ii).matrix_wi{jj,14} obj.zone(ii).matrix_wi{jj,13} obj.zone(ii).matrix_wi{jj,13} obj.zone(ii).matrix_wi{jj,13}];
+%                 	seq_factor = [];
+%                     for ll = -1:building.maxruntime
+%                         if ll == building.maxruntime
+%                             time_factor= [time_factor time_months+ll*365*24*3600 365*24*3600*(building.maxruntime+1)];
+%                             seq_factor = [seq_factor seq_factor_ seq_factor_(1)];
+%                         else
+%                             time_factor = [time_factor time_months+ll*365*24*3600];
+%                             seq_factor = [seq_factor seq_factor_];
+%                         end
+%                     end
+%                     obj.zone(ii).win_factor_seq{jj}  = [time_factor' seq_factor'];
+%                 end
+%             end
         end
         
         function obj = add_intersection(obj, number, name, zones)
@@ -871,7 +924,6 @@ classdef THERMALZONE
                     break
                 end
             end
-            
             % check if zone is not existing
             if ind
                 area = 0;
@@ -900,13 +952,7 @@ classdef THERMALZONE
             for jj = 1:length(obj.zone)
                 if obj.zone(jj).number == number
                     for ll = 1:size(obj.zone(jj).matrix_wd,1)
-                        % TODO BUG
-                        switch obj.zone(jj).matrix_wd{ll,3}
-                            case 'INTERNAL'
-                                factor = factor + 2*obj.zone(jj).matrix_wd{ll,11};
-                            otherwise
-                                factor = factor + obj.zone(jj).matrix_wd{ll,11};
-                        end
+                        factor = factor + obj.zone(jj).matrix_wd{ll,11};
                     end
                 end
             end
@@ -1026,7 +1072,7 @@ classdef THERMALZONE
         
         function plot_building(obj, num_zone, geometry)
             % to plot the walls and window of a zone
-            % 1 ... number of the zone
+            % 1 ... list of the number of the zone
             % 2 ... geometry object
             colour =[];
             colour(1,1:3) = [249 109 26] ./ 255;
