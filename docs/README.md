@@ -1,12 +1,9 @@
 # carnotUIBK
 MATLAB Simulink Toolbox for creating a thermal building simulation.
-The Toolbox CARNOT is also necessary: https://de.mathworks.com/matlabcentral/fileexchange/68890-carnot-toolbox
-
-## Installation
-Run the init_carnotUIBK.m to install! Have fun!
+The Toolbox [CARNOT](https://de.mathworks.com/matlabcentral/fileexchange/68890-carnot-toolbox) is also necessary!
 
 ## Changelog
-https://github.com/siegeledietmar/carnotUIBK/blob/master/CHANGELOG.md
+[See here!](https://github.com/siegeledietmar/carnotUIBK/blob/master/CHANGELOG.md)
 
 ## Licence
 
