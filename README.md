@@ -9,7 +9,6 @@ Run the init_carnotUIBK.m to install! Have fun!
 Look [HERE](https://github.com/siegeledietmar/carnotUIBK/blob/master/CHANGELOG.md) for the Changelog!
 
 ## Licence
-
 Copyright (c) 2016-2018, University of Innsbruck, Unit for Energy Efficient Building.
 
 Dietmar Siegele     dietmar.siegele@uibk.ac.at
