@@ -284,6 +284,71 @@ classdef BOUNDARY
             obj = add_weather_from_file(obj, building, name_txt, name, latitude, longitude, reference_meridian_for_time);
         end
         
+        function obj = ground_neighbour_weather_to_excel(obj, name_xls, building, variant_boundary)
+            
+           vollpfad = [pwd '\' name_xls]
+            
+            if exist(vollpfad, 'file')
+                warning('Existing Excel file used.')
+            else
+                error('Excel file not existing!')
+            end
+
+            % modify excel for write weather
+            Excel = actxserver('Excel.Application');
+            Excel.Workbooks.Open(vollpfad);
+            warning('Excel file opened for writing! Do not interrupt this script!')
+
+            % to delete the raws of the excel
+            xlswrite1(name_xls,{''},'Boundary','B4:O9')
+            xlswrite1(name_xls,{''},'Boundary','B14:O19')
+            xlswrite1(name_xls,{''},'Boundary','B23:O23')
+            
+            count_ground = 0;
+            count_neighbour = 0;
+            
+            for ii = 1:size(building.boundary(variant_boundary).ground,2)
+                if strcmp(building.boundary(variant_boundary).ground(ii).name, 'none')
+                else
+                    count_ground = count_ground+1;
+                    ground_pfad = building.boundary(variant_boundary);
+                    matrix_to_write_ground(count_ground,:) = [{ground_pfad.ground(count_ground).name} {2}...
+                        {ground_pfad.ground(count_ground).temperature(1,2)} {ground_pfad.ground(count_ground).temperature(2,2)} {ground_pfad.ground(count_ground).temperature(3,2)}...
+                        {ground_pfad.ground(count_ground).temperature(4,2)} {ground_pfad.ground(count_ground).temperature(5,2)} {ground_pfad.ground(count_ground).temperature(6,2)}...
+                        {ground_pfad.ground(count_ground).temperature(7,2)} {ground_pfad.ground(count_ground).temperature(8,2)} {ground_pfad.ground(count_ground).temperature(9,2)}...
+                        {ground_pfad.ground(count_ground).temperature(10,2)} {ground_pfad.ground(count_ground).temperature(11,2)} {ground_pfad.ground(count_ground).temperature(12,2)}];
+                end
+            end
+            
+            for ii = 1:size(building.boundary(variant_boundary).neighbour,2)
+                if strcmp(building.boundary(variant_boundary).neighbour(ii).name, 'none')
+                else
+                    count_neighbour = count_neighbour+1;
+                    neighbour_pfad = building.boundary(variant_boundary);
+                    matrix_to_write_neigbour(count_neighbour,:) = [{neighbour_pfad.neighbour(count_neighbour).name} {2}...
+                        {neighbour_pfad.neighbour(count_neighbour).temperature(1,2)} {neighbour_pfad.neighbour(count_neighbour).temperature(2,2)} {neighbour_pfad.neighbour(count_neighbour).temperature(3,2)}...
+                        {neighbour_pfad.neighbour(count_neighbour).temperature(4,2)} {neighbour_pfad.neighbour(count_neighbour).temperature(5,2)} {neighbour_pfad.neighbour(count_neighbour).temperature(6,2)}...
+                        {neighbour_pfad.neighbour(count_neighbour).temperature(7,2)} {neighbour_pfad.neighbour(count_neighbour).temperature(8,2)} {neighbour_pfad.neighbour(count_neighbour).temperature(9,2)}...
+                        {neighbour_pfad.neighbour(count_neighbour).temperature(10,2)} {neighbour_pfad.neighbour(count_neighbour).temperature(11,2)} {neighbour_pfad.neighbour(count_neighbour).temperature(12,2)}];
+                end
+            end
+            
+            matrix_to_write_weather = [{building.boundary(variant_boundary).weather.name} {building.boundary(variant_boundary).weather.path} {building.boundary(variant_boundary).weather.latitude} {''} {''} {''} {building.boundary(variant_boundary).weather.longitude} {''} {''} {''} ...
+                {building.boundary(variant_boundary).weather.latitude_timezone} {''} {''} {''}]; %I don t know how to do with the name of the txt and the time
+           
+            xlswrite1(name_xls,matrix_to_write_ground,'Boundary',['B4:O' num2str(count_ground+3)]) 
+            xlswrite1(name_xls,matrix_to_write_neigbour,'Boundary',['B14:O' num2str(count_neighbour+13)]) 
+            xlswrite1(name_xls,matrix_to_write_weather,'Boundary','B23:O23') 
+            
+            
+            Excel.ActiveWorkbook.Save
+            Excel.Quit
+            Excel.delete
+            clear Excel
+            warning('Excel file closed!')
+            
+        end
+        
         function obj = add_weather_from_file(obj, building, name_txt, name, latitude, longitude, reference_meridian_for_time)
             weather = load(name_txt);
             timevec_weather = linspace(-8760*3600, (building.maxruntime+1)*8760*3600, ((building.maxruntime+2)*size(weather,1)-(building.maxruntime+1)))';
@@ -294,8 +359,6 @@ classdef BOUNDARY
             end
             
             time_value = [timevec_weather timevec_weather]; 
-            latitude = latitude;
-            longitude = longitude;
             zenith = [timevec_weather weather(:,3) ];
             azimuth = [timevec_weather weather(:,4)];
             latitude_timezone = reference_meridian_for_time;
@@ -315,12 +378,12 @@ classdef BOUNDARY
             Idirect_surface = [timevec_weather weather(:,18)];
             Idiffuse_surface = [timevec_weather weather(:,19)];
             
-            obj.weather = [obj.weather WEATHER(name, time_value, zenith, azimuth, latitude, longitude, latitude_timezone, radiation_beam_normal, radiation_diffuse_horizontal, t_ambient, t_sky, rh, precip, cloud, p, vw, wdir, incidence, tetap, tetas, Idirect_surface, Idiffuse_surface)];
+            obj.weather = [obj.weather WEATHER(name, time_value, zenith, azimuth, latitude, longitude, latitude_timezone, radiation_beam_normal, radiation_diffuse_horizontal, t_ambient, t_sky, rh, precip, cloud, p, vw, wdir, incidence, tetap, tetas, Idirect_surface, Idiffuse_surface, name_txt)];
             
         end
         
-        function obj = add_weather(obj, name, time_value, zenith, azimuth, latitude , longitude, latitude_timezone, radiation_beam_normal, radiation_diffuse_horizontal, t_ambient, t_sky, rh, precip, cloud, p, vw, wdir, incidence, tetap, tetas, Idirect_surface, Idiffuse_surface)
-            obj.weather = [obj.weather WEATHER(name, time_value, zenith, azimuth, latitude, longitude, latitude_timezone, radiation_beam_normal, radiation_diffuse_horizontal, t_ambient, t_sky, rh, precip, cloud, p, vw, wdir, incidence, tetap, tetas, Idirect_surface, Idiffuse_surface)];
+        function obj = add_weather(obj, name, time_value, zenith, azimuth, latitude , longitude, latitude_timezone, radiation_beam_normal, radiation_diffuse_horizontal, t_ambient, t_sky, rh, precip, cloud, p, vw, wdir, incidence, tetap, tetas, Idirect_surface, Idiffuse_surface, path)
+            obj.weather = [obj.weather WEATHER(name, time_value, zenith, azimuth, latitude, longitude, latitude_timezone, radiation_beam_normal, radiation_diffuse_horizontal, t_ambient, t_sky, rh, precip, cloud, p, vw, wdir, incidence, tetap, tetas, Idirect_surface, Idiffuse_surface, path)];
         end
         
         function obj = complete_ground_and_neighbour(obj, building)

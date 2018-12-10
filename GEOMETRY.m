@@ -299,6 +299,123 @@ classdef GEOMETRY
             end
         end
         
+        function obj = geometry_to_excel(obj, name_xls, building, variant_geometry)
+            % to put the geometry datas into the excel
+            % 1 ... name of the excel file
+            
+            vollpfad = [pwd '\' name_xls]
+            
+            if exist(vollpfad, 'file')
+                warning('Existing Excel file used.')
+            else
+                error('Excel file not existing!')
+            end
+
+            % modify excel for write weather
+            Excel = actxserver('Excel.Application');
+            Excel.Workbooks.Open(vollpfad);
+            warning('Excel file opened for writing! Do not interrupt this script!')
+
+            % to delete the raws of the excel
+            xlswrite1(name_xls,{''},'Walls','A4:AD800')
+            xlswrite1(name_xls,{''},'WinDoors','A4:AZ800')
+            xlswrite1(name_xls,{''},'Rooms','A7:D800')
+            
+            wall_names_list = {};
+            wall_count = 0;
+            windoor_count = 0;
+            room_count = 0;
+            for ii=1:size(building.geometry(variant_geometry).room,2)
+                room_count = room_count +1;
+                matrix_to_write_room(room_count,:) = [{building.geometry(variant_geometry).room(ii).name} {building.geometry(variant_geometry).room(ii).area} {building.geometry(variant_geometry).room(ii).area * building.geometry(variant_geometry).room(ii).height} {building.geometry(variant_geometry).room(ii).n50} ];
+                
+                for jj = 1: size(building.geometry(variant_geometry).room(ii).wall,2)
+                       
+                       wall_names_list = [wall_names_list, {building.geometry(variant_geometry).room(ii).wall(jj).name}];
+                       wall_count = wall_count+1;
+                    
+                       wall_pfad = building.geometry(variant_geometry).room(ii).wall(jj);
+                       
+                       %definition wall_orientation
+                       if wall_pfad.orientation_slope == 90
+                           switch wall_pfad.orientation_azimuth
+                               case {0, 360}
+                                   wall_orientation{wall_count} = 'S';
+                               case {180, -180}
+                                   wall_orientation{wall_count} = 'N';
+                               case {270, -90}
+                                   wall_orientation{wall_count} = 'W';
+                               case 90
+                                   wall_orientation{wall_count} = 'E';
+                           end
+                           
+                       elseif wall_pfad.orientation_slope == 180 || wall_pfad.orientation_slope==-180
+                            wall_orientation{wall_count} = 'ceil';
+                            
+                       elseif wall_pfad.orientation_slope == 0
+                            wall_orientation{wall_count} = 'floor';
+                            
+                       end
+                       
+                       val = sum(strcmp(wall_orientation,wall_orientation{wall_count}));
+                       
+                       %definition n_wall
+                       n_wall(wall_count) = val;
+                       
+                       matrix_to_write_wall(wall_count,:) = [{wall_pfad.name} {building.geometry(variant_geometry).room(ii).name} ...
+                           {wall_orientation{wall_count}} {n_wall(wall_count)} {wall_pfad.X} {wall_pfad.Y} {wall_pfad.Z} {wall_pfad.width} {wall_pfad.height}...
+                           {wall_pfad.orientation_slope} {wall_pfad.orientation_azimuth} {wall_pfad.orientation_rotation} {wall_pfad.boundary}...
+                           {wall_pfad.construction} {wall_pfad.model_cons} {wall_pfad.model_heattrans} {wall_pfad.view_factor}...
+                           {wall_pfad.amb_factor} {wall_pfad.inside} {wall_pfad.model_inf} {wall_pfad.C(1)} {wall_pfad.C(2)} {wall_pfad.C(3)}...
+                           {wall_pfad.n(1)} {wall_pfad.n(2)} {wall_pfad.n(3)} {wall_pfad.V(1)} {wall_pfad.V(2)} {wall_pfad.V(3)} {wall_pfad.control_i}];
+                        
+                        for kk = 1:size(building.geometry(variant_geometry).room(ii).wall(jj).windows,2)
+                            
+                            windoor_count = windoor_count+1;
+                            
+                            window_pfad = building.geometry(variant_geometry).room(ii).wall(jj).windows(kk);
+                            
+                            matrix_to_write_windoor(windoor_count,:) = [{'window'} {building.geometry(variant_geometry).room(ii).wall(jj).name} {wall_orientation{wall_count}}...
+                                {window_pfad.X} {window_pfad.Y} {window_pfad.width} {window_pfad.height} {window_pfad.width_glass} {window_pfad.height_glass}...
+                                {window_pfad.model_cons} {window_pfad.construction} {window_pfad.view_factor} {window_pfad.amb_factor}  {window_pfad.shadingtop(1)}...
+                                {window_pfad.shadingtop(2)} {window_pfad.shadingleft(1)} {window_pfad.shadingleft(2)} {window_pfad.shadingright(1)} {window_pfad.shadingright(2)}...
+                                {window_pfad.shadinghorizont(1)} {window_pfad.shadinghorizont(2)} {window_pfad.fd} {window_pfad.psi_i(1)} {window_pfad.psi_i(3)}...
+                                {window_pfad.psi_i(2)} {window_pfad.psi_i(4)} {window_pfad.control_s} {0} {window_pfad.model_inf} {window_pfad.C(1)} {window_pfad.C(2)} {window_pfad.C(3)}...
+                                {window_pfad.n(1)} {window_pfad.n(2)} {window_pfad.n(3)} {window_pfad.V(1)} {window_pfad.V(2)} {window_pfad.V(3)} {window_pfad.control_i}...
+                                {'2'} {window_pfad.fsvalue(1)} {window_pfad.fsvalue(2)} {window_pfad.fsvalue(3)} {window_pfad.fsvalue(4)} {window_pfad.fsvalue(5)} {window_pfad.fsvalue(6)} {window_pfad.fsvalue(7)} {window_pfad.fsvalue(8)} {window_pfad.fsvalue(9)} {window_pfad.fsvalue(10)} {window_pfad.fsvalue(11)} {window_pfad.fsvalue(12)}...
+                                ];
+                            % devo ancora capire come fare per fs
+                        end
+                        
+                        for ll = 1:size(building.geometry(variant_geometry).room(ii).wall(jj).doors,2)
+                            
+                            windoor_count = windoor_count+1;
+                            
+                            door_pfad = building.geometry(variant_geometry).room(ii).wall(jj).doors(ll);
+                            
+                            matrix_to_write_windoor(windoor_count,:) = [{'door'} {building.geometry(variant_geometry).room(ii).wall(jj).name} {wall_orientation{wall_count}}...
+                                {door_pfad.X} {door_pfad.Y} {door_pfad.width} {door_pfad.height} {' '} {' '}...
+                                {door_pfad.model_cons} {door_pfad.construction} {door_pfad.view_factor} {door_pfad.amb_factor} ...
+                                {''} {''} {''} {''} {''} {''} {''} {''} {''} {''} {''} {''} {''} {' '} {0} {door_pfad.model_inf} {door_pfad.C(1)} {door_pfad.C(2)} {door_pfad.C(3)}...
+                                {door_pfad.n(1)} {door_pfad.n(2)} {door_pfad.n(3)} {door_pfad.V(1)} {door_pfad.V(2)} {door_pfad.V(3)} {door_pfad.control_i}...
+                                {''} {''} {''} {''} {''} {''} {''} {''} {''} {''} {''} {''} {''} 
+                                ];
+                        end
+                end
+            end    
+            
+            xlswrite1(name_xls,matrix_to_write_room,'Rooms',['A7:D' num2str(room_count+6)]) 
+            xlswrite1(name_xls,matrix_to_write_wall,'Walls',['A4:AD' num2str(wall_count+3)])
+            xlswrite1(name_xls,matrix_to_write_windoor,'WinDoors',['A4:AZ' num2str(windoor_count+3)])
+            
+            Excel.ActiveWorkbook.Save
+            Excel.Quit
+            Excel.delete
+            clear Excel
+            warning('Excel file closed!')
+            
+        end
+        
         function obj = geometry_from_XML_andor_excel(obj, name_XML, building, name_xls, excel_create)
             % function to create the building object (geometry and thermal
             % zone) from a XML file created with sketch up. If it is given
