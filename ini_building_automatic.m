@@ -2,7 +2,7 @@
 % ***********************************************************************
 % This file is part of the uibkCARNOT Blockset.
 % 
-% Copyright (c) 2016-2018, University of Innsbruck, Unit for Energy 
+% Copyright (c) 2016-2019, University of Innsbruck, Unit for Energy 
 % Efficient Building.
 %   Dietmar Siegele     dietmar.siegele@uibk.ac.at
 %   Eleonora Leonardi   eleonora.leonardi@uibk.ac.at
@@ -37,12 +37,14 @@
 % THE POSSIBILITY OF SUCH DAMAGE.
 % **********************************************************************
 % 
-%% carnotUIBK version 1.3
-% Copyright (c) 2016-2018, University of Innsbruck, Unit for Energy 
+%% carnotUIBK version 2.0
+% Copyright (c) 2016-2019, University of Innsbruck, Unit for Energy 
 % Efficient Building.
 %
 % Author    Date         Description
 % DS        2018-05-25   v1.3: creation of a more simplified way to load and modify the building
+% DS,EL	    2019-01-24   updates for GUI v2.0
+
 %%
 function building = ini_building_automatic(building, modify, import_mode, name_XML, name_EXCEL, name_PHPP, NUMBEROFZONES)
     %% gbXML file (DO NOT MODIFY)
@@ -58,97 +60,97 @@ function building = ini_building_automatic(building, modify, import_mode, name_X
     disp(' ')
     switch modify.geometry
         case -1
-            disp('No new or updated variant for geometry.')
+%             disp('No new or updated variant for geometry.')
         case 0
-            disp('New automatic variant for geometry.')
+%             disp('New automatic variant for geometry.')
             if size(building.geometry(1).room,2) == 0
                 building.variant_geometry = 1;
             else
                 building.variant_geometry = length(building.geometry) + 1;
             end
-            disp(['   -> new variant geometry: ' num2str(building.variant_geometry)])
+%             disp(['   -> new variant geometry: ' num2str(building.variant_geometry)])
         otherwise
-            disp(['Overwrite variant ' num2str(modify.geometry) ' for geometry.'])
+%             disp(['Overwrite variant ' num2str(modify.geometry) ' for geometry.'])
             building.variant_geometry = modify.geometry;
     end
     
     switch modify.construction
         case -1
-            disp('No new or updated variant for construction.')
+%             disp('No new or updated variant for construction.')
         case 0
-            disp('New automatic variant for construction.')
+%             disp('New automatic variant for construction.')
             if size(building.geometry(1).room,2) == 0
                 building.variant_construction = 1;
             else
                 building.variant_construction = length(building.construction) + 1;
             end
-            disp(['   -> new variant construction: ' num2str(building.variant_construction)])
+%             disp(['   -> new variant construction: ' num2str(building.variant_construction)])
         otherwise
-            disp(['Overwrite variant ' num2str(modify.construction) ' for construction.'])
+%             disp(['Overwrite variant ' num2str(modify.construction) ' for construction.'])
             building.variant_construction = modify.construction;
     end
     
     switch modify.boundary
         case -1
-            disp('No new or updated variant for boundary.')
+%             disp('No new or updated variant for boundary.')
         case 0
-            disp('New automatic variant for boundary.')
+%             disp('New automatic variant for boundary.')
             if size(building.geometry(1).room,2) == 0
                 building.variant_boundary = 1;
             else
                 building.variant_boundary = length(building.boundary) + 1;
             end
-            disp(['   -> new variant boundary: ' num2str(building.variant_geometry)])
+%             disp(['   -> new variant boundary: ' num2str(building.variant_geometry)])
         otherwise
-            disp(['Overwrite variant ' num2str(modify.boundary) ' for boundary.'])
+%             disp(['Overwrite variant ' num2str(modify.boundary) ' for boundary.'])
             building.variant_boundary = modify.boundary;
     end
     
     switch modify.gains
         case -1
-            disp('No new or updated variant for gains.')
+%             disp('No new or updated variant for gains.')
         case 0
-            disp('New automatic variant for gains.')
+%             disp('New automatic variant for gains.')
             if size(building.geometry(1).room,2) == 0
                 building.variant_gains = 1;
             else
                 building.variant_gains = length(building.gains) + 1;
             end
-            disp(['   -> new variant gains: ' num2str(building.variant_gains)])
+%             disp(['   -> new variant gains: ' num2str(building.variant_gains)])
         otherwise
-            disp(['Overwrite variant ' num2str(modify.gains) ' for gains.'])
+%             disp(['Overwrite variant ' num2str(modify.gains) ' for gains.'])
             building.variant_gains = modify.gains;
     end
     
     switch modify.hvac
         case -1
-            disp('No new or updated variant for hvac.')
+%             disp('No new or updated variant for hvac.')
         case 0
-            disp('New automatic variant for hvac.')
+%             disp('New automatic variant for hvac.')
             if size(building.geometry(1).room,2) == 0
                 building.variant_hvac = 1;
             else
                 building.variant_hvac = length(building.hvac) + 1;
             end
-            disp(['   -> new variant hvac: ' num2str(building.variant_hvac)])
+%             disp(['   -> new variant hvac: ' num2str(building.variant_hvac)])
         otherwise
-            disp(['Overwrite variant ' num2str(modify.hvac) ' for hvac.'])
+%             disp(['Overwrite variant ' num2str(modify.hvac) ' for hvac.'])
             building.variant_hvac = modify.hvac;
     end
     
     switch modify.thermalzone
         case -1
-            disp('No new or updated variant for thermalzone.')
+%             disp('No new or updated variant for thermalzone.')
         case 0
-            disp('New automatic variant for thermalzone.')
+%             disp('New automatic variant for thermalzone.')
             if size(building.geometry(1).room,2) == 0
                 building.variant_thermalzone = 1;
             else
                 building.variant_thermalzone = length(building.thermalzone) + 1;
             end
-            disp(['   -> new variant thermalzone: ' num2str(building.variant_thermalzone)])
+%             disp(['   -> new variant thermalzone: ' num2str(building.variant_thermalzone)])
         otherwise
-            disp(['Overwrite variant ' num2str(modify.thermalzone) ' for thermalzone.'])
+%             disp(['Overwrite variant ' num2str(modify.thermalzone) ' for thermalzone.'])
             building.variant_thermalzone = modify.thermalzone;
     end
     
@@ -181,8 +183,9 @@ function building = ini_building_automatic(building, modify, import_mode, name_X
     end
     
     %% define building (DO NOT MODIFY)
-    % add the geometry (DO NOT MODIFY)
+    % add the geometry
     if modify.geometry >= 0
+%         disp('Import geometry')
         if strcmp(import_mode,'gbXML')
             excel_create = 'structure';
             building.geometry(building.variant_geometry) = GEOMETRY();
@@ -193,13 +196,12 @@ function building = ini_building_automatic(building, modify, import_mode, name_X
         elseif strcmp(import_mode,'PHPP')
             building.geometry(building.variant_geometry) = GEOMETRY();
             building = building.add_variant_geometry(building.variant_geometry, building.geometry(building.variant_geometry).geometry_from_PHPP(building.PHPP.name, building.PHPP.language, building.PHPP.version, building.PHPP.choice_modelconswall, building));
-            % 13-11-2018 Eleonora Leonardi
-            building.geometry.geometry_to_excel(['EXCEL_' building.PHPP.name], building, building.variant_geometry);
         end
     end
     
-    % add the construction (MODIFY the function "create_construction")
+    % add the construction
     if modify.construction >= 0
+%         disp('Import construction')
         if strcmp(import_mode,'gbXML')
             cons = CONSTRUCTION();
             cons = cons.construction_from_EXCEL(building.EXCEL.name);
@@ -216,13 +218,12 @@ function building = ini_building_automatic(building, modify, import_mode, name_X
             cons = cons.constructionwindow_from_PHPP(building.PHPP.name, building.PHPP.language, building.PHPP.version);
             cons = cons.constructiontbUA_from_PHPP(building.PHPP.name, building.PHPP.language, building.PHPP.version);
             building = building.add_variant_construction(building.variant_construction, cons);
-            % 13-11-2018 Eleonora Leonardi
-            building.construction.construction_to_excel(['EXCEL_' building.PHPP.name], building, building.variant_construction);
         end
     end
     
     % add the gains
     if modify.gains >= 0
+%         disp('Import gains')
         if strcmp(import_mode,'gbXML')
             intgain = GAINS();
             building = building.add_variant_gains(building.variant_gains, intgain.gains_from_excel(building.EXCEL.name));
@@ -234,13 +235,12 @@ function building = ini_building_automatic(building, modify, import_mode, name_X
             intgain = intgain.gain_from_PHPP(building.PHPP.name, building.PHPP.language, building.PHPP.version);
             intgain = intgain.assign_gain_to_zone('Person_W/m²_from_PHPP', 1);
             building = building.add_variant_gains(building.variant_gains, intgain);
-            % 13-11-2018 Eleonora Leonardi
-            building.gains.gains_to_excel(['EXCEL_' building.PHPP.name], building, building.variant_gains);
         end
     end
     
     % add the thermal zone
     if modify.thermalzone >= 0
+%         disp('Import thermalzone')
         if strcmp(import_mode,'gbXML')
             thzo = THERMALZONE(NUMBEROFZONES);
             building = building.add_variant_thermalzone(building.variant_thermalzone, thzo.zone_from_XML(building.XML.name));
@@ -257,13 +257,12 @@ function building = ini_building_automatic(building, modify, import_mode, name_X
             thzo = thzo.add_zone(1, 'building', {'whole_building'}, model_room);
             thzo = thzo.add_cpspectozone_setorientimp(building.PHPP.name, building.PHPP.language, building.PHPP.version, 1, building.PHPP.orientation_important);
             building = building.add_variant_thermalzone(building.variant_thermalzone, thzo);
-            % 13-11-2018 Eleonora Leonardi
-            building.thermalzone.zone_to_excel(['EXCEL_' building.PHPP.name], building, building.variant_thermalzone);
         end
     end
     
     % add the boundary conditions
     if modify.boundary >= 0
+%         disp('Import boundary')
         if strcmp(import_mode,'gbXML')
             boun = BOUNDARY();
             boun = boun.add_ground_neighbour_weather_from_excel(building, building.EXCEL.name);
@@ -281,13 +280,12 @@ function building = ini_building_automatic(building, modify, import_mode, name_X
             boun = boun.add_weather_from_file(building, building.PHPP.weather.file, building.PHPP.weather.name, building.PHPP.weather.latitude, building.PHPP.weather.longitude, building.PHPP.weather.ref_median);
             boun = boun.complete_ground_and_neighbour(building);
             building = building.add_variant_boundary(building.variant_boundary, boun);
-            % 13-11-2018 Eleonora Leonardi
-            building.boundary.ground_neighbour_weather_to_excel(['EXCEL_' building.PHPP.name], building, building.variant_boundary);
         end
     end
     
     % add an empty hvac (except for PHPP)
     if modify.hvac >= 0
+%         disp('Import HVAC')
         if strcmp(import_mode,'gbXML')
             hvac = HVAC();
             building = building.add_variant_hvac(building.variant_hvac, hvac);

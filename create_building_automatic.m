@@ -2,7 +2,7 @@
 % ***********************************************************************
 % This file is part of the uibkCARNOT Blockset.
 % 
-% Copyright (c) 2016-2018, University of Innsbruck, Unit for Energy 
+% Copyright (c) 2016-2019, University of Innsbruck, Unit for Energy 
 % Efficient Building.
 %   Dietmar Siegele     dietmar.siegele@uibk.ac.at
 %   Eleonora Leonardi   eleonora.leonardi@uibk.ac.at
@@ -37,12 +37,14 @@
 % THE POSSIBILITY OF SUCH DAMAGE.
 % **********************************************************************
 % 
-%% carnotUIBK version 1.3
-% Copyright (c) 2016-2018, University of Innsbruck, Unit for Energy 
+%% carnotUIBK version 2.0
+% Copyright (c) 2016-2019, University of Innsbruck, Unit for Energy 
 % Efficient Building.
 %
 % Author    Date         Description
 % DS        2018-05-25   v1.3: creation of a more simplified way to load and modify the building
+% DS,EL	    2019-01-24   updates for GUI v2.0
+
 %%
 function building = create_building_automatic(building, modify, import_mode, name_XML, name_EXCEL, name_PHPP, NUMBEROFZONES)    
     %% initialize the model (DO NOT MODIFY)
@@ -51,8 +53,8 @@ function building = create_building_automatic(building, modify, import_mode, nam
     %% save building (DO NOT MODIFY)
     building = building.save();
     
-    %% plotting of the zones (DO NOT MODIFY)
-    % to plot the zone of the building with the function plot_building(num_zone, geometry)
-    close all
-    building.get_building().thermalzone.plot_building([1:10],building.geometry(building.variant_geometry));
+%     %% plotting of the zones (DO NOT MODIFY)
+%     % to plot the zone of the building with the function plot_building(num_zone, geometry)
+%     close all
+%     building.get_building().thermalzone.plot_building([1:10],building.geometry(building.variant_geometry));
 end

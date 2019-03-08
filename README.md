@@ -1,10 +1,16 @@
 # carnotUIBK
 MATLAB Simulink Toolbox for creating a thermal building simulation.
-
 The [Toolbox CARNOT](https://de.mathworks.com/matlabcentral/fileexchange/68890-carnot-toolbox) is required!
+Please use the version 6.0, because later versions have a bug in RC-model.
 
 ## Installation
-Run the init_carnotUIBK.m to install! Have fun!
+1. Run the init_carnotUIBK.m to install!
+2. Create a working folder (e.g. by copying the TEMPLATE folder!). Don't stay in the carnotUIBK folder!
+3. The GUI can be started with start_carnotUIBK.m
+4. Load an existing building model or create a new one.
+5. Simulate! For the Simulink model please use a model of the TEMPLATE folder. The Simulink model is not automatically created and it is needed to copy it.
+6. Modify parameters, modify the HVAC part in the Simulink model.
+7. Have fun!
 
 ## Changelog
 Look [HERE](https://github.com/siegeledietmar/carnotUIBK/blob/master/CHANGELOG.md) for the Changelog!
@@ -31,13 +37,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 ## Contact
 University of Innsbruck
-
 Unit for Energy Efficient Building
-
 Dipl.-Ing. Dietmar Siegele, BSc MSc
-
 Technikerstraße 13, AT-020 Innsbruck
-
 Telefon  +43 512 507-63614
-
 E-Mail    dietmar.siegele@uibk.ac.at

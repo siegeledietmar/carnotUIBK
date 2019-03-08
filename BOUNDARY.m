@@ -2,7 +2,7 @@
 % ***********************************************************************
 % This file is part of the uibkCARNOT Blockset.
 % 
-% Copyright (c) 2016-2018, University of Innsbruck, Unit for Energy 
+% Copyright (c) 2016-2019, University of Innsbruck, Unit for Energy 
 % Efficient Building.
 %   Dietmar Siegele     dietmar.siegele@uibk.ac.at
 %   Eleonora Leonardi   eleonora.leonardi@uibk.ac.at
@@ -37,27 +37,28 @@
 % THE POSSIBILITY OF SUCH DAMAGE.
 % **********************************************************************
 % 
-%% carnotUIBK version 1.3
-% Copyright (c) 2016-2018, University of Innsbruck, Unit for Energy 
+%% carnotUIBK version 2.0
+% Copyright (c) 2016-2019, University of Innsbruck, Unit for Energy 
 % Efficient Building.
 %
 % Author    Date         Description
 % DS,EL     2017-03-12   initial revision v1.0
 % DS        2017-03-16   v1.1: fixed several bugs for empty cells reading
 %                        PHPP file caused troubles with NaNs
+% DS,EL	    2019-01-24   updates for GUI v2.0
 
 %%
 classdef BOUNDARY
     % BOUNDARY
     
     properties
+        name = 'new boundary';
         weather = [];
         ground = GROUND();
         neighbour = NEIGHBOUR();
     end
     
     methods
-        
         function obj = BOUNDARY()
             
         end
@@ -202,6 +203,16 @@ classdef BOUNDARY
             % excel supported)
             % 1 ... building object
             % 2 ... name of the excel file
+            vollpfad = [pwd '\' name_xls];
+            
+            if exist(vollpfad, 'file')
+                warning('Existing Excel file used.')
+            else
+                rootpath = fileparts(which('carnotUIBK'));
+                copyfile([rootpath '\building_TEMPLATE.xlsx'], vollpfad);
+                warning('New Excel file generated.')
+            end
+            
             [~, ~, raw_boundary] = xlsread(name_xls, 'Boundary');
             
             raw_ground = raw_boundary(4:9,:);
@@ -286,20 +297,21 @@ classdef BOUNDARY
         
         function obj = ground_neighbour_weather_to_excel(obj, name_xls, building, variant_boundary)
             
-           vollpfad = [pwd '\' name_xls]
+            vollpfad = [pwd '\' name_xls];
             
             if exist(vollpfad, 'file')
                 warning('Existing Excel file used.')
             else
-                warning('Excel file not existing, using template!')
-                copyfile('building_TEMPLATE.xlsx',name_xls);
+                rootpath = fileparts(which('carnotUIBK'));
+                copyfile([rootpath '\building_TEMPLATE.xlsx'], vollpfad);
+                warning('New Excel file generated.')
             end
-
+            
             % modify excel for write weather
             Excel = actxserver('Excel.Application');
             Excel.Workbooks.Open(vollpfad);
             warning('Excel file opened for writing! Do not interrupt this script!')
-
+            
             % to delete the raws of the excel
             xlswrite1(name_xls,{''},'Boundary','B4:O9')
             xlswrite1(name_xls,{''},'Boundary','B14:O19')
@@ -352,6 +364,7 @@ classdef BOUNDARY
         
         function obj = add_weather_from_file(obj, building, name_txt, name, latitude, longitude, reference_meridian_for_time)
             weather = load(name_txt);
+            
             timevec_weather = linspace(-8760*3600, (building.maxruntime+1)*8760*3600, ((building.maxruntime+2)*size(weather,1)-(building.maxruntime+1)))';
             weather_short = weather(1:(end-1),:);
             for jj = 1:(building.maxruntime+1)
@@ -383,7 +396,7 @@ classdef BOUNDARY
             
         end
         
-        function obj = add_weather(obj, name, time_value, zenith, azimuth, latitude , longitude, latitude_timezone, radiation_beam_normal, radiation_diffuse_horizontal, t_ambient, t_sky, rh, precip, cloud, p, vw, wdir, incidence, tetap, tetas, Idirect_surface, Idiffuse_surface, path)
+        function obj = add_weather(obj, name, time_value, zenith, azimuth, latitude, longitude, latitude_timezone, radiation_beam_normal, radiation_diffuse_horizontal, t_ambient, t_sky, rh, precip, cloud, p, vw, wdir, incidence, tetap, tetas, Idirect_surface, Idiffuse_surface, path)
             obj.weather = [obj.weather WEATHER(name, time_value, zenith, azimuth, latitude, longitude, latitude_timezone, radiation_beam_normal, radiation_diffuse_horizontal, t_ambient, t_sky, rh, precip, cloud, p, vw, wdir, incidence, tetap, tetas, Idirect_surface, Idiffuse_surface, path)];
         end
         
@@ -426,7 +439,7 @@ classdef BOUNDARY
             end
         end
         
-        function neighbour = get_neighbour (obj, name)
+        function neighbour = get_neighbour(obj, name)
         	ind = [];
             for jj = 1:length(obj.neighbour)
                 if strcmp(obj.neighbour(jj).name,name)
@@ -442,7 +455,7 @@ classdef BOUNDARY
             end 
         end
         
-        function weather = get_weather (obj, name)
+        function weather = get_weather(obj, name)
         	ind = [];
             for jj = 1:length(obj.weather)
                 if strcmp(obj.weather(jj).name,name)

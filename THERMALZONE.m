@@ -2,7 +2,7 @@
 % ***********************************************************************
 % This file is part of the uibkCARNOT Blockset.
 % 
-% Copyright (c) 2016-2018, University of Innsbruck, Unit for Energy 
+% Copyright (c) 2016-2019, University of Innsbruck, Unit for Energy 
 % Efficient Building.
 %   Dietmar Siegele     dietmar.siegele@uibk.ac.at
 %   Eleonora Leonardi   eleonora.leonardi@uibk.ac.at
@@ -37,18 +37,20 @@
 % THE POSSIBILITY OF SUCH DAMAGE.
 % **********************************************************************
 % 
-%% carnotUIBK version 1.3
-% Copyright (c) 2016-2018, University of Innsbruck, Unit for Energy 
+%% carnotUIBK version 2.0
+% Copyright (c) 2016-2019, University of Innsbruck, Unit for Energy 
 % Efficient Building.
 %
 % Author    Date         Description
 % DS,EL     2017-03-12   initial revision v1.0
+% DS,EL	    2019-01-24   updates for GUI v2.0
 
 %%
 classdef THERMALZONE
     % THERMALZONE
     
     properties
+        name = 'new thermalzone';
         zone = [];
         intersection = [];
     end
@@ -277,13 +279,14 @@ classdef THERMALZONE
         
         function obj = zone_to_excel(obj, name_xls, building,variant_thermalzone)
             
-            vollpfad = [pwd '\' name_xls]
-            
+            vollpfad = [pwd '\' name_xls];
+
             if exist(vollpfad, 'file')
                 warning('Existing Excel file used.')
             else
-                warning('Excel file not existing, using template!')
-                copyfile('building_TEMPLATE.xlsx',name_xls);
+                rootpath = fileparts(which('carnotUIBK'));
+                copyfile([rootpath '\building_TEMPLATE.xlsx'], vollpfad);
+                warning('New Excel file generated.')
             end
 
             % modify excel for write weather
@@ -490,7 +493,11 @@ classdef THERMALZONE
                             obj.zone(ind).matrix_wi{ind_sum_wi,17} = room(kk).wall(ll).windows(nn).width_glass*2 + room(kk).wall(ll).windows(nn).height_glass*2;
                             obj.zone(ind).matrix_wi{ind_sum_wi,18} = room(kk).wall(ll).windows(nn).control_s;
                             obj.zone(ind).matrix_wi{ind_sum_wi,19} = room(kk).wall(ll).windows(nn).model_inf; % model_infiltration
-                            obj.zone(ind).matrix_wi{ind_sum_wi,20} = room(kk).wall(ll).windows(nn).Y + room(kk).wall(ll).Z; % z
+							if length(room(kk).wall(ll).Z) > 1
+                                obj.zone(ind).matrix_wi{ind_sum_wi,20} = room(kk).wall(ll).windows(nn).Y + room(kk).wall(ll).Z(2); % z
+                            else
+                                obj.zone(ind).matrix_wi{ind_sum_wi,20} = room(kk).wall(ll).windows(nn).Y + room(kk).wall(ll).Z(1); % z
+                            end
                             obj.zone(ind).matrix_wi{ind_sum_wi,21} = room(kk).wall(ll).windows(nn).C; % C matrix
                             obj.zone(ind).matrix_wi{ind_sum_wi,22} = room(kk).wall(ll).windows(nn).n; % n matrix
                             obj.zone(ind).matrix_wi{ind_sum_wi,23} = room(kk).wall(ll).windows(nn).V; % V matrix
@@ -506,8 +513,9 @@ classdef THERMALZONE
                         end  
                     end
                 end  
-                ttt = [];
+                
                 % to set the internal walls
+                ttt = [];
                 for oo = 1:size(obj.zone(ind).matrix_wd,1)
                     ttt(oo) = oo;
                     for pp = 1:size(obj.zone(ind).matrix_wd,1)
@@ -768,7 +776,30 @@ classdef THERMALZONE
                 for jj = 1:size(obj.zone(ii).matrix_wi,1)
                     time_factor = obj.zone(ii).matrix_wi{jj,13};
                     seq_factor = obj.zone(ii).matrix_wi{jj,14};
-                    obj.zone(ii).win_factor_seq{jj}  = [time_factor' seq_factor'];
+                    
+                    if length(time_factor) == 13
+                        if time_factor(1) == 0 && round(time_factor(end)) == 365*24*3600
+                            % everything is fine
+                        else
+                            warning(['The shading vector for a window in the zone ' num2str(ii) ' looks strange. An automatic reparation is tried. Please check it!'])
+                            time_factor = [0 31 59 90 120 151 181 212 243 273 304 334 365]*24*3600;
+                        end
+                        time_factor_ = time_factor-365*24*3600;
+                        seq_factor_ = seq_factor;
+                        for lll = 0:building.maxruntime
+                            time_factor_ = [time_factor_, time_factor(2:end)+lll*365*24*3600];
+                            seq_factor_ = [seq_factor_, seq_factor(2:end)];
+                        end
+                    else
+                        time_factor_ = time_factor-365*24*3600;
+                        seq_factor_ = seq_factor;
+                        for lll = 0:building.maxruntime
+                            time_factor_ = [time_factor_, time_factor(2:end)+lll*365*24*3600];
+                            seq_factor_ = [seq_factor_, seq_factor(2:end)];
+                        end
+                    end
+                    
+                    obj.zone(ii).win_factor_seq{jj}  = [time_factor_' seq_factor_'];
                 end
             end
         end
@@ -936,13 +967,17 @@ classdef THERMALZONE
             factor = 0;
             for jj = 1:length(obj.zone)
                 if obj.zone(jj).number == number
-                    for ll = 1:size(obj.zone(jj).matrix_wd,1)
-                        factor = factor + obj.zone(jj).matrix_wd{ll,11};
+                    for ii = 1:size(obj.zone(jj).matrix_wd,1)
+                        if strcmp(obj.zone(jj).matrix_wd{ii,3},'INTERNAL')
+                            factor = factor + 2*obj.zone(jj).matrix_wd{ii,11};
+                        else
+                            factor = factor + obj.zone(jj).matrix_wd{ii,11};
+                        end
                     end
                 end
             end
             for jj = 1:size(obj.intersection,1)    
-            tt(jj) = jj;
+                tt(jj) = jj;
                 for kk = 1:size(obj.intersection,2)
                     if jj ~= kk && all(kk ~= tt)
                         for ll = 1:length(obj.intersection{jj,kk}.zones)
@@ -957,7 +992,7 @@ classdef THERMALZONE
                 end
             end
             if (factor > 0.999) && (factor < 1.001)
-                disp(['Solar ratio for zone ' num2str(number) ' equal to 1 (' num2str(factor) ').'])
+%                 disp(['Solar ratio for zone ' num2str(number) ' equal to 1 (' num2str(factor) ').'])
             else
                 warning(['Solar ratio for zone ' num2str(number) ' not equal to 1 (' num2str(factor) ')!'])
             end
@@ -1078,12 +1113,15 @@ classdef THERMALZONE
                     for mm = 1:length(room.wall)
                         if strcmp(room.wall(mm).name(end-2:end-1), 'fl') || strcmp(room.wall(mm).name(end-2:end-1), 'ce')
                             plot(room.wall(mm), colour(kk,1:3))
-                            axis equal
                             plot(room.wall(mm), 'red')
+                            axis equal
+                            rotate3d on
+                            axis tight
                         else
                             plot(room.wall(mm), colour(kk,1:3))
                             axis equal
-                            % plot(room.wall(mm), 'cyan')
+                            rotate3d on
+                            axis tight
                         end
                     end
                 end
@@ -1097,6 +1135,14 @@ classdef THERMALZONE
             % the walls is not important, the external walls are merged
             % 1 ... object geometry
             % 2 ... object building
+            
+            for jj = 1:length(obj.zone)
+                obj.zone(jj).matrix_wd = [];
+                obj.zone(jj).matrix_wi = [];
+                obj.zone(jj).matrix_gains = [];
+                obj.zone(jj).win_factor_seq = [];
+            end
+                
             for jj = 1:length(obj.zone)
                 obj = obj.update_zone(jj, geom, buil, variant_gains);
                 obj = obj.heatedarea_zone(jj, geom);

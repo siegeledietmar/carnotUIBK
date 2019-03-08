@@ -2,7 +2,7 @@
 % ***********************************************************************
 % This file is part of the uibkCARNOT Blockset.
 % 
-% Copyright (c) 2016-2018, University of Innsbruck, Unit for Energy 
+% Copyright (c) 2016-2019, University of Innsbruck, Unit for Energy 
 % Efficient Building.
 %   Dietmar Siegele     dietmar.siegele@uibk.ac.at
 %   Eleonora Leonardi   eleonora.leonardi@uibk.ac.at
@@ -38,8 +38,10 @@
 % **********************************************************************
 % 
 %% carnotUIBK
-% Copyright (c) 2016-2018, University of Innsbruck, Unit for Energy 
+% Copyright (c) 2016-2019, University of Innsbruck, Unit for Energy 
 % Efficient Building.
+
+% DS,EL	    2019-01-24   updates for GUI v2.0
 
 %% this ist a copy of the CARNOT installation
 fprintf('################################################\n*Initializing carnotUIBK Toolbox\n\n')
@@ -67,14 +69,18 @@ end
 carnotUIBKpaths = {...
     'root'          fullfile(rootpath);...
     'TEMPLATE'      fullfile(rootpath,'TEMPLATE');...
+    'result_scripts'      fullfile(rootpath,'result_scripts');...
+    'HVAC_SYSTEM'      fullfile(rootpath,'HVAC_SYSTEM');...
     };
 
 % set paths mode: adds carnotUIBK paths to matlab path
 if strcmp(ctrl,'setpaths')
     % specify which paths should be added
-    paths2add = { ...               %first to add is last in path
+    paths2add = { ...               % first to add is last in path
         %'help','inthelp', ...    
         'root', ...
+        'result_scripts', ...
+        'HVAC_SYSTEM', ...
         };
     disp('Adding carnotUIBK paths...')
     for i = 1:length(paths2add)
@@ -111,3 +117,5 @@ rehash toolboxcache;
 
 cd(cpath)
 
+%%
+clear

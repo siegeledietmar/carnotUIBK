@@ -2,7 +2,7 @@
 % ***********************************************************************
 % This file is part of the uibkCARNOT Blockset.
 % 
-% Copyright (c) 2016-2018, University of Innsbruck, Unit for Energy 
+% Copyright (c) 2016-2019, University of Innsbruck, Unit for Energy 
 % Efficient Building.
 %   Dietmar Siegele     dietmar.siegele@uibk.ac.at
 %   Eleonora Leonardi   eleonora.leonardi@uibk.ac.at
@@ -37,18 +37,20 @@
 % THE POSSIBILITY OF SUCH DAMAGE.
 % **********************************************************************
 % 
-%% carnotUIBK version 1.3
-% Copyright (c) 2016-2018, University of Innsbruck, Unit for Energy 
+%% carnotUIBK version 2.0
+% Copyright (c) 2016-2019, University of Innsbruck, Unit for Energy 
 % Efficient Building.
 %
 % Author    Date         Description
 % DS,EL     2017-03-12   initial revision v1.0
+% DS,EL	    2019-01-24   updates for GUI v2.0
 
 %%
 classdef HVAC
     % HVAC
     
     properties
+        name = 'new HVAC';
         system = [];
     end
     
@@ -74,13 +76,33 @@ classdef HVAC
             if ind
                 error(['system number' number ' already existing!'])
             else
-                obj.system = [obj.system SYSTEM_HVAC(name, number, parameter)];
+                if isstr(parameter)
+                    try
+                        obj.system = [obj.system SYSTEM_HVAC(name, number, parameter)];
+                    catch
+                        try
+                            obj.system = [obj.system SYSTEM_HVAC(name, number, parameter, 1)];
+                        catch
+                            error('Import was not possbile!')
+                        end
+                    end
+                else
+                    try
+                        obj.system = [obj.system SYSTEM_HVAC(name, number, parameter, 1)];
+                    catch
+                        try
+                            obj.system = [obj.system SYSTEM_HVAC(name, number, parameter)];
+                        catch
+                            error('Import was not possbile!')
+                        end
+                    end
+                end
             end
             
         end
         
         function obj = add_system_from_PHPP(obj, name, number, name_xls_PHPP, language, version, choice_heatload)
-            % to take the parameters form the PHPP (use only with the block HVAC PHPP in Simulink!!!)
+            % to take the parameters from the PHPP (use only with the block HVAC PHPP in Simulink!!!)
             % 1 ... name of the system (for the user)
             % 2 ... number of the system, according to the SIMULINK model
             % 3 ... name of the file xls of the PHPP
@@ -242,11 +264,16 @@ classdef HVAC
                     break
                 end
             end
+            
             %check if system is not existing
             if ind
                 system = obj.system(ind);
             else
-                error(['system number' num2str(number) ' not existing!'])
+                system = SYSTEM_HVAC();
+                system.name = 'not defined';
+                system.number = number;
+                system.parameter = [];
+                warning(['system number' num2str(number) ' not existing!'])
             end
         end
         

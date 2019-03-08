@@ -2,7 +2,7 @@
 % ***********************************************************************
 % This file is part of the uibkCARNOT Blockset.
 % 
-% Copyright (c) 2016-2018, University of Innsbruck, Unit for Energy 
+% Copyright (c) 2016-2019, University of Innsbruck, Unit for Energy 
 % Efficient Building.
 %   Dietmar Siegele     dietmar.siegele@uibk.ac.at
 %   Eleonora Leonardi   eleonora.leonardi@uibk.ac.at
@@ -37,12 +37,13 @@
 % THE POSSIBILITY OF SUCH DAMAGE.
 % **********************************************************************
 % 
-%% carnotUIBK version 1.3
-% Copyright (c) 2016-2018, University of Innsbruck, Unit for Energy 
+%% carnotUIBK version 2.0
+% Copyright (c) 2016-2019, University of Innsbruck, Unit for Energy 
 % Efficient Building.
 %
 % Author    Date         Description
 % DS,EL     2017-03-12   initial revision v1.0
+% DS,EL	    2019-01-24   updates for GUI v2.0
 
 %%
 classdef GROUND
@@ -112,7 +113,7 @@ classdef GROUND
                 if model == 2
                     temperature_value_ = [];
                     temperature_time_ = [];
-                    for ii = -1 : building.maxruntime
+                    for ii = -1:building.maxruntime
                         if ii == building.maxruntime
                             temperature_time_ = [temperature_time_ temperature_time+ii*365*24*3600 365*24*3600*(building.maxruntime+1)];
                             temperature_value_ = [temperature_value_ temperature_value temperature_value(1)];

@@ -2,7 +2,7 @@
 % ***********************************************************************
 % This file is part of the uibkCARNOT Blockset.
 % 
-% Copyright (c) 2016-2018, University of Innsbruck, Unit for Energy 
+% Copyright (c) 2016-2019, University of Innsbruck, Unit for Energy 
 % Efficient Building.
 %   Dietmar Siegele     dietmar.siegele@uibk.ac.at
 %   Eleonora Leonardi   eleonora.leonardi@uibk.ac.at
@@ -37,12 +37,13 @@
 % THE POSSIBILITY OF SUCH DAMAGE.
 % **********************************************************************
 % 
-%% carnotUIBK version 1.3
-% Copyright (c) 2016-2018, University of Innsbruck, Unit for Energy 
+%% carnotUIBK version 2.0
+% Copyright (c) 2016-2019, University of Innsbruck, Unit for Energy 
 % Efficient Building.
 %
 % Author    Date         Description
 % DS,EL     2017-03-12   initial revision v1.0
+% DS,EL	    2019-01-24   updates for GUI v2.0
 
 %%
 classdef SYSTEM_HVAC
@@ -50,8 +51,8 @@ classdef SYSTEM_HVAC
     % system of the HVAC
     
     properties
-        name = '';                  % name of structure
-        number = 0;                 % type of the structure: 0 ... wall, 1 ... window, 2 ... thermal bridge
+        name = '';
+        number = 0;
         parameter = '';
     end
     
@@ -67,6 +68,8 @@ classdef SYSTEM_HVAC
                 obj.parameter = parameter;
             end
         end
+        
+        
     end
     
 end

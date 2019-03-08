@@ -2,7 +2,7 @@
 % ***********************************************************************
 % This file is part of the uibkCARNOT Blockset.
 % 
-% Copyright (c) 2016-2018, University of Innsbruck, Unit for Energy 
+% Copyright (c) 2016-2019, University of Innsbruck, Unit for Energy 
 % Efficient Building.
 %   Dietmar Siegele     dietmar.siegele@uibk.ac.at
 %   Eleonora Leonardi   eleonora.leonardi@uibk.ac.at
@@ -37,8 +37,8 @@
 % THE POSSIBILITY OF SUCH DAMAGE.
 % **********************************************************************
 % 
-%% carnotUIBK version 1.3
-% Copyright (c) 2016-2018, University of Innsbruck, Unit for Energy 
+%% carnotUIBK version 2.0
+% Copyright (c) 2016-2019, University of Innsbruck, Unit for Energy 
 % Efficient Building.
 %
 % Author    Date         Description
@@ -50,12 +50,14 @@
 %                        correlated private functions
 %                        doors and thermal bridges implemented in the PHPP
 %                        reading
+% DS,EL	    2019-01-29   updates for GUI v2.0
 
 %%
 classdef CONSTRUCTION
     % CONSTRUCTION
     
     properties
+        name = 'new construction';
         structure = [];
     end
     
@@ -109,7 +111,8 @@ classdef CONSTRUCTION
             if ind
                 structure = obj.structure(ind);
             else
-                error(['structure ' name ' not existing!'])
+                structure = [];
+%                 error(['structure ' name ' not existing!'])
             end
         end
         
@@ -121,7 +124,6 @@ classdef CONSTRUCTION
             % 4 ... model of the construction of the wall 'UA' or 'RC'
             
             filename = name_xls_PHPP;
-            addpath('structures')
             
             % if the user wants a RC model have to insert in excel 2
             % columns after the value of lambda with rho and C
@@ -170,7 +172,7 @@ classdef CONSTRUCTION
             
             for ii = index_raw_name:interval:size(data,1)
                 savename = [data{ii,index_column_name(1)} '-' data{ii,index_column_name(2)}];
-                type=0; % type of the structure: 0 ... wall, 1 ... window, 2 ... thermal bridge
+                type = 0; % type of the structure: 0 ... wall, 1 ... window, 2 ... thermal bridge
                 matr = data((index_raw_namelay(1)+ii-1:index_raw_namelay(end)+ii-1),index_column_namelay:index_column_d);
                 check_NaN = [];
                 check_NaN = (cellfun(@(V) any(isnan(V)),matr));
@@ -191,15 +193,15 @@ classdef CONSTRUCTION
                             c_layer(ll) = data{index_raw_namelay(1)+ll-1+ii-1,index_column_clay};
                             rho_layer(ll) = data{index_raw_namelay(1)+ll-1+ii-1,index_column_rholay};
                         elseif strcmp(model_cons_wall,'UA')
-                            c_layer(ll) = 0;
-                            rho_layer(ll) = 0;
+                            c_layer(ll) = 1000;
+                            rho_layer(ll) = 50;
                         end 
-                        if d_layer(ll)<0.020
+                        if d_layer(ll) < 0.015
                             N_layer(ll) = 0;
                         else
                             N_layer(ll) = 1;
                         end
-                        colors(ll,:) = [1 1 1] * ((1-0.3)*rand(1)+0.3);
+                        colors(ll,:) = [0.85 0.85 0.85] * ((1-0.3)*rand(1)+0.3);
                         names{ll} = data{index_raw_namelay(1)+ll-1+ii-1,index_column_namelay};
                     end
                 end
@@ -209,7 +211,7 @@ classdef CONSTRUCTION
                     T_dactive = -1;
                     Phi_active = -1;
                     [general.beuken.d general.beuken.lambda general.beuken.rho general.beuken.c general.beuken.tau_all general.beuken.D general.beuken.R general.beuken.U general.beuken.C general.beuken.tau] = wall_node_optim_(obj, d_layer, lambda_layer, rho_layer, c_layer, N_layer, T_dactive, R_si, R_se, 0); 
-                    general.beuken.d_active=-1;
+                    general.beuken.d_active = -1;
                     d = d_layer;
                     U = general.beuken.U;
                     layers_names = names;
@@ -227,25 +229,11 @@ classdef CONSTRUCTION
                         parameter.type = type;
                         parameter.U = U;
                         parameter.d = d;
-                        parameter.d_active = d_active;
-                        parameter.T_dactive = T_dactive;
-                        parameter.Phi_dactive = Phi_active;
-                        parameter.layers_names = layers_names;
-                        parameter.layers_colors = layers_colors;
-                        parameter.layers_lambda = lambda_layer;
-                        parameter.layers_N_layer = N_layer;
-                        parameter.T_ini_beuken = T_ini_beuken;
-                        parameter.tau = tau;
-                    elseif strcmp(model_cons_wall,'RC')
-                        model = 1;
-                        parameter.model = model;
-                        parameter.type = type;
-                        parameter.U = U;
-                        parameter.d = d;
-                        parameter.N_layer = xmesh_beu;
+                        parameter.N_layer = d;
+                        parameter.xmesh_beu = d;
                         parameter.lambda = lambda;
                         parameter.rho = rho;
-                        parameter.c = cp;
+                        parameter.cp = cp;
                         parameter.tau = tau;
                         parameter.T_ini_beuken = T_ini_beuken;
                         parameter.d_active = d_active;
@@ -257,17 +245,39 @@ classdef CONSTRUCTION
                         parameter.layers_lambda = lambda_layer;
                         parameter.layers_rho = rho_layer;
                         parameter.layers_cp = c_layer;
-                        
+                    elseif strcmp(model_cons_wall,'RC')
+                        model = 1;
+                        parameter.model = model;
+                        parameter.type = type;
+                        parameter.U = U;
+                        parameter.d = d;
+                        parameter.N_layer = xmesh_beu;
+                        parameter.xmesh_beu = xmesh_beu;
+                        parameter.lambda = lambda;
+                        parameter.rho = rho;
+                        parameter.cp = cp;
+                        parameter.tau = tau;
+                        parameter.T_ini_beuken = T_ini_beuken;
+                        parameter.d_active = d_active;
+                        parameter.T_dactive = T_dactive;
+                        parameter.Phi_dactive = Phi_active;
+                        parameter.layers_N_layer = N_layer;
+                        parameter.layers_names = layers_names;
+                        parameter.layers_colors = layers_colors;
+                        parameter.layers_lambda = lambda_layer;
+                        parameter.layers_rho = rho_layer;
+                        parameter.layers_cp = c_layer;
                     end
+                    
                     emission_1 = 0.94;
-                    emission_2 = 0.60;
+                    emission_2 = 0.94;
                     absorption_2 = 0.65;
+                    
                     obj = obj.add_structure(savename, parameter, emission_1, emission_2, absorption_2);
                 end
             end
             
             clearvars parameter
-            
             
             switch version
                 case '9.1'
@@ -279,22 +289,38 @@ classdef CONSTRUCTION
                     range = 'N40:AE40';
                     [~, ~, data_door] = xlsread(filename, sheet, range);
                     if data_door{3} == 0 || isnan(data_door{3})
+                        warning('no door')
                     else
                         savename = data_door{1};
                         model = 0;
                         type = 0;
                         U = 1/(1/data_door{end}-0.13-0.04);
                         d = 0.10;
-                        layers_names= 'holz';
+                        layers_names = {'Wood'};
                         layers_colors = [1 1 1] * ((1-0.3)*rand(1)+0.3);
                         parameter.model = model;
                         parameter.type = type;
                         parameter.U = U;
                         parameter.d = d;
+                        parameter.N_layer = d;
+                        parameter.xmesh_beu = d;
+                        parameter.lambda = 0.13;
+                        parameter.rho = 650;
+                        parameter.cp = 1700;
+                        parameter.tau = parameter.rho*parameter.cp/2;
                         parameter.layers_names = layers_names;
                         parameter.layers_colors = layers_colors;
+                        parameter.layers_lambda = 0.13;
+                        parameter.layers_rho = 650;
+                        parameter.layers_cp = 1700;
+                        parameter.layers_N_layer = 1;
+                        parameter.T_ini_beuken = 20;
+                        parameter.d_active = -1;
+                        parameter.T_dactive = -1;
+                        parameter.Phi_dactive = -1;
                         emission_1 = 0.94;
-                        emission_2 = 0.60;
+                        emission_2 = 0.94;
+                        
                         obj = obj.add_structure(savename, parameter, emission_1, emission_2, 0);
                     end
                     
@@ -310,7 +336,6 @@ classdef CONSTRUCTION
             % 3 ... version of PHPP used
             
             filename = name_xls_PHPP;
-            addpath('structures')
             
             switch version
                 case '9.1'
@@ -329,16 +354,14 @@ classdef CONSTRUCTION
                     index_column_lpsi = 39;
             end
             
-            if data3{index_raw_tb(1),index_column_tbarea}==0
-                
-            else
+            if ~data3{index_raw_tb(1),index_column_tbarea} == 0
                 savename = 'Ambient_thermal_bridge'; 
                 model = 0;
                 type = 0;
                 d = 1;
                 U = 1/(1/(data3{index_raw_tb(1),index_column_lpsi}/data3{index_raw_tb(1),index_column_tbarea})-0.13-0.04);
-                layers_names = savename;
-                layers_colors = [1 1 1] * ((1-0.3)*rand(1)+0.3);
+                layers_names = {savename};
+                layers_colors = [1.0 1.0 1.0] * ((1-0.3)*rand(1)+0.3);
                 parameter.model = model;
                 parameter.type = type;
                 parameter.U = U;
@@ -346,23 +369,36 @@ classdef CONSTRUCTION
                 parameter.layers_names = layers_names;
                 parameter.layers_colors = layers_colors;
                 emission_1 = 0.94;
-                emission_2 = 0.60;
-                obj = obj.add_structure(savename, parameter, emission_1, emission_2, 0);
+                emission_2 = 0.94;
                 
+                parameter.N_layer = d;
+                parameter.xmesh_beu = d;
+                parameter.lambda = U;
+                parameter.rho = 50;
+                parameter.cp = 1000;
+                parameter.tau = parameter.rho*parameter.cp/2;
+                parameter.layers_lambda = parameter.lambda;
+                parameter.layers_rho = parameter.rho;
+                parameter.layers_cp = parameter.cp;
+                parameter.layers_N_layer = 1;
+                parameter.T_ini_beuken = 20;
+                parameter.d_active = -1;
+                parameter.T_dactive = -1;
+                parameter.Phi_dactive = -1;
+                
+                obj = obj.add_structure(savename, parameter, emission_1, emission_2, 0);
             end
             
             clearvars parameter
             
-            if data3{index_raw_tb(2),index_column_tbarea}==0
-                
-            else
+            if ~data3{index_raw_tb(2),index_column_tbarea} == 0
                 savename = 'Perimeter_thermal_bridge'; 
                 model = 0;
                 type = 0;
                 d = 1;
                 U = 1/((1/(data3{index_raw_tb(2),index_column_lpsi}/data3{index_raw_tb(2),index_column_tbarea}))-0.13-0.04);
-                layers_names = savename;
-                layers_colors = [1 1 1] * ((1-0.3)*rand(1)+0.3);
+                layers_names = {savename};
+                layers_colors = [1.0 1.0 1.0] * ((1-0.3)*rand(1)+0.3);
                 parameter.model = model;
                 parameter.type = type;
                 parameter.U = U;
@@ -370,22 +406,36 @@ classdef CONSTRUCTION
                 parameter.layers_names = layers_names;
                 parameter.layers_colors = layers_colors;
                 emission_1 = 0.94;
-                emission_2 = 0.60;
+                emission_2 = 0.94;
+                
+                parameter.N_layer = d;
+                parameter.xmesh_beu = d;
+                parameter.lambda = U;
+                parameter.rho = 50;
+                parameter.cp = 1000;
+                parameter.tau = parameter.rho*parameter.cp/2;
+                parameter.layers_lambda = parameter.lambda;
+                parameter.layers_rho = parameter.rho;
+                parameter.layers_cp = parameter.cp;
+                parameter.layers_N_layer = 1;
+                parameter.T_ini_beuken = 20;
+                parameter.d_active = -1;
+                parameter.T_dactive = -1;
+                parameter.Phi_dactive = -1;
+                
                 obj = obj.add_structure(savename, parameter, emission_1, emission_2, 0);
             end
             
             clearvars parameter
             
-            if data3{index_raw_tb(3),index_column_tbarea}==0
-                
-            else
+            if ~data3{index_raw_tb(3),index_column_tbarea} == 0
                 savename = 'Ground_thermal_bridge'; 
                 model = 0;
                 type = 0;
                 d = 1;
-                U = 1/((1/(data3{index_raw_tb(3),index_column_lpsi}/data3{index_raw_tb(3),index_column_tbarea}))-0.17);
-                layers_names = savename;
-                layers_colors = [1 1 1] * ((1-0.3)*rand(1)+0.3);
+                U = 1/((1/(data3{index_raw_tb(3),index_column_lpsi}/data3{index_raw_tb(3),index_column_tbarea}))-0.17-0.00);
+                layers_names = {savename};
+                layers_colors = [1.0 1.0 1.0] * ((1-0.3)*rand(1)+0.3);
                 parameter.model = model;
                 parameter.type = type;
                 parameter.U = U;
@@ -393,7 +443,23 @@ classdef CONSTRUCTION
                 parameter.layers_names = layers_names;
                 parameter.layers_colors = layers_colors;
                 emission_1 = 0.94;
-                emission_2 = 0.60;
+                emission_2 = 0.94;
+                
+                parameter.N_layer = d;
+                parameter.xmesh_beu = d;
+                parameter.lambda = U;
+                parameter.rho = 50;
+                parameter.cp = 1000;
+                parameter.tau = parameter.rho*parameter.cp/2;
+                parameter.layers_lambda = parameter.lambda;
+                parameter.layers_rho = parameter.rho;
+                parameter.layers_cp = parameter.cp;
+                parameter.layers_N_layer = 1;
+                parameter.T_ini_beuken = 20;
+                parameter.d_active = -1;
+                parameter.T_dactive = -1;
+                parameter.Phi_dactive = -1;
+                
                 obj = obj.add_structure(savename, parameter, emission_1, emission_2, 0);
             end
             
@@ -408,7 +474,6 @@ classdef CONSTRUCTION
             % 3 ... version of PHPP used
             
             filename = name_xls_PHPP;
-            addpath('structures')
             
             switch version
                 case '9.1'
@@ -437,18 +502,17 @@ classdef CONSTRUCTION
                     for ii = 1:size(data1,1)
                         check =[];
                         check = strcmp([data1{ii,index_constr1_wi} ' ' data1{ii,index_constr2_wi}],(count_name));
-                        if check(end)
-                        else
-                            savename = [data1{ii,index_constr1_wi}(1:10) '_' data1{ii,index_constr2_wi}(1:10)];
+                        if sum(check) == 0
+                            savename = [data1{ii,index_constr1_wi}(1:end) '_' data1{ii,index_constr2_wi}(1:end)];
                             type = 1;
-
+							
                             U_g = data1{ii,index_Ug};
                             U_f = data1{ii,index_Uf};
                             psi_ge = data1{ii,index_psige};
 
                             g_w =  data1{ii,index_gw};
                             tau_g_w = g_w;
-
+							
                             n_pane = 3;                                 % number of panels
 
                             d_w = [0.004 0.004 0.004];                  % / [m]
@@ -483,17 +547,17 @@ classdef CONSTRUCTION
             end
         end
         
-        function obj = construction_from_EXCEL(obj, name_xls_EXCEL) %24/01/2017
+        function obj = construction_from_EXCEL(obj, name_xls_EXCEL)
             % to add a construction from the Excel file
-            
             [~, ~, raw_structure] = xlsread(name_xls_EXCEL, 'Structures');
             raw_walls = raw_structure(3:381,2:11);
             
-            hygro = 0;
-            RC = 0;
-            
             % to add the structures of walls that are in the excel
-            for ii=1:19:size(raw_walls,1)
+            for ii = 1:19:size(raw_walls,1)
+                UA = 0;
+                hygro = 0;
+                RC = 0;
+                
                 qui = 0;
                 raw_name_layer = [];
                 raw_path_layer = [];
@@ -507,7 +571,7 @@ classdef CONSTRUCTION
                 raw_phi_ini= [];
                 
                 if isnan(raw_walls{ii,2})
-                    qui =1;
+                    qui = 1;
                 end
                 
                 if qui == 0
@@ -524,280 +588,310 @@ classdef CONSTRUCTION
                             raw_d_active=raw_walls{ii+12,2};
                             raw_T_active=raw_walls{ii+13,2};
                             raw_Phi_active=raw_walls{ii+14,2};
-                            if isnan(raw_walls{ii+1+jj,4})
+                            
+                            if ~isnan(raw_walls{ii+1+jj,2})
                                 hygro = 1;
-                                parameter.model=2;
+                                parameter.model = 2;
                                 raw_n_layer_hygrothermal_layer(jj)=raw_walls{ii+1+jj,8};
                                 raw_n_layer_beuken_layer(jj)=raw_walls{ii+1+jj,7};
                                 raw_T_ini(jj+1)=(raw_walls{1+ii+jj,9});
                                 raw_phi_ini(jj+1)=(raw_walls{1+ii+jj,10})/100;
+                            elseif isnan(raw_walls{ii+1+jj,5})
+                                UA = 1;
+                                parameter.model = 0;
+                                raw_lambda_layer(jj)=raw_walls{ii+1+jj,4};
                             else
                                 RC = 1;
-                                parameter.model=1;
+                                parameter.model = 1;
                                 raw_lambda_layer(jj)=raw_walls{ii+1+jj,4};
                                 raw_rho_layer(jj)=raw_walls{ii+1+jj,5};
                                 raw_cp_layer(jj)=raw_walls{ii+1+jj,6};
-                                raw_n_layer_beuken_layer(jj)=raw_walls{ii+1+jj,7};                         
+                                raw_n_layer_beuken_layer(jj)=raw_walls{ii+1+jj,7};
                             end
                         end
                     end
-                    if RC==1
+                    if RC
                         parameter = create_parameter_structure_RC(obj, raw_name_structure, parameter.model, jj-1, raw_d_layer, raw_lambda_layer, raw_rho_layer, raw_cp_layer, raw_name_layer, raw_n_layer_beuken_layer);
-                    else
+                    elseif hygro
                         T_source = zeros(sum(raw_n_layer_hygrothermal_layer),1);
                         Phi_source = zeros(sum(raw_n_layer_hygrothermal_layer),1);
                         parameter = create_parameter_structure_hygrothermal(obj, raw_name_structure, parameter.model, jj-1, raw_d_layer, raw_n_layer_beuken_layer, raw_n_layer_hygrothermal_layer, raw_path_layer, raw_name_layer, raw_T_ini, raw_phi_ini, T_source, Phi_source);
+                    else    % UA
+                        parameter.d = raw_d_layer;
+                        Rsi = 0.13;
+                        R_tot = 0;
+                        for jk = 1:length(raw_d_layer)
+                            if ~isempty(raw_d_layer(jk))
+                                R_tot = R_tot + raw_d_layer(jk) / raw_lambda_layer(jk);
+                            end
+                        end
+                        Rse = 0.04;
+                        parameter.U = 1/(Rsi+R_tot+Rse);
                     end
-                    raw_emission_1=raw_walls{ii+15,2};
-                    raw_emission_2=raw_walls{ii+16,2};
-                    raw_absorption_2=raw_walls{ii+17,2};
+                    
+                    parameter.layers_names = raw_name_layer;
+                    parameter.layers_lambda = raw_lambda_layer;
+                    parameter.layers_colors = [];
+                    for iii=1:(jj-1)
+                        parameter.layers_colors(iii,:) = rand*[0.85 0.85 0.85];
+                    end
+                    
+                    raw_emission_1 = raw_walls{ii+15,2};
+                    raw_emission_2 = raw_walls{ii+16,2};
+                    raw_absorption_2 = raw_walls{ii+17,2};
+                    
                     parameter.T_ini_beuken = 20;
                     parameter.d_active = raw_d_active;
                     parameter.Phi_dactive = raw_Phi_active;
                     parameter.T_dactive = raw_T_active;
                     
-                    parameter.d=raw_d_layer;
-                    parameter.type=0;
+                    parameter.d = raw_d_layer;
+                    
+                    parameter.type = 0;
+                                        
                     obj = add_structure(obj, raw_name_structure, parameter, raw_emission_1, raw_emission_2, raw_absorption_2);
                 end
             end
         end
         
         function obj = construction_to_excel(obj, name_xls, building, variant_construction)
-            
-            vollpfad = [pwd '\' name_xls]
-            
-            if exist(vollpfad, 'file')
-                warning('Existing Excel file used.')
-            else
-                warning('Excel file not existing, using template!')
-                copyfile('building_TEMPLATE.xlsx',name_xls);
-            end
+            try
+                vollpfad = [pwd '\' name_xls];
+                
+                if exist(vollpfad, 'file')
+                    warning('Existing Excel file used.')
+                else
+                    rootpath = fileparts(which('carnotUIBK'));
+                    copyfile([rootpath '\building_TEMPLATE.xlsx'], vollpfad);
+                    warning('New Excel file generated.')
+                end
+                
+                % modify excel for write weather
+                Excel = actxserver('Excel.Application');
+                Excel.Workbooks.Open(vollpfad);
+                warning('Excel file opened for writing! Do not interrupt this script!')
 
-            % modify excel for write weather
-            Excel = actxserver('Excel.Application');
-            Excel.Workbooks.Open(vollpfad);
-            warning('Excel file opened for writing! Do not interrupt this script!')
+                % to delete the raws of the excel
+                for ii=1:19:400
+                    xlswrite1(name_xls,{''},'Structures',['B' num2str(ii+2) 'K' num2str(ii+19)])
+                    xlswrite1(name_xls,{''},'Structures',['M' num2str(ii+2) 'P' num2str(ii+19)])
+                end
 
-            % to delete the raws of the excel
-            for ii=1:19:400
-                xlswrite1(name_xls,{''},'Structures',['B' num2str(ii+2) 'K' num2str(ii+19)])
-                xlswrite1(name_xls,{''},'Structures',['M' num2str(ii+2) 'P' num2str(ii+19)])
-            end
-            
-            count_win = 0;
-            
-            for jj = 1:size(building.construction(variant_construction).structure,2)
-                if building.construction(variant_construction).structure(jj).type == 0
-                    if building.construction(variant_construction).structure(jj).model == 0
-                        %UA
-                        for ll = 1: size(building.construction(variant_construction).structure(jj).parameter.layers_names,2)
-                            layers_names(ll) = building.construction(variant_construction).structure(jj).parameter.layers_names(ll);
-                            %layers_path(ll) = building.construction(variant_construction).structure(jj).parameter.layers_names(ll); %path
-                            layers_d(ll) = building.construction(variant_construction).structure(jj).parameter.d(ll);
-                            layers_lambda(ll) = building.construction(variant_construction).structure(jj).parameter.layers_lambda(ll);
-%                             layers_rho(ll) = building.construction(variant_construction).structure(jj).parameter.layers_rho(ll);
-%                             layers_cp(ll) = building.construction(variant_construction).structure(jj).parameter.layers_cp(ll);
-                            layers_n_layer_beuken(ll) = building.construction(variant_construction).structure(jj).parameter.layers_N_layer(ll);
-                            %layers_n_layer_hygrothermal(ll) = 1;%building.construction(variant_construction).structure(jj).parameter.xmesh_hygro(ll);
-                            layers_T_ini(ll) = nan;
-                            layers_phi_ini(ll) = nan;
-                        end
-
-                        for kk = size(building.construction(variant_construction).structure(jj).parameter.layers_names,2)+1: 10
-                            layers_names{kk} = '';
-                            %layers_path(kk) =' ';
-                            layers_d(kk) = nan;
-                            layers_lambda(kk) =nan;
-%                             layers_rho(kk) =nan;
-%                             layers_cp(kk) =nan;
-                            layers_n_layer_beuken(kk) = nan;
-                            %layers_n_layer_hygrothermal(kk) = nan;
-                            layers_T_ini(kk) = nan;
-                            layers_phi_ini(kk) = nan;
-                        end
-
-                        matrix_to_write_constr = [{'NAME'} {building.construction(variant_construction).structure(jj).name} {''} {''} {''} {''} {''} {''} {'T_ini'} {'phi_ini'}
-                        {'name'} {'path'} {'d'} {'lambda'} {'rho'} {'cp'} {'n_layer_beuken'} {'n_layer_hygrothermal'} {''} {''} 
-                        {layers_names{1}} {''} {layers_d(1)} {layers_lambda(1)} {''} {''} {layers_n_layer_beuken(1)} {''} {layers_T_ini(1)} {layers_phi_ini(1)}
-                        {layers_names{2}} {''} {layers_d(2)} {layers_lambda(2)} {''} {''} {layers_n_layer_beuken(2)} {''} {layers_T_ini(2)} {layers_phi_ini(2)}
-                        {layers_names{3}} {''} {layers_d(3)} {layers_lambda(3)} {''} {''} {layers_n_layer_beuken(3)} {''} {layers_T_ini(3)} {layers_phi_ini(3)}
-                        {layers_names{4}} {''} {layers_d(4)} {layers_lambda(4)} {''} {''} {layers_n_layer_beuken(4)} {''} {layers_T_ini(4)} {layers_phi_ini(4)}
-                        {layers_names{5}} {''} {layers_d(5)} {layers_lambda(5)} {''} {''} {layers_n_layer_beuken(5)} {''} {layers_T_ini(5)} {layers_phi_ini(5)}
-                        {layers_names{6}} {''} {layers_d(6)} {layers_lambda(6)} {''} {''} {layers_n_layer_beuken(6)} {''} {layers_T_ini(6)} {layers_phi_ini(6)}
-                        {layers_names{7}} {''} {layers_d(7)} {layers_lambda(7)} {''} {''} {layers_n_layer_beuken(7)} {''} {layers_T_ini(7)} {layers_phi_ini(7)}
-                        {layers_names{8}} {''} {layers_d(8)} {layers_lambda(8)} {''} {''} {layers_n_layer_beuken(8)} {''} {layers_T_ini(8)} {layers_phi_ini(8)}
-                        {layers_names{9}} {''} {layers_d(9)} {layers_lambda(9)} {''} {''} {layers_n_layer_beuken(9)} {''} {layers_T_ini(9)} {layers_phi_ini(9)}
-                        {layers_names{10}} {''} {layers_d(10)} {layers_lambda(10)} {''} {''} {layers_n_layer_beuken(10)} {''} {layers_T_ini(10)} {layers_phi_ini(10)}
-                        {'d_active'} {building.construction(variant_construction).structure(jj).parameter.d_active} {''} {''} {''} {''} {''} {''} {''} {''}
-                        {'T_active'} {building.construction(variant_construction).structure(jj).parameter.T_dactive} {''} {''} {''} {''} {''} {''} {''} {''}
-                        {'Phi_active'} {building.construction(variant_construction).structure(jj).parameter.Phi_dactive} {''} {''} {''} {''} {''} {''} {''} {''}
-                        {'emission 1'} {building.construction(variant_construction).structure(jj).emission_1} {''} {''} {''} {''} {''} {''} {''} {''}
-                        {'emission 2'} {building.construction(variant_construction).structure(jj).emission_2} {''} {''} {''} {''} {''} {''} {''} {''}
-                        {'absorption 2'} {building.construction(variant_construction).structure(jj).absorption_2} {''} {''} {''} {''} {''} {''} {''} {''}
-                        ];
-                        
-                        xlswrite1(name_xls,matrix_to_write_constr,'Structures',['B' num2str(3+(jj-1)*19) ':K' num2str(20+(jj-1)*19)])
-                        
-                    elseif building.construction(variant_construction).structure(jj).model == 2
-                        %hygrothermal
-                        n_layer_progressive = 0;
-                        for ll = 1:size(building.construction(variant_construction).structure(jj).parameter.layers_names,2)
-                            layers_names(ll) = building.construction(variant_construction).structure(jj).parameter.layers_names(ll);
-                            if isfield(building.construction(variant_construction).structure(jj).parameter,'path')
-                                layers_path(ll) = building.construction(variant_construction).structure(jj).parameter.path(ll);
-                            else
-                                layers_path{ll} = 'not defined';
-                            end
-                            layers_d(ll) = building.construction(variant_construction).structure(jj).parameter.d(ll);
-                            %layers_lambda(ll) = building.construction(variant_construction).structure(jj).parameter.layers_names(ll);
-                            %layers_rho(ll) = building.construction(variant_construction).structure(jj).parameter.layers_names(ll);
-                            %layers_cp(ll) = building.construction(variant_construction).structure(jj).parameter.layers_names(ll);
-                            layers_n_layer_beuken(ll) = building.construction(variant_construction).structure(jj).parameter.N_layer(ll);
-                            if isfield(building.construction(variant_construction).structure(jj).parameter, 'n_layer_hygrothermal_layer')
-                                layers_n_layer_hygrothermal(ll) = building.construction(variant_construction).structure(jj).parameter.n_layer_hygrothermal_layer(ll);
-                                n_layer_progressive = n_layer_progressive + building.construction(variant_construction).structure(jj).parameter.n_layer_hygrothermal_layer(ll);
-                                layers_T_ini(ll) = building.construction(variant_construction).structure(jj).parameter.T_ini_hygro(n_layer_progressive+1)-273.15;
-                                layers_phi_ini(ll) = building.construction(variant_construction).structure(jj).parameter.Phi_ini_hygro(n_layer_progressive+1)*100;
-                            else
-                                layers_n_layer_hygrothermal(ll) = nan;
+                count_win = 0;
+                
+                jjk = 0;
+                for jj = 1:size(building.construction(variant_construction).structure,2)
+                    if building.construction(variant_construction).structure(jj).type == 0
+                        jjk = jjk + 1;
+                        if building.construction(variant_construction).structure(jj).model == 0
+                            % UA
+                            for ll = 1:size(building.construction(variant_construction).structure(jj).parameter.layers_names,2)
+                                layers_names(ll) = building.construction(variant_construction).structure(jj).parameter.layers_names(ll);
+                                layers_d(ll) = building.construction(variant_construction).structure(jj).parameter.d(ll);
+                                layers_lambda(ll) = building.construction(variant_construction).structure(jj).parameter.layers_lambda(ll);
+                                layers_n_layer_beuken(ll) = 1;
                                 layers_T_ini(ll) = nan;
                                 layers_phi_ini(ll) = nan;
                             end
                             
+                            for kk = (size(building.construction(variant_construction).structure(jj).parameter.layers_names,2)+1):10
+                                layers_names{kk} = '';
+                                layers_d(kk) = nan;
+                                layers_lambda(kk) = nan;
+                                layers_n_layer_beuken(kk) = nan;
+                                layers_T_ini(kk) = nan;
+                                layers_phi_ini(kk) = nan;
+                            end
+
+                            matrix_to_write_constr = [{'NAME'} {building.construction(variant_construction).structure(jj).name} {''} {''} {''} {''} {''} {''} {'T_ini'} {'phi_ini'}
+                                {'name'} {'path'} {'d'} {'lambda'} {'rho'} {'cp'} {'n_layer_beuken'} {'n_layer_hygrothermal'} {''} {''} 
+                                {layers_names{1}} {''} {layers_d(1)} {layers_lambda(1)} {''} {''} {layers_n_layer_beuken(1)} {''} {layers_T_ini(1)} {layers_phi_ini(1)}
+                                {layers_names{2}} {''} {layers_d(2)} {layers_lambda(2)} {''} {''} {layers_n_layer_beuken(2)} {''} {layers_T_ini(2)} {layers_phi_ini(2)}
+                                {layers_names{3}} {''} {layers_d(3)} {layers_lambda(3)} {''} {''} {layers_n_layer_beuken(3)} {''} {layers_T_ini(3)} {layers_phi_ini(3)}
+                                {layers_names{4}} {''} {layers_d(4)} {layers_lambda(4)} {''} {''} {layers_n_layer_beuken(4)} {''} {layers_T_ini(4)} {layers_phi_ini(4)}
+                                {layers_names{5}} {''} {layers_d(5)} {layers_lambda(5)} {''} {''} {layers_n_layer_beuken(5)} {''} {layers_T_ini(5)} {layers_phi_ini(5)}
+                                {layers_names{6}} {''} {layers_d(6)} {layers_lambda(6)} {''} {''} {layers_n_layer_beuken(6)} {''} {layers_T_ini(6)} {layers_phi_ini(6)}
+                                {layers_names{7}} {''} {layers_d(7)} {layers_lambda(7)} {''} {''} {layers_n_layer_beuken(7)} {''} {layers_T_ini(7)} {layers_phi_ini(7)}
+                                {layers_names{8}} {''} {layers_d(8)} {layers_lambda(8)} {''} {''} {layers_n_layer_beuken(8)} {''} {layers_T_ini(8)} {layers_phi_ini(8)}
+                                {layers_names{9}} {''} {layers_d(9)} {layers_lambda(9)} {''} {''} {layers_n_layer_beuken(9)} {''} {layers_T_ini(9)} {layers_phi_ini(9)}
+                                {layers_names{10}} {''} {layers_d(10)} {layers_lambda(10)} {''} {''} {layers_n_layer_beuken(10)} {''} {layers_T_ini(10)} {layers_phi_ini(10)}
+                                {'d_active'} {-1} {''} {''} {''} {''} {''} {''} {''} {''}
+                                {'T_active'} {-1} {''} {''} {''} {''} {''} {''} {''} {''}
+                                {'Phi_active'} {-1} {''} {''} {''} {''} {''} {''} {''} {''}
+                                {'emission 1'} {0.94} {''} {''} {''} {''} {''} {''} {''} {''}
+                                {'emission 2'} {0.60} {''} {''} {''} {''} {''} {''} {''} {''}
+                                {'absorption 2'} {0.65} {''} {''} {''} {''} {''} {''} {''} {''}
+                                ];
+
+                            xlswrite1(name_xls,matrix_to_write_constr,'Structures',['B' num2str(3+(jjk-1)*19) ':K' num2str(20+(jjk-1)*19)])
+
+                        elseif building.construction(variant_construction).structure(jj).model == 2
+                            % hygrothermal
+                            n_layer_progressive = 0;
+                            for ll = 1:size(building.construction(variant_construction).structure(jj).parameter.layers_names,2)
+                                layers_names(ll) = building.construction(variant_construction).structure(jj).parameter.layers_names(ll);
+                                if isfield(building.construction(variant_construction).structure(jj).parameter,'path')
+                                    layers_path(ll) = building.construction(variant_construction).structure(jj).parameter.path(ll);
+                                else
+                                    layers_path{ll} = 'not defined';
+                                end
+                                layers_d(ll) = building.construction(variant_construction).structure(jj).parameter.d(ll);
+                                %layers_lambda(ll) = building.construction(variant_construction).structure(jj).parameter.layers_names(ll);
+                                %layers_rho(ll) = building.construction(variant_construction).structure(jj).parameter.layers_names(ll);
+                                %layers_cp(ll) = building.construction(variant_construction).structure(jj).parameter.layers_names(ll);
+                                layers_n_layer_beuken(ll) = building.construction(variant_construction).structure(jj).parameter.N_layer(ll);
+                                if isfield(building.construction(variant_construction).structure(jj).parameter, 'n_layer_hygrothermal_layer')
+                                    layers_n_layer_hygrothermal(ll) = building.construction(variant_construction).structure(jj).parameter.n_layer_hygrothermal_layer(ll);
+                                    n_layer_progressive = n_layer_progressive + building.construction(variant_construction).structure(jj).parameter.n_layer_hygrothermal_layer(ll);
+                                    layers_T_ini(ll) = building.construction(variant_construction).structure(jj).parameter.T_ini_hygro(n_layer_progressive+1)-273.15;
+                                    layers_phi_ini(ll) = building.construction(variant_construction).structure(jj).parameter.Phi_ini_hygro(n_layer_progressive+1)*100;
+                                else
+                                    layers_n_layer_hygrothermal(ll) = nan;
+                                    layers_T_ini(ll) = nan;
+                                    layers_phi_ini(ll) = nan;
+                                end
+
+                            end
+
+                            for kk = size(building.construction(variant_construction).structure(jj).parameter.layers_names,2)+1: 10
+                                layers_names{kk} = '';
+                                layers_path{kk} = '';
+                                layers_d(kk) = nan;
+                                %layers_lambda(kk) ='';
+                                %layers_rho(kk) ='';
+                                %layers_cp(kk) ='';
+                                layers_n_layer_beuken(kk) = nan;
+                                layers_n_layer_hygrothermal(kk) = nan;
+                                layers_T_ini(kk) = nan;
+                                layers_phi_ini(kk) = nan;
+                            end
+
+                            matrix_to_write_constr = [{'NAME'} {building.construction(variant_construction).structure(jj).name} {''} {''} {''} {''} {''} {''} {'T_ini'} {'phi_ini'}
+                            {'name'} {'path'} {'d'} {'lambda'} {'rho'} {'cp'} {'n_layer_beuken'} {'n_layer_hygrothermal'} {building.construction(variant_construction).structure(jj).parameter.T_ini_hygro(1)-273.15} {building.construction(variant_construction).structure(jj).parameter.Phi_ini_hygro(1)*100} 
+                            {layers_names{1}} {layers_path{1}} {layers_d(1)} {''} {''} {''} {layers_n_layer_beuken(1)} {layers_n_layer_hygrothermal(1)} {layers_T_ini(1)} {layers_phi_ini(1)}
+                            {layers_names{2}} {layers_path{2}} {layers_d(2)} {''} {''} {''} {layers_n_layer_beuken(2)} {layers_n_layer_hygrothermal(2)} {layers_T_ini(2)} {layers_phi_ini(2)}
+                            {layers_names{3}} {layers_path{3}} {layers_d(3)} {''} {''} {''} {layers_n_layer_beuken(3)} {layers_n_layer_hygrothermal(3)} {layers_T_ini(3)} {layers_phi_ini(3)}
+                            {layers_names{4}} {layers_path{4}} {layers_d(4)} {''} {''} {''} {layers_n_layer_beuken(4)} {layers_n_layer_hygrothermal(4)} {layers_T_ini(4)} {layers_phi_ini(4)}
+                            {layers_names{5}} {layers_path{5}} {layers_d(5)} {''} {''} {''} {layers_n_layer_beuken(5)} {layers_n_layer_hygrothermal(5)} {layers_T_ini(5)} {layers_phi_ini(5)}
+                            {layers_names{6}} {layers_path{6}} {layers_d(6)} {''} {''} {''} {layers_n_layer_beuken(6)} {layers_n_layer_hygrothermal(6)} {layers_T_ini(6)} {layers_phi_ini(6)}
+                            {layers_names{7}} {layers_path{7}} {layers_d(7)} {''} {''} {''} {layers_n_layer_beuken(7)} {layers_n_layer_hygrothermal(7)} {layers_T_ini(7)} {layers_phi_ini(7)}
+                            {layers_names{8}} {layers_path{8}} {layers_d(8)} {''} {''} {''} {layers_n_layer_beuken(8)} {layers_n_layer_hygrothermal(8)} {layers_T_ini(8)} {layers_phi_ini(8)}
+                            {layers_names{9}} {layers_path{9}} {layers_d(9)} {''} {''} {''} {layers_n_layer_beuken(9)} {layers_n_layer_hygrothermal(9)} {layers_T_ini(9)} {layers_phi_ini(9)}
+                            {layers_names{10}} {layers_path{10}} {layers_d(10)} {''} {''} {''} {layers_n_layer_beuken(10)} {layers_n_layer_hygrothermal(10)} {layers_T_ini(10)} {layers_phi_ini(10)}
+                            {'d_active'} {building.construction(variant_construction).structure(jj).parameter.d_active} {''} {''} {''} {''} {''} {''} {''} {''}
+                            {'T_active'} {building.construction(variant_construction).structure(jj).parameter.T_dactive} {''} {''} {''} {''} {''} {''} {''} {''}
+                            {'Phi_active'} {building.construction(variant_construction).structure(jj).parameter.Phi_dactive} {''} {''} {''} {''} {''} {''} {''} {''}
+                            {'emission 1'} {building.construction(variant_construction).structure(jj).emission_1} {''} {''} {''} {''} {''} {''} {''} {''}
+                            {'emission 2'} {building.construction(variant_construction).structure(jj).emission_2} {''} {''} {''} {''} {''} {''} {''} {''}
+                            {'absorption 2'} {building.construction(variant_construction).structure(jj).absorption_2} {''} {''} {''} {''} {''} {''} {''} {''}
+                            ];
+
+                            xlswrite1(name_xls,matrix_to_write_constr,'Structures',['B' num2str(3+(jjk-1)*19) ':K' num2str(20+(jjk-1)*19)])
+                        else
+                           % RC
+                           for ll = 1: size(building.construction(variant_construction).structure(jj).parameter.layers_names,2)
+                                layers_names(ll) = building.construction(variant_construction).structure(jj).parameter.layers_names(ll);
+                                %layers_path(ll) = building.construction(variant_construction).structure(jj).parameter.layers_names(ll); %path
+                                layers_d(ll) = building.construction(variant_construction).structure(jj).parameter.d(ll);
+                                layers_lambda(ll) = building.construction(variant_construction).structure(jj).parameter.layers_lambda(ll);
+                                layers_rho(ll) = building.construction(variant_construction).structure(jj).parameter.layers_rho(ll);
+                                layers_cp(ll) = building.construction(variant_construction).structure(jj).parameter.layers_cp(ll);
+                                layers_n_layer_beuken(ll) = building.construction(variant_construction).structure(jj).parameter.layers_N_layer(ll);
+                                %layers_n_layer_hygrothermal(ll) = 1;%building.construction(variant_construction).structure(jj).parameter.xmesh_hygro(ll);
+                                layers_T_ini(ll) = nan;
+                                layers_phi_ini(ll) = nan;
+                            end
+
+                            for kk = size(building.construction(variant_construction).structure(jj).parameter.layers_names,2)+1: 10
+                                layers_names{kk} = '';
+                                %layers_path(kk) =' ';
+                                layers_d(kk) = nan;
+                                layers_lambda(kk) =nan;
+                                layers_rho(kk) =nan;
+                                layers_cp(kk) =nan;
+                                layers_n_layer_beuken(kk) = nan;
+                                %layers_n_layer_hygrothermal(kk) = nan;
+                                layers_T_ini(kk) = nan;
+                                layers_phi_ini(kk) = nan;
+                            end
+
+                            matrix_to_write_constr = [{'NAME'} {building.construction(variant_construction).structure(jj).name} {''} {''} {''} {''} {''} {''} {'T_ini'} {'phi_ini'}
+                                {'name'} {'path'} {'d'} {'lambda'} {'rho'} {'cp'} {'n_layer_beuken'} {'n_layer_hygrothermal'} {''} {''} 
+                                {layers_names{1}} {''} {layers_d(1)} {layers_lambda(1)} {layers_rho(1)} {layers_cp(1)} {layers_n_layer_beuken(1)} {''} {layers_T_ini(1)} {layers_phi_ini(1)}
+                                {layers_names{2}} {''} {layers_d(2)} {layers_lambda(2)} {layers_rho(2)} {layers_cp(2)} {layers_n_layer_beuken(2)} {''} {layers_T_ini(2)} {layers_phi_ini(2)}
+                                {layers_names{3}} {''} {layers_d(3)} {layers_lambda(3)} {layers_rho(3)} {layers_cp(3)} {layers_n_layer_beuken(3)} {''} {layers_T_ini(3)} {layers_phi_ini(3)}
+                                {layers_names{4}} {''} {layers_d(4)} {layers_lambda(4)} {layers_rho(4)} {layers_cp(4)} {layers_n_layer_beuken(4)} {''} {layers_T_ini(4)} {layers_phi_ini(4)}
+                                {layers_names{5}} {''} {layers_d(5)} {layers_lambda(5)} {layers_rho(5)} {layers_cp(5)} {layers_n_layer_beuken(5)} {''} {layers_T_ini(5)} {layers_phi_ini(5)}
+                                {layers_names{6}} {''} {layers_d(6)} {layers_lambda(6)} {layers_rho(6)} {layers_cp(6)} {layers_n_layer_beuken(6)} {''} {layers_T_ini(6)} {layers_phi_ini(6)}
+                                {layers_names{7}} {''} {layers_d(7)} {layers_lambda(7)} {layers_rho(7)} {layers_cp(7)} {layers_n_layer_beuken(7)} {''} {layers_T_ini(7)} {layers_phi_ini(7)}
+                                {layers_names{8}} {''} {layers_d(8)} {layers_lambda(8)} {layers_rho(8)} {layers_cp(8)} {layers_n_layer_beuken(8)} {''} {layers_T_ini(8)} {layers_phi_ini(8)}
+                                {layers_names{9}} {''} {layers_d(9)} {layers_lambda(9)} {layers_rho(9)} {layers_cp(9)} {layers_n_layer_beuken(9)} {''} {layers_T_ini(9)} {layers_phi_ini(9)}
+                                {layers_names{10}} {''} {layers_d(10)} {layers_lambda(10)} {layers_rho(10)} {layers_cp(10)} {layers_n_layer_beuken(10)} {''} {layers_T_ini(10)} {layers_phi_ini(10)}
+                                {'d_active'} {building.construction(variant_construction).structure(jj).parameter.d_active} {''} {''} {''} {''} {''} {''} {''} {''}
+                                {'T_active'} {building.construction(variant_construction).structure(jj).parameter.T_dactive} {''} {''} {''} {''} {''} {''} {''} {''}
+                                {'Phi_active'} {building.construction(variant_construction).structure(jj).parameter.Phi_dactive} {''} {''} {''} {''} {''} {''} {''} {''}
+                                {'emission 1'} {building.construction(variant_construction).structure(jj).emission_1} {''} {''} {''} {''} {''} {''} {''} {''}
+                                {'emission 2'} {building.construction(variant_construction).structure(jj).emission_2} {''} {''} {''} {''} {''} {''} {''} {''}
+                                {'absorption 2'} {building.construction(variant_construction).structure(jj).absorption_2} {''} {''} {''} {''} {''} {''} {''} {''}
+                                ];
+                            
+                             xlswrite1(name_xls,matrix_to_write_constr,'Structures',['B' num2str(3+(jjk-1)*19) ':K' num2str(20+(jjk-1)*19)]) 
                         end
-
-                        for kk = size(building.construction(variant_construction).structure(jj).parameter.layers_names,2)+1: 10
-                            layers_names{kk} = '';
-                            layers_path{kk} = '';
-                            layers_d(kk) = nan;
-                            %layers_lambda(kk) ='';
-                            %layers_rho(kk) ='';
-                            %layers_cp(kk) ='';
-                            layers_n_layer_beuken(kk) = nan;
-                            layers_n_layer_hygrothermal(kk) = nan;
-                            layers_T_ini(kk) = nan;
-                            layers_phi_ini(kk) = nan;
-                        end
-
-                        matrix_to_write_constr = [{'NAME'} {building.construction(variant_construction).structure(jj).name} {''} {''} {''} {''} {''} {''} {'T_ini'} {'phi_ini'}
-                        {'name'} {'path'} {'d'} {'lambda'} {'rho'} {'cp'} {'n_layer_beuken'} {'n_layer_hygrothermal'} {building.construction(variant_construction).structure(jj).parameter.T_ini_hygro(1)-273.15} {building.construction(variant_construction).structure(jj).parameter.Phi_ini_hygro(1)*100} 
-                        {layers_names{1}} {layers_path{1}} {layers_d(1)} {''} {''} {''} {layers_n_layer_beuken(1)} {layers_n_layer_hygrothermal(1)} {layers_T_ini(1)} {layers_phi_ini(1)}
-                        {layers_names{2}} {layers_path{2}} {layers_d(2)} {''} {''} {''} {layers_n_layer_beuken(2)} {layers_n_layer_hygrothermal(2)} {layers_T_ini(2)} {layers_phi_ini(2)}
-                        {layers_names{3}} {layers_path{3}} {layers_d(3)} {''} {''} {''} {layers_n_layer_beuken(3)} {layers_n_layer_hygrothermal(3)} {layers_T_ini(3)} {layers_phi_ini(3)}
-                        {layers_names{4}} {layers_path{4}} {layers_d(4)} {''} {''} {''} {layers_n_layer_beuken(4)} {layers_n_layer_hygrothermal(4)} {layers_T_ini(4)} {layers_phi_ini(4)}
-                        {layers_names{5}} {layers_path{5}} {layers_d(5)} {''} {''} {''} {layers_n_layer_beuken(5)} {layers_n_layer_hygrothermal(5)} {layers_T_ini(5)} {layers_phi_ini(5)}
-                        {layers_names{6}} {layers_path{6}} {layers_d(6)} {''} {''} {''} {layers_n_layer_beuken(6)} {layers_n_layer_hygrothermal(6)} {layers_T_ini(6)} {layers_phi_ini(6)}
-                        {layers_names{7}} {layers_path{7}} {layers_d(7)} {''} {''} {''} {layers_n_layer_beuken(7)} {layers_n_layer_hygrothermal(7)} {layers_T_ini(7)} {layers_phi_ini(7)}
-                        {layers_names{8}} {layers_path{8}} {layers_d(8)} {''} {''} {''} {layers_n_layer_beuken(8)} {layers_n_layer_hygrothermal(8)} {layers_T_ini(8)} {layers_phi_ini(8)}
-                        {layers_names{9}} {layers_path{9}} {layers_d(9)} {''} {''} {''} {layers_n_layer_beuken(9)} {layers_n_layer_hygrothermal(9)} {layers_T_ini(9)} {layers_phi_ini(9)}
-                        {layers_names{10}} {layers_path{10}} {layers_d(10)} {''} {''} {''} {layers_n_layer_beuken(10)} {layers_n_layer_hygrothermal(10)} {layers_T_ini(10)} {layers_phi_ini(10)}
-                        {'d_active'} {building.construction(variant_construction).structure(jj).parameter.d_active} {''} {''} {''} {''} {''} {''} {''} {''}
-                        {'T_active'} {building.construction(variant_construction).structure(jj).parameter.T_dactive} {''} {''} {''} {''} {''} {''} {''} {''}
-                        {'Phi_active'} {building.construction(variant_construction).structure(jj).parameter.Phi_dactive} {''} {''} {''} {''} {''} {''} {''} {''}
-                        {'emission 1'} {building.construction(variant_construction).structure(jj).emission_1} {''} {''} {''} {''} {''} {''} {''} {''}
-                        {'emission 2'} {building.construction(variant_construction).structure(jj).emission_2} {''} {''} {''} {''} {''} {''} {''} {''}
-                        {'absorption 2'} {building.construction(variant_construction).structure(jj).absorption_2} {''} {''} {''} {''} {''} {''} {''} {''}
-                        ];
-
-                        xlswrite1(name_xls,matrix_to_write_constr,'Structures',['B' num2str(3+(jj-1)*19) ':K' num2str(20+(jj-1)*19)])
-
                     else
-                        % RC model
-                       for ll = 1: size(building.construction(variant_construction).structure(jj).parameter.layers_names,2)
-                            layers_names(ll) = building.construction(variant_construction).structure(jj).parameter.layers_names(ll);
-                            %layers_path(ll) = building.construction(variant_construction).structure(jj).parameter.layers_names(ll); %path
-                            layers_d(ll) = building.construction(variant_construction).structure(jj).parameter.d(ll);
-                            layers_lambda(ll) = building.construction(variant_construction).structure(jj).parameter.layers_lambda(ll);
-                            layers_rho(ll) = building.construction(variant_construction).structure(jj).parameter.layers_rho(ll);
-                            layers_cp(ll) = building.construction(variant_construction).structure(jj).parameter.layers_cp(ll);
-                            layers_n_layer_beuken(ll) = building.construction(variant_construction).structure(jj).parameter.layers_N_layer(ll);
-                            %layers_n_layer_hygrothermal(ll) = 1;%building.construction(variant_construction).structure(jj).parameter.xmesh_hygro(ll);
-                            layers_T_ini(ll) = nan;
-                            layers_phi_ini(ll) = nan;
+                        count_win = count_win + 1;
+                        for ll = 1: size(building.construction(variant_construction).structure(jj).parameter.c_w,2)
+                            d_w(ll) = building.construction(variant_construction).structure(jj).parameter.d_w(ll);
+                            c_w(ll) = building.construction(variant_construction).structure(jj).parameter.c_w(ll);
+                            rho_w(ll) = building.construction(variant_construction).structure(jj).parameter.rho_w(ll);
+                            lambda_w(ll) = building.construction(variant_construction).structure(jj).parameter.lambda_w(ll);
                         end
-
-                        for kk = size(building.construction(variant_construction).structure(jj).parameter.layers_names,2)+1: 10
-                            layers_names{kk} = '';
-                            %layers_path(kk) =' ';
-                            layers_d(kk) = nan;
-                            layers_lambda(kk) =nan;
-                            layers_rho(kk) =nan;
-                            layers_cp(kk) =nan;
-                            layers_n_layer_beuken(kk) = nan;
-                            %layers_n_layer_hygrothermal(kk) = nan;
-                            layers_T_ini(kk) = nan;
-                            layers_phi_ini(kk) = nan;
+                        
+                        for ll = size(building.construction(variant_construction).structure(jj).parameter.c_w,2)+1:8
+                            d_w(ll) = nan;
+                            c_w(ll) = nan;
+                            rho_w(ll) = nan;
+                            lambda_w(ll) = nan;
                         end
-
-                        matrix_to_write_constr = [{'NAME'} {building.construction(variant_construction).structure(jj).name} {''} {''} {''} {''} {''} {''} {'T_ini'} {'phi_ini'}
-                        {'name'} {'path'} {'d'} {'lambda'} {'rho'} {'cp'} {'n_layer_beuken'} {'n_layer_hygrothermal'} {''} {''} 
-                        {layers_names{1}} {''} {layers_d(1)} {layers_lambda(1)} {layers_rho(1)} {layers_cp(1)} {layers_n_layer_beuken(1)} {''} {layers_T_ini(1)} {layers_phi_ini(1)}
-                        {layers_names{2}} {''} {layers_d(2)} {layers_lambda(2)} {layers_rho(2)} {layers_cp(2)} {layers_n_layer_beuken(2)} {''} {layers_T_ini(2)} {layers_phi_ini(2)}
-                        {layers_names{3}} {''} {layers_d(3)} {layers_lambda(3)} {layers_rho(3)} {layers_cp(3)} {layers_n_layer_beuken(3)} {''} {layers_T_ini(3)} {layers_phi_ini(3)}
-                        {layers_names{4}} {''} {layers_d(4)} {layers_lambda(4)} {layers_rho(4)} {layers_cp(4)} {layers_n_layer_beuken(4)} {''} {layers_T_ini(4)} {layers_phi_ini(4)}
-                        {layers_names{5}} {''} {layers_d(5)} {layers_lambda(5)} {layers_rho(5)} {layers_cp(5)} {layers_n_layer_beuken(5)} {''} {layers_T_ini(5)} {layers_phi_ini(5)}
-                        {layers_names{6}} {''} {layers_d(6)} {layers_lambda(6)} {layers_rho(6)} {layers_cp(6)} {layers_n_layer_beuken(6)} {''} {layers_T_ini(6)} {layers_phi_ini(6)}
-                        {layers_names{7}} {''} {layers_d(7)} {layers_lambda(7)} {layers_rho(7)} {layers_cp(7)} {layers_n_layer_beuken(7)} {''} {layers_T_ini(7)} {layers_phi_ini(7)}
-                        {layers_names{8}} {''} {layers_d(8)} {layers_lambda(8)} {layers_rho(8)} {layers_cp(8)} {layers_n_layer_beuken(8)} {''} {layers_T_ini(8)} {layers_phi_ini(8)}
-                        {layers_names{9}} {''} {layers_d(9)} {layers_lambda(9)} {layers_rho(9)} {layers_cp(9)} {layers_n_layer_beuken(9)} {''} {layers_T_ini(9)} {layers_phi_ini(9)}
-                        {layers_names{10}} {''} {layers_d(10)} {layers_lambda(10)} {layers_rho(10)} {layers_cp(10)} {layers_n_layer_beuken(10)} {''} {layers_T_ini(10)} {layers_phi_ini(10)}
-                        {'d_active'} {building.construction(variant_construction).structure(jj).parameter.d_active} {''} {''} {''} {''} {''} {''} {''} {''}
-                        {'T_active'} {building.construction(variant_construction).structure(jj).parameter.T_dactive} {''} {''} {''} {''} {''} {''} {''} {''}
-                        {'Phi_active'} {building.construction(variant_construction).structure(jj).parameter.Phi_dactive} {''} {''} {''} {''} {''} {''} {''} {''}
-                        {'emission 1'} {building.construction(variant_construction).structure(jj).emission_1} {''} {''} {''} {''} {''} {''} {''} {''}
-                        {'emission 2'} {building.construction(variant_construction).structure(jj).emission_2} {''} {''} {''} {''} {''} {''} {''} {''}
-                        {'absorption 2'} {building.construction(variant_construction).structure(jj).absorption_2} {''} {''} {''} {''} {''} {''} {''} {''}
-                        ];
-
-                     xlswrite1(name_xls,matrix_to_write_constr,'Structures',['B' num2str(3+(jj-1)*19) ':K' num2str(20+(jj-1)*19)]) 
+                        
+                        matrix_to_write_constr = [{'NAME'} {building.construction(variant_construction).structure(jj).name} {''} {''}
+                            {'d_w'} {'c_w'} {'rho_w'} {'lambda_w'}
+                            {d_w(1)} {c_w(1)} {rho_w(1)} {lambda_w(1)}
+                            {d_w(2)} {c_w(2)} {rho_w(2)} {lambda_w(2)}
+                            {d_w(3)} {c_w(3)} {rho_w(3)} {lambda_w(3)}
+                            {d_w(4)} {c_w(4)} {rho_w(4)} {lambda_w(4)}
+                            {d_w(5)} {c_w(5)} {rho_w(5)} {lambda_w(5)}
+                            {d_w(6)} {c_w(6)} {rho_w(6)} {lambda_w(6)}
+                            {d_w(7)} {c_w(7)} {rho_w(7)} {lambda_w(7)}
+                            {d_w(8)} {c_w(8)} {rho_w(8)} {lambda_w(8)} 
+                            {'U_g'} {building.construction(variant_construction).structure(jj).parameter.U_g} {''} {''}
+                            {'U_f'} {building.construction(variant_construction).structure(jj).parameter.U_f} {''} {''}
+                            {'psi_ge'} {building.construction(variant_construction).structure(jj).parameter.psi_ge} {''} {''}
+                            {'g_w'} {building.construction(variant_construction).structure(jj).parameter.g_w} {''} {''}
+                            {'tau_g_w'} {building.construction(variant_construction).structure(jj).parameter.tau_g_w} {''} {''}
+                            {'emission 1'} {building.construction(variant_construction).structure(jj).emission_1} {''} {''}
+                            {'emission 2'} {building.construction(variant_construction).structure(jj).emission_2} {''} {''}
+                            {'absorption 2'} {building.construction(variant_construction).structure(jj).absorption_2} {''} {''}
+                            ];
+                        
+                        xlswrite1(name_xls,matrix_to_write_constr,'Structures',['M' num2str(3+(count_win-1)*19) ':P' num2str(20+(count_win-1)*19)]) 
                     end
-                else
-                    
-                    count_win = count_win +1;
-                    for ll = 1: size(building.construction(variant_construction).structure(jj).parameter.c_w,2)
-                        d_w(ll) = building.construction(variant_construction).structure(jj).parameter.d_w(ll);
-                        c_w(ll) = building.construction(variant_construction).structure(jj).parameter.c_w(ll);
-                        rho_w(ll) = building.construction(variant_construction).structure(jj).parameter.rho_w(ll);
-                        lambda_w(ll) = building.construction(variant_construction).structure(jj).parameter.lambda_w(ll);
-                    end
-
-                    for ll = size(building.construction(variant_construction).structure(jj).parameter.c_w,2)+1:8
-                        d_w(ll) = nan;
-                        c_w(ll) = nan;
-                        rho_w(ll) = nan;
-                        lambda_w(ll) = nan;
-                    end
-                    
-                    matrix_to_write_constr = [{'NAME'} {building.construction(variant_construction).structure(jj).name} {''} {''}
-                        {'d_w'} {'c_w'} {'rho_w'} {'lambda_w'}
-                        {d_w(1)} {c_w(1)} {rho_w(1)} {lambda_w(1)}
-                        {d_w(2)} {c_w(2)} {rho_w(2)} {lambda_w(2)}
-                        {d_w(3)} {c_w(3)} {rho_w(3)} {lambda_w(3)}
-                        {d_w(4)} {c_w(4)} {rho_w(4)} {lambda_w(4)}
-                        {d_w(5)} {c_w(5)} {rho_w(5)} {lambda_w(5)}
-                        {d_w(6)} {c_w(6)} {rho_w(6)} {lambda_w(6)}
-                        {d_w(7)} {c_w(7)} {rho_w(7)} {lambda_w(7)}
-                        {d_w(8)} {c_w(8)} {rho_w(8)} {lambda_w(8)} 
-                        {'U_g'} {building.construction(variant_construction).structure(jj).parameter.U_g} {''} {''}
-                        {'U_f'} {building.construction(variant_construction).structure(jj).parameter.U_f} {''} {''}
-                        {'psi_ge'} {building.construction(variant_construction).structure(jj).parameter.psi_ge} {''} {''}
-                        {'g_w'} {building.construction(variant_construction).structure(jj).parameter.g_w} {''} {''}
-                        {'tau_g_w'} {building.construction(variant_construction).structure(jj).parameter.tau_g_w} {''} {''}
-                        {'emission 1'} {building.construction(variant_construction).structure(jj).emission_1} {''} {''}
-                        {'emission 2'} {building.construction(variant_construction).structure(jj).emission_2} {''} {''}
-                        {'absorption 2'} {building.construction(variant_construction).structure(jj).absorption_2} {''} {''}
-                        ];
-                    xlswrite1(name_xls,matrix_to_write_constr,'Structures',['M' num2str(3+(count_win-1)*19) ':P' num2str(20+(count_win-1)*19)]) 
                 end
                 
+                Excel.ActiveWorkbook.Save
+                Excel.Quit
+                Excel.delete
+                clear Excel
+                warning('Excel file closed!')
+                
+            catch ME
+                ME
+                
+                Excel.ActiveWorkbook.Save
+                Excel.Quit
+                Excel.delete
+                clear Excel
+                warning('Excel file closed!')
             end
-            Excel.ActiveWorkbook.Save
-            Excel.Quit
-            Excel.delete
-            clear Excel
-            warning('Excel file closed!')
-             
         end
         
         function obj = construction_windows_from_EXCEL(obj, name_xls_EXCEL) %24/01/2017
@@ -828,7 +922,7 @@ classdef CONSTRUCTION
                             if isnan(raw_windows{ii+1+jj,4})
                                 parameter.model=0;
                             else
-                                parameter.model=1;
+                                parameter.model=2;
                                 raw_lambda_w(jj) = raw_windows{ii+1+jj,4};
                             end
                         end
@@ -836,7 +930,7 @@ classdef CONSTRUCTION
                     parameter.c_w = raw_c_w;
                     parameter.d_w = raw_d_w;
                     parameter.rho_w = raw_rho_w;
-                    if parameter.model == 1
+                    if parameter.model >= 1
                         parameter.lambda_w = raw_lambda_w;
                     end
                     parameter.n_pane = length(raw_c_w);
@@ -857,14 +951,13 @@ classdef CONSTRUCTION
         end
     end
     
-    methods (Access = private)
+    methods (Access = public)
         function parameter = create_parameter_structure_RC(obj, name, model, number_layer, d, lambda, rho, cp, names, n_layer_beuken)
             parameter.name = name;
             parameter.model = model;
             
-            %UA and RC parameter.d_layer = d; parameter.names = names;
             for ii=1:number_layer
-                parameter.colors(ii,:)=rand*[1 1 1];
+                parameter.colors(ii,:) = rand*[0.8 0.8 0.8];
             end
             parameter.names = names;
             parameter.d_layer = d;
@@ -884,13 +977,13 @@ classdef CONSTRUCTION
             parameter.T_active, parameter.R_si,...
             parameter.R_se, 0);
             
-            parameter.d_active=-1;
+            parameter.d_active = -1;
         end
        
         function parameter = create_parameter_structure_hygrothermal(obj, name, model, number_layer, d, n_layer_beuken, anzx, pfad, names, T_ini, Phi_ini, T_source, Phi_source)
-                        
             % parameters for the hygrothermal model
             general.hygrothermal = create_strct_hum(obj,name, d,anzx,pfad,T_ini,Phi_ini);
+            
             parameter.xmesh_hygro = general.hygrothermal.xmesh;
             parameter.X = general.hygrothermal.X;
             parameter.xmesh_hygro = general.hygrothermal.xmesh;
@@ -925,7 +1018,7 @@ classdef CONSTRUCTION
             parameter.d = d;
             parameter.layers_names = names;
             for ii=1:number_layer
-                parameter.layers_colors(ii,:)=rand*[1 1 1];
+                parameter.layers_colors(ii,:)=rand*[0.8 0.8 0.8];
             end
             parameter.N_layer = n_layer_beuken; 
 %             parameter.d_layer = parameter.d;
@@ -941,7 +1034,6 @@ classdef CONSTRUCTION
         end
         
         function strct = create_strct_hum(obj, name, d, anzx, pfad, T_ini, Phi_ini)
-
             zufallnr = floor(10000*rand);
             
             mindx = 0.0005;
@@ -1416,7 +1508,6 @@ classdef CONSTRUCTION
         end
     
         function prop = read_delphin_material_final(obj, materialdatei, plotten)
-
             global nr_GLOBAL
             nr_GLOBAL  = 0;
             
@@ -1615,8 +1706,10 @@ classdef CONSTRUCTION
 %             plot(prop.FSF.phi,[prop.FSF.dudphi,0],'r-')
 
 
-            if plotten, figure(3); end
-
+            if plotten
+                figure(3); 
+            end
+            
             coeff = fminsearch(@(coeff) costfun(obj, rho_w,R_v,prop,phi(ind0:ind1),u(ind0:ind1),h1,coeff,plotten),[1,1]);
             prop.FSF.k(1) = coeff(1)*prop.FSF.k(1);
             prop.FSF.k(2) = coeff(2)*prop.FSF.k(2);

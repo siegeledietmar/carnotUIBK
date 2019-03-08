@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.0
+* add GUI
+* fixed several bugs in all features
+
 ## 1.4.0
 * add export to Excel
 

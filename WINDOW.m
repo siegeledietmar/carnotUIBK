@@ -2,7 +2,7 @@
 % ***********************************************************************
 % This file is part of the uibkCARNOT Blockset.
 % 
-% Copyright (c) 2016-2018, University of Innsbruck, Unit for Energy 
+% Copyright (c) 2016-2019, University of Innsbruck, Unit for Energy 
 % Efficient Building.
 %   Dietmar Siegele     dietmar.siegele@uibk.ac.at
 %   Eleonora Leonardi   eleonora.leonardi@uibk.ac.at
@@ -37,12 +37,13 @@
 % THE POSSIBILITY OF SUCH DAMAGE.
 % **********************************************************************
 % 
-%% carnotUIBK version 1.3
-% Copyright (c) 2016-2018, University of Innsbruck, Unit for Energy 
+%% carnotUIBK version 2.0
+% Copyright (c) 2016-2019, University of Innsbruck, Unit for Energy 
 % Efficient Building.
 %
 % Author    Date         Description
 % DS,EL     2017-03-12   initial revision v1.0
+% DS,EL	    2019-01-24   updates for GUI v2.0
 
 %%
 classdef WINDOW
@@ -66,7 +67,7 @@ classdef WINDOW
         fstime = 0;
         fsvalue = 0;
         fd = 0.95;
-        psi_i = [0 0; 0 0]; %thermal bridge installation: up, bottom, left, right
+        psi_i = [0 0; 0 0]; %thermal bridge installation: up, bottom; left, right
         control_s = 1;
         construction = '';
         model_inf = 0; %%%%%%
@@ -77,7 +78,7 @@ classdef WINDOW
     end
     
     methods
-        function obj = WINDOW(name, model_cons, X, Y, width, height, width_glass, height_glass, view_factor, amb_factor, shadingtop, shadingleft, shadingright, shadinghorizont, fstime, fsvalue, fd, psi_i, control_s, construction, model_inf, C, n, V, control_i)  
+        function obj = WINDOW(name, model_cons, X, Y, width, height, width_glass, height_glass, view_factor, amb_factor, shadingtop, shadingleft, shadingright, shadinghorizont, fstime, fsvalue, fd, psi_i, control_s, construction, model_inf, C, n, V, control_i)
             if (nargin == 0)
             else
                 obj.name = name;

@@ -2,7 +2,7 @@
 % ***********************************************************************
 % This file is part of the uibkCARNOT Blockset.
 % 
-% Copyright (c) 2016-2018, University of Innsbruck, Unit for Energy 
+% Copyright (c) 2016-2019, University of Innsbruck, Unit for Energy 
 % Efficient Building.
 %   Dietmar Siegele     dietmar.siegele@uibk.ac.at
 %   Eleonora Leonardi   eleonora.leonardi@uibk.ac.at
@@ -37,13 +37,14 @@
 % THE POSSIBILITY OF SUCH DAMAGE.
 % **********************************************************************
 % 
-%% carnotUIBK version 1.3
-% Copyright (c) 2016-2018, University of Innsbruck, Unit for Energy 
+%% carnotUIBK version 2.0
+% Copyright (c) 2016-2019, University of Innsbruck, Unit for Energy 
 % Efficient Building.
 %
 % Author    Date         Description
 % DS,EL     2017-03-12   initial revision v1.0
 % DS        2018-05-25   v1.3: cleanup the disp
+% DS,EL	    2019-01-24   updates for GUI v2.0
 
 %%
 classdef BUILDING
@@ -51,7 +52,7 @@ classdef BUILDING
     
     properties
         name = '';
-        model = 'building_v18';
+        model = '';
         variant_geometry = 1;
         variant_construction = 1;
         variant_thermalzone = 1;
@@ -77,6 +78,7 @@ classdef BUILDING
         sampletime_3 = 60; % seconds
         sampletime_4 = 10; % seconds
         datalogger = 1; % switch on datalogger
+        internal_version = 1.0;     % do not change!
     end
     
     methods
@@ -171,86 +173,9 @@ classdef BUILDING
                 disp([obj.thermalzone(ii).zone(1,list_zones(ll)).name ': ' name_rooms ' , MODEL:' mod ', HEATED AREA: '  num2str(obj.thermalzone(ii).zone(1,list_zones(ll)).heated_area) ' m²'])
                 end
             end
-            count_variant = [];
             
             disp(['       <a href="matlab:' inputname(1) '.thermalzone(' num2str(ii) ').plot_building(1:10,' inputname(1) '.geometry(1))">plot all the thermal zones</a>'])
             disp(['       <a href="matlab:' inputname(1) '.plot_zones(' num2str(ii) ', 1)">plot ZONES' '</a>'])
-            
-%             for iii = 1:length(obj.result)
-%                 if obj.result(iii).number == 0
-%                     disp(['       <a href="matlab:' inputname(1) '.thermalzone(' num2str(ii) ').plot_building(1:10,' inputname(1) '.geometry(1))">plot all the thermal zones</a>'])
-%                     disp(['       <a href="matlab:' inputname(1) '.plot_zones(' num2str(ii) ', 1)">plot ZONES' '</a>'])
-%                         disp([' '])
-%                         disp(['       <a href="matlab:' inputname(1) '.disp_checkmatrix(' num2str(ii) ', ' ' 1 ' ')">check matrixes ZONES' '</a>'])
-%                         disp(['       <a href="matlab:' inputname(1) '.disp_checkmatrix(' num2str(ii) ', ' ' 2 ' ')">check matrixes INTERSECTIONS' '</a>'])
-%                 disp('   ')
-%                 else
-%                     if ismember(obj.result(iii).variant_thermalzone,count_variant)
-%                     else
-%                         count_variant = [count_variant obj.result(iii).variant_thermalzone];
-%                         disp('   ')
-%                         disp(['Variant Thermal Zone number ' num2str(obj.result(iii).variant_thermalzone) ' associated to Variant geometry number ' num2str(obj.result(iii).variant_geometry)])
-%                         thzone = obj.result(iii).variant_thermalzone;
-%                         geom = obj.result(iii).variant_geometry;
-% %                         for ll = 1:length(obj.result(iii).list_zones)
-% %                             name_rooms = [];
-% %                             for mm = 1:length(obj.thermalzone(thzone).zone(1,obj.result(iii).list_zones(ll)).rooms)
-% %                                 name_rooms = [name_rooms strjoin(obj.thermalzone(thzone).zone(1,obj.result(iii).list_zones(ll)).rooms(mm)) '   '];
-% %                             end
-% %                             if obj.thermalzone(thzone).zone(1,obj.result(iii).list_zones(ll)).model == 0
-% %                                 mod = 'none/temperature';
-% %                             elseif obj.thermalzone(thzone).zone(1,obj.result(iii).list_zones(ll)).model == 1
-% %                                 mod = 'ideal';
-% %                             elseif obj.thermalzone(thzone).zone(1,obj.result(iii).list_zones(ll)).model == 2
-% %                                 mod = '1-node';
-% %                             elseif obj.thermalzone(thzone).zone(1,obj.result(iii).list_zones(ll)).model == 3
-% %                                 mod = '2-node';
-% %                             end
-% %                             disp([obj.thermalzone(thzone).zone(1,obj.result(iii).list_zones(ll)).name ': ' name_rooms ' , MODEL:' mod ', HEATED AREA: '  num2str(obj.thermalzone(thzone).zone(1,obj.result(iii).list_zones(ll)).heated_area) ' m²'])
-% %                         end
-%                         disp(['       <a href="matlab:' inputname(1) '.thermalzone(' num2str(thzone) ').plot_building(1:10,' inputname(1) '.geometry(' num2str(geom) '))">plot all the thermal zone</a>'])
-%                         disp(['       <a href="matlab:' inputname(1) '.plot_zones(' num2str(thzone) ', ' num2str(geom) ')">plot ZONES' '</a>'])
-%                         disp(['       <a href="matlab:' inputname(1) '.disp_checkmatrix(' num2str(thzone) ', ' ' 1 ' ')">check matrixes ZONES' '</a>'])
-%                         disp(['       <a href="matlab:' inputname(1) '.disp_checkmatrix(' num2str(thzone) ', ' ' 2 ' ')">check matrixes INTERSECTIONS' '</a>'])
-%                         disp('   ')
-%                     end
-%                 end
-%             end
-%             if obj.result(length(obj.result)).variant_geometry == obj.variant_geometry && obj.result(length(obj.result)).variant_thermalzone == obj.variant_thermalzone
-%             else
-%                 disp(['Variant Thermal Zone number ' num2str(obj.variant_thermalzone) ' associated to Variant geometry number ' num2str(obj.variant_geometry)])
-%                 disp(' ')
-%                 thzone = obj.variant_thermalzone;
-%                 geom = obj.variant_geometry;
-%                 list_zones = [];
-%                 for ll = 1:length(obj.thermalzone(thzone).zone)
-%                     if (length(obj.thermalzone(thzone).zone(1,ll).name)>4) && strcmp (obj.thermalzone(thzone).zone(1,ll).name(1:5), 'EMPTY')
-%                     else
-%                         list_zones = [list_zones ll];
-%                     end
-%                 end
-% %                 for ll = 1:length(list_zones)
-% %                     name_rooms = [];
-% %                     for mm = 1:length(obj.thermalzone(thzone).zone(1,list_zones(ll)).rooms)
-% %                         name_rooms = [name_rooms strjoin(obj.thermalzone(thzone).zone(1,list_zones(ll)).rooms(mm)) '   '];
-% %                     end
-% %                     if obj.thermalzone(thzone).zone(1,list_zones(ll)).model == 0
-% %                         mod = 'none/temperature';
-% %                     elseif obj.thermalzone(thzone).zone(1,list_zones(ll)).model == 1
-% %                         mod = 'ideal';
-% %                     elseif obj.thermalzone(thzone).zone(1,list_zones(ll)).model == 2
-% %                         mod = '1-node';
-% %                     elseif obj.thermalzone(thzone).zone(1,list_zones(ll)).model == 3
-% %                         mod = '2-node';
-% %                     end
-% %                     disp([obj.thermalzone(thzone).zone(1,list_zones(ll)).name ': ' name_rooms ' , MODEL:' mod ', HEATED AREA: '  num2str(obj.thermalzone(thzone).zone(1,list_zones(ll)).heated_area) ' m²'])
-% %                 end
-%                 disp(['       <a href="matlab:' inputname(1) '.thermalzone(' num2str(thzone) ').plot_building(1:10,' inputname(1) '.geometry(' num2str(geom) '))">plot all the thermal zone</a>'])
-%                 disp(['       <a href="matlab:' inputname(1) '.plot_zones(' num2str(thzone) ', ' num2str(geom) ')">plot ZONES' '</a>'])
-%                 disp(['       <a href="matlab:' inputname(1) '.disp_checkmatrix(' num2str(thzone) ', ' ' 1 ' ')">check matrixes ZONES' '</a>'])
-%                 disp(['       <a href="matlab:' inputname(1) '.disp_checkmatrix(' num2str(thzone) ', ' ' 2 ' ')">check matrixes INTERSECTIONS' '</a>'])
-%                 disp('   ')
-%             end
             
             disp(' ')
             fprintf('<strong> *** GEOMETRY *** </strong>\n')
@@ -277,76 +202,6 @@ classdef BUILDING
                 disp(['       <a href="matlab:' inputname(1) '.gains(' num2str(ii) ').plot_gain()">plot gains</a>']) 
                 disp('  ')
             end
-            count_gains = [];
-%             for iii = 1:length(obj.result)
-%                 if obj.result(iii).number == 0
-%                     disp(['Variant Gains number ' num2str(obj.variant_gains) ' associated to Variant ThermalZone number ' num2str(obj.variant_thermalzone)])
-%                     disp(['       <a href="matlab:' inputname(1) '.gains(' num2str(obj.variant_gains) ').calculate_gain(' inputname(1) ', ' num2str(obj.variant_thermalzone) ')">info gains</a>'])
-%                     count = 0;
-%                     for ll = 1:length(obj.thermalzone(obj.variant_thermalzone).zone)
-%                         if (length(obj.thermalzone(obj.variant_thermalzone).zone(1,ll).name)>4) && strcmp (obj.thermalzone(obj.variant_thermalzone).zone(1,ll).name(1:5), 'EMPTY')
-%                         else
-%                             for jj = 1:length(obj.gains(obj.variant_gains).gain_to_zone)
-%                                 if obj.gains(obj.variant_gains).gain_to_zone(jj).number_of_zone == ll
-%                                     disp(['Zone name "' obj.thermalzone(obj.variant_thermalzone).zone(ll).name '" -> Internal Gains: ' obj.gains(obj.variant_gains).gain_to_zone(jj).name_gains])
-%                                     count = jj;
-%                                 end
-%                             end
-%                             if count == 0 
-%                                 if size(obj.thermalzone(obj.variant_thermalzone).zone(ll).name,2)>4 && strcmp(obj.thermalzone(obj.variant_thermalzone).zone(ll).name(1:5), 'EMPTY')
-%                                 else
-%                                     disp(['Zone name "' obj.thermalzone(obj.variant_thermalzone).zone(ll).name '" -> Internal Gains: none'])
-%                                 end
-%                             end
-%                         end
-%                     end
-%                 else
-%                     if ismember(obj.result(iii).variant_gains,count_gains) == 0
-%                         count_gains = [count_gains obj.result(iii).variant_gains];
-%                         disp(['Variant Gains number ' num2str(obj.result(iii).variant_gains) ' associated to Variant ThermalZone number ' num2str(obj.result(iii).variant_thermalzone)])
-%                         thzone = obj.result(iii).variant_thermalzone;
-%                         disp(['       <a href="matlab:' inputname(1) '.gains(' num2str(obj.result(iii).variant_gains) ').calculate_gain(' inputname(1) ', ' num2str(thzone) ')">info gains</a>'])
-%                         for ll = 1:length(obj.thermalzone(obj.result(iii).variant_thermalzone).zone)
-%                             count = 0;
-%                             for jj = 1:length(obj.gains(obj.result(iii).variant_gains).gain_to_zone)
-%                                 if obj.gains(obj.result(iii).variant_gains).gain_to_zone(jj).number_of_zone == ll
-%                                     disp(['Zone name "' obj.thermalzone(obj.result(iii).variant_thermalzone).zone(ll).name '" -> Internal Gains: ' obj.gains(obj.result(iii).variant_gains).gain_to_zone(jj).name_gains])
-%                                     count = jj;
-%                                 end
-%                             end
-%                             if count == 0 
-%                                 if size(obj.thermalzone(obj.result(iii).variant_thermalzone).zone(ll).name,2)>4 && strcmp(obj.thermalzone(obj.result(iii).variant_thermalzone).zone(ll).name(1:5), 'EMPTY')
-%                                 else
-%                                     disp(['Zone name "' obj.thermalzone(obj.result(iii).variant_thermalzone).zone(ll).name '" -> Internal Gains: none'])
-%                                 end
-%                             end
-%                         end
-%                         disp('    ')
-%                     end
-%                 end
-%             end
-%             if obj.result(length(obj.result)).variant_gains == obj.variant_gains && obj.result(length(obj.result)).variant_thermalzone == obj.variant_thermalzone
-%             else
-%                 disp(['Variant Gains number ' num2str(obj.variant_gains) ' associated to Variant ThermalZone number ' num2str(obj.variant_thermalzone)])
-%                 thzone = obj.variant_thermalzone;
-%                 disp(['       <a href="matlab:' inputname(1) '.gains(' num2str(obj.variant_gains) ').calculate_gain(' inputname(1) ', ' num2str(thzone) ')">info gains</a>'])
-%                 for ll = 1:length(obj.thermalzone(obj.variant_thermalzone).zone)
-%                     count = 0;
-%                     for jj = 1:length(obj.gains(obj.variant_gains).gain_to_zone)
-%                         if obj.gains(obj.variant_gains).gain_to_zone(jj).number_of_zone == ll
-%                             disp(['Zone name "' obj.thermalzone(obj.variant_thermalzone).zone(ll).name '" -> Internal Gains: ' obj.gains(obj.variant_gains).gain_to_zone(jj).name_gains])
-%                             count = jj;
-%                         end
-%                     end
-%                     if count == 0 
-%                         if size(obj.thermalzone(obj.variant_thermalzone).zone(ll).name,2)>4 && strcmp(obj.thermalzone(obj.variant_thermalzone).zone(ll).name(1:5), 'EMPTY')
-%                         else
-%                             disp(['Zone name "' obj.thermalzone(obj.variant_thermalzone).zone(ll).name '" -> Internal Gains: none'])
-%                         end
-%                     end
-%                 end
-%                 disp('    ')
-%             end
             
             disp(' ')
             fprintf('<strong> *** BOUNDARY *** </strong>\n')
@@ -386,12 +241,6 @@ classdef BUILDING
                     end
                     disp(['   Number of zones: ' num2str(length(obj.result(ii).list_zones))])
                     disp('  VARIANT  ')
-%                     disp(['    Variant Geometry number ' num2str(obj.result(ii).variant_geometry)])
-%                     disp(['    Variant Construction number ' num2str(obj.result(ii).variant_construction)])
-%                     disp(['    Variant Thermalzone number ' num2str(obj.result(ii).variant_thermalzone)])
-%                     disp(['    Variant Boundary number ' num2str(obj.result(ii).variant_boundary)])
-%                     disp(['    Variant Gains number ' num2str(obj.result(ii).variant_gains)])
-%                     disp(['    Variant HVAC number ' num2str(obj.result(ii).variant_hvac)])
                     disp(['    Variant: Geometry: ' num2str(obj.result(ii).variant_geometry) ', Construction: ' num2str(obj.result(ii).variant_construction) ', Thermalzone: ' num2str(obj.result(ii).variant_thermalzone) ', Boundary: ' num2str(obj.result(ii).variant_boundary) ', Gains: ' num2str(obj.result(ii).variant_gains) ', HVAC: ' num2str(obj.result(ii).variant_hvac) ''])
                     disp('  FUNCTIONS  ')
                     disp(['       <a href="matlab:' inputname(1) '.result.info(' num2str(obj.result(ii).number) ',' inputname(1) ');">info results</a>     <a href="matlab:' inputname(1) '.result.plot(' num2str(obj.result(ii).number) ',' inputname(1) ');">plot results</a>'])    
@@ -414,6 +263,8 @@ classdef BUILDING
         function plot(obj)
             % to plot the geometry of building
             obj.thermalzone.plot_building(1:length(obj.thermalzone.zone),obj.geometry)
+            rotate3d on
+            axis tight
         end
         
         function obj = add_variant_geometry(obj, num, geom)
@@ -562,7 +413,7 @@ classdef BUILDING
                 ind = [];
                 for ii = 1:length(obj.result)
                     if obj.result(ii).number == number
-                        error(['result number ' num2str(obj.result(ii).number) ' already existing, if you want to overwrite the result, add a 1 as 3rd input of add_simulation' ])
+                        error(['Result number ' num2str(obj.result(ii).number) ' already existing, if you want to overwrite the result, add a 1 as 3rd input of add_simulation' ])
                         ind = ii;
                         break
                     end
@@ -570,7 +421,11 @@ classdef BUILDING
             
             % to overwrite a result
             elseif nargin == 8
-                ind = [];
+                if overwrite
+                    ind = [];
+                else
+                    error(['Result number ' num2str(obj.result(ii).number) ' already existing!'])
+                end
             end
             
             % to run the simulation and save the result in the actual building object
@@ -619,7 +474,11 @@ classdef BUILDING
             
             % to overwrite a result
             elseif nargin == 4
-                ind = [];
+                if overwrite
+                    ind = [];
+                else
+                    error(['Result number ' num2str(obj.result(ii).number) ' already existing!'])
+                end
             end
             
             % to run the simulation and save the result in the actual building object

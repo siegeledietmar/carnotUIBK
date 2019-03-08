@@ -2,7 +2,7 @@
 % ***********************************************************************
 % This file is part of the uibkCARNOT Blockset.
 % 
-% Copyright (c) 2016-2018, University of Innsbruck, Unit for Energy 
+% Copyright (c) 2016-2019, University of Innsbruck, Unit for Energy 
 % Efficient Building.
 %   Dietmar Siegele     dietmar.siegele@uibk.ac.at
 %   Eleonora Leonardi   eleonora.leonardi@uibk.ac.at
@@ -37,18 +37,20 @@
 % THE POSSIBILITY OF SUCH DAMAGE.
 % **********************************************************************
 % 
-%% carnotUIBK version 1.3
-% Copyright (c) 2016-2018, University of Innsbruck, Unit for Energy 
+%% carnotUIBK version 2.0
+% Copyright (c) 2016-2019, University of Innsbruck, Unit for Energy 
 % Efficient Building.
 %
 % Author    Date         Description
 % DS,EL     2017-03-12   initial revision v1.0
+% DS,EL	    2019-01-24   updates for GUI v2.0
 
 %%
 classdef GAINS
     % GAINS
     
     properties
+        name = 'new gains';
         gain = [];
         gain_to_zone = [];
     end
@@ -69,7 +71,7 @@ classdef GAINS
             % 4 ... time profile for the gains
             % 5 ... values1 =  for model 0, type 0 e 1: profile of people, for all the others: required profile
             % 6 ... values2 =  for model 0, type 0 e 1: activity profile
-            % 7 ... control = 1; if gain s activated
+            % 7 ... control = 2; if gain is activated
             
             ind = [];
             for jj = 1:length(obj.gain)
@@ -83,7 +85,8 @@ classdef GAINS
                 values1 = [values1 values1];
                 values2 = [values2 values2];
             end
-            % check if room si already existing
+            
+            % check if gain is already existing
             if ind
                 error(['gain ' name ' already existing!'])
             else
@@ -94,8 +97,7 @@ classdef GAINS
         function obj = assign_gain_to_zone(obj, name_gains, number_zone)
             % to assign the gain profile to the zone
             % 1 ... name of the gain profile (gain.name)
-            % 2 ... number of the zone which you want to assign the profile
-            % to
+            % 2 ... number of the zone which you want to assign the profile to
             obj.gain_to_zone = [obj.gain_to_zone GAIN_TO_ZONE(name_gains, number_zone)];
         end
         
@@ -211,15 +213,16 @@ classdef GAINS
         
         function obj = gains_to_excel(obj, name_xls, building, variant_gains)
             
-            vollpfad = [pwd '\' name_xls]
-            
+            vollpfad = [pwd '\' name_xls];
+                
             if exist(vollpfad, 'file')
                 warning('Existing Excel file used.')
             else
-                warning('Excel file not existing, using template!')
-                copyfile('building_TEMPLATE.xlsx',name_xls);
+                rootpath = fileparts(which('carnotUIBK'));
+                copyfile([rootpath '\building_TEMPLATE.xlsx'], vollpfad);
+                warning('New Excel file generated.')
             end
-
+            
             % modify excel for write weather
             Excel = actxserver('Excel.Application');
             Excel.Workbooks.Open(vollpfad);
@@ -361,9 +364,9 @@ classdef GAINS
                     index_raw_area = 7;
                     index_column_area = 1;
             end
-            timevalues = [0 24]*3600;
-            values1 = data{index_raw_intloads,index_column_intloads}; % number of people
-            values2 = values1; % activity
+            timevalues = [0:24]*3600;
+            values1 = ones(1,24)*data{index_raw_intloads,index_column_intloads};
+            values2 = values1; % not used
             control = 2;
             obj = obj.add_gain('Person_W/m²_from_PHPP', 0, 2, timevalues, values1, values2, control);
         end

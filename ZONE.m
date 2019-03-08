@@ -2,7 +2,7 @@
 % ***********************************************************************
 % This file is part of the uibkCARNOT Blockset.
 % 
-% Copyright (c) 2016-2018, University of Innsbruck, Unit for Energy 
+% Copyright (c) 2016-2019, University of Innsbruck, Unit for Energy 
 % Efficient Building.
 %   Dietmar Siegele     dietmar.siegele@uibk.ac.at
 %   Eleonora Leonardi   eleonora.leonardi@uibk.ac.at
@@ -37,12 +37,13 @@
 % THE POSSIBILITY OF SUCH DAMAGE.
 % **********************************************************************
 % 
-%% carnotUIBK version 1.3
-% Copyright (c) 2016-2018, University of Innsbruck, Unit for Energy 
+%% carnotUIBK version 2.0
+% Copyright (c) 2016-2019, University of Innsbruck, Unit for Energy 
 % Efficient Building.
 %
 % Author    Date         Description
 % DS,EL     2017-03-12   initial revision v1.0
+% DS,EL	    2019-01-24   updates for GUI v2.0
 
 %%
 classdef ZONE
@@ -55,7 +56,7 @@ classdef ZONE
         number = 0;
         name = '';                  % name of room
         rooms = {};                 % rooms
-        model = -1;                 % 0 ... none/temperature, 1 ... ideal, 2 ... 1-node, 3 ... 2-node, 4 ... 2-node wo mass
+        model = -1;                 % 0 ... none/temperature, 1 ... ideal, 2 ... 1-node, 3 ... 2-node, 4 ... 1-node wo massbalance
         heated_area = 0;            % heated area [m²]
         heated_volume = 0;          % heated volume [m³]
         n50 = 0;                    % n50 value [1/h]

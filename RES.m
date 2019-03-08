@@ -2,7 +2,7 @@
 % ***********************************************************************
 % This file is part of the uibkCARNOT Blockset.
 % 
-% Copyright (c) 2016-2018, University of Innsbruck, Unit for Energy 
+% Copyright (c) 2016-2019, University of Innsbruck, Unit for Energy 
 % Efficient Building.
 %   Dietmar Siegele     dietmar.siegele@uibk.ac.at
 %   Eleonora Leonardi   eleonora.leonardi@uibk.ac.at
@@ -37,12 +37,13 @@
 % THE POSSIBILITY OF SUCH DAMAGE.
 % **********************************************************************
 % 
-%% carnotUIBK version 1.3
-% Copyright (c) 2016-2018, University of Innsbruck, Unit for Energy 
+%% carnotUIBK version 2.0
+% Copyright (c) 2016-2019, University of Innsbruck, Unit for Energy 
 % Efficient Building.
 %
 % Author    Date         Description
 % DS,EL     2017-03-12   initial revision v1.0
+% DS,EL	    2019-01-24   updates for GUI v2.0
 
 %%
 classdef RES
@@ -582,7 +583,7 @@ classdef RES
                             plot(AIB(resultfile.results_building.list_zones(ii)).Ts)
                             grid on
                             title(['Sensitive Temperature, ' num2str(resultfile.results_building.building_saved.thermalzone.zone(resultfile.results_building.list_zones(ii)).name)]);
-                            ylabel('T_s (°C)')
+                            ylabel('T_s [°C]')
                             xlim([datetime('31-Dec-2014 23:59:00') datetime('01-Jan-2016 00:00:00')])
                             temperature_s(:,ii) = eval(['AIB(resultfile.results_building.list_zones(ii)).Ts']);
                             temperature_r(:,ii) = eval(['AIB(resultfile.results_building.list_zones(ii)).Tr']);
@@ -622,7 +623,7 @@ classdef RES
                             title(['Sensitive, Radiative and Convective Temperature, ' num2str(resultfile.results_building.building_saved.thermalzone.zone(resultfile.results_building.list_zones(ii)).name)]);
                             grid on
                             legend('T_s', 'T_r', 'T_c','Orientation','horizontal')
-                            ylabel('Temperature (°C)')
+                            ylabel('Temperature [°C]')
                             
                             figure
                             pressure = 101325; %Pa
@@ -678,7 +679,7 @@ classdef RES
                     end
                     
                     xlim([datetime('31-Dec-2014 23:59:00') datetime('01-Jan-2016 00:00:00')])
-                    ylabel('Temperature (°C)')
+                    ylabel('Temperature [°C]')
                     grid on
                     title ('Sensitive Temperature, every zone')
                     legend(text_legend,'Orientation','horizontal')
@@ -1625,8 +1626,8 @@ classdef RES
                             hold on
                             plot(resultfile.results_building.results_BOUNDARY.power.WDB.Temperature_Ambient.Data(resultfile.results_building.results_BOUNDARY.power.WDB.Temperature_Ambient.Time > 365*3600*24)', Pow_H_tot/area,'dk');
                             title('Heating Load Sorted by Ambient Temperature')
-                            xlabel('Ambient Temperature (°C)')
-                            ylabel('Heating Power (W/m^2)')
+                            xlabel('Ambient Temperature [°C]')
+                            ylabel('Heating Power [W/m^2]')
                             grid on
                         end
                         
@@ -1642,8 +1643,8 @@ classdef RES
                         hold on
                         plot(teta_amb_d1_hourly_, Pow_H_tot_hourly/area,'dk');
                         title('Heating Load Sorted by Ambient Temperature (hourly values)')
-                        xlabel('Ambient Temperature (°C)')
-                        ylabel('Heating Power (W/m^2)')
+                        xlabel('Ambient Temperature [°C]')
+                        ylabel('Heating Power [W/m^2]')
                         grid on
                         
                         if nargin == 3
@@ -1651,8 +1652,8 @@ classdef RES
                             hold on
                             plot(teta_amb_d1_daily, Pow_H_tot_daily/area,'dk');
                             title('Heating Load Sorted by Ambient Temperature (daily values)')
-                            xlabel('Ambient Temperature (°C)')
-                            ylabel('Heating Power (W/m^2)')
+                            xlabel('Ambient Temperature [°C]')
+                            ylabel('Heating Power [W/m^2]')
                             grid on
                         end
 
@@ -1664,7 +1665,7 @@ classdef RES
                         hold on
                         plot(linspace(0,8760,length(Pow_H_tot_hourly)),sort(Pow_H_tot_hourly/area,'descend'),'Color','b','LineStyle','-','Marker','None','LineWidth',2);
                         title('Heating Load sorted by the Hours')
-                        ylabel('Heating Power (W/m^2)')
+                        ylabel('Heating Power [W/m^2]')
                         xlabel('Time / [h]')
                         grid on
                         
@@ -1681,8 +1682,8 @@ classdef RES
                             hold on
                             plot(resultfile.results_building.results_BOUNDARY.power.WDB.Temperature_Ambient.Data(resultfile.results_building.results_BOUNDARY.power.WDB.Temperature_Ambient.Time > 365*3600*24)', Pow_C_tot/area,'dk');
                             title('Cooling Load Sorted by Ambient Temperature')
-                            xlabel('Ambient Temperature (°C)')
-                            ylabel('Cooling Power (W/m^2)')
+                            xlabel('Ambient Temperature [°C]')
+                            ylabel('Cooling Power [W/m^2]')
                             grid on
                         end 
                         
@@ -1691,8 +1692,8 @@ classdef RES
                             hold on
                             plot(teta_amb_d1_hourly_, Pow_C_tot_hourly/area,'dk');
                             title('Cooling Load Sorted by Ambient Temperature (hourly values)')
-                            xlabel('Ambient Temperature (°C)')
-                            ylabel('Cooling Power (W/m^2)')
+                            xlabel('Ambient Temperature [°C]')
+                            ylabel('Cooling Power [W/m^2]')
                             grid on
                         end
                         
@@ -1701,8 +1702,8 @@ classdef RES
                             hold on
                             plot(teta_amb_d1_daily, Pow_C_tot_daily/area,'dk');
                             title('Cooling Load Sorted by Ambient Temperature (daily values)')
-                            xlabel('Ambient Temperature (°C)')
-                            ylabel('Cooling Power (W/m^2)')
+                            xlabel('Ambient Temperature [°C]')
+                            ylabel('Cooling Power [W/m^2]')
                             grid on
                         end
                         
@@ -1711,7 +1712,7 @@ classdef RES
                             hold on
                             plot(linspace(0,8760,length(Pow_C_tot_hourly)),sort(Pow_C_tot_hourly/area,'descend'),'Color','b','LineStyle','-','Marker','None','LineWidth',2);
                             title('Cooling Load sorted by the Hours')
-                            ylabel('Cooling Power (W/m^2)')
+                            ylabel('Cooling Power [W/m^2]')
                             xlabel('Time / [h]')
                             grid on;
                         end
@@ -1781,7 +1782,7 @@ classdef RES
                         legend('T_{mean,building}','T_{ambient}','T_{ground}','Orientation','horizontal')
 
                         title('Temperature')
-                        ylabel = 'T (°C)';
+                        ylabel = 'T [°C]';
                     end
                 end
             end
@@ -1822,31 +1823,25 @@ classdef RES
                             grid on
                             bar(teta_i_count,anz_teta_i_count,.5)
                             title(['Temperature Arranged by the hours, ' num2str(resultfile.results_building.building_saved.thermalzone.zone(resultfile.results_building.list_zones(ii)).name)]);
-                            xlabel('Temperature (°C)')
-                            ylabel('Hours')
+                            xlabel('Temperature [°C]')
+                            ylabel('Time [h]')
                             grid on
                             set(gca,'Xlim',[18,28])
-                            sorted_temp_1(ii) = sort(AIB(resultfile.results_building.list_zones(ii)).Ts.Data(AIB(resultfile.results_building.list_zones(ii)).Ts.Time > 365*24*3600),'descend');
-                            sorted_time_1(ii) = linspace(0,24*365,length(AIB(resultfile.results_building.list_zones(ii)).Ts.Data(AIB(resultfile.results_building.list_zones(ii)).Ts.Time > 365*24*3600)));
-%                             teta_i_count_2 = [15:.1:30];
-%                             
-%                             for jj = 1:length(teta_i_count_2)
-%                                 anz_teta_i_count_2(jj) = (length(find(round(AIB(resultfile.results_building.list_zones(ii)).Ts.Data(AIB(resultfile.results_building.list_zones(ii)).Ts.Time > 365*24*3600)*2)/2==teta_i_count_2(jj))));
-%                             end
-%                             anz_teta_i_count_2 = anz_teta_i_count_2/(3600/(AIB(resultfile.results_building.list_zones(ii)).Ts.Time(2)-AIB(resultfile.results_building.list_zones(ii)).Ts.Time(1)));
+                            sorted_temp_1(:,ii) = sort(AIB(resultfile.results_building.list_zones(ii)).Ts.Data(AIB(resultfile.results_building.list_zones(ii)).Ts.Time > 365*24*3600),'descend');
+                            sorted_time_1(:,ii) = linspace(0,24*365,length(AIB(resultfile.results_building.list_zones(ii)).Ts.Data(AIB(resultfile.results_building.list_zones(ii)).Ts.Time > 365*24*3600)));
                         end
                         for ii = 1:length(resultfile.results_building.list_zones)
                             figure
                             grid on
-                            sorted_temp_2(ii) = sort(AIB(resultfile.results_building.list_zones(ii)).Ts.Data(AIB(resultfile.results_building.list_zones(ii)).Ts.Time > 365*24*3600),'descend');
-                            sorted_time_2(ii) = linspace(0,24*365,length(AIB(resultfile.results_building.list_zones(ii)).Ts.Data(AIB(resultfile.results_building.list_zones(ii)).Ts.Time > 365*24*3600)));
+                            sorted_temp_2(:,ii) = sort(AIB(resultfile.results_building.list_zones(ii)).Ts.Data(AIB(resultfile.results_building.list_zones(ii)).Ts.Time > 365*24*3600),'descend');
+                            sorted_time_2(:,ii) = linspace(0,24*365,length(AIB(resultfile.results_building.list_zones(ii)).Ts.Data(AIB(resultfile.results_building.list_zones(ii)).Ts.Time > 365*24*3600)));
                             plot(sort(AIB(resultfile.results_building.list_zones(ii)).Ts.Data(AIB(resultfile.results_building.list_zones(ii)).Ts.Time > 365*24*3600),'descend'), linspace(0,24*365,length(AIB(resultfile.results_building.list_zones(ii)).Ts.Data(AIB(resultfile.results_building.list_zones(ii)).Ts.Time > 365*24*3600))))
                             %plot(AIB(resultfile.results_building.list_zones(ii)).Ts.Data(AIB(resultfile.results_building.list_zones(ii)).Ts.Time > 365*24*3600)),anz_teta_i_count_2)))
                             title(['Temperature Arranged by the hours, ' num2str(resultfile.results_building.building_saved.thermalzone.zone(resultfile.results_building.list_zones(ii)).name)]);
-                            xlabel('Temperature (°C)')
-                            ylabel('Time (hours)')
+                            xlabel('Temperature [°C]')
+                            ylabel('Time [h]')
                             grid on
-                            set(gca,'Xlim',[18,28])
+                            set(gca,'Ylim',[0,8760])
                         end
                     end
                 end
@@ -2068,7 +2063,7 @@ classdef RES
                     plot(Pow.H_hourly(resultfile.results_building.list_zones(ii)))
                     title(['Heating Power, ' num2str(resultfile.results_building.building_saved.thermalzone.zone(resultfile.results_building.list_zones(ii)).name)]);
                     xlabel('Time')
-                    ylabel('Power (W)')
+                    ylabel('Power [W]')
                     grid on
                     xlim([datetime('31-Dec-2014 23:59:00') datetime('01-Jan-2016 00:00:00')])
                 end
@@ -2077,7 +2072,7 @@ classdef RES
                 plot(Pow.H_tot_hourly)
                 title(['Total Heating Power']);
                 xlabel('Time')
-                ylabel('Power (W)')
+                ylabel('Power [W]')
                 grid on
                 xlim([datetime('31-Dec-2014 23:59:00') datetime('01-Jan-2016 00:00:00')])
 
@@ -2086,7 +2081,7 @@ classdef RES
                     plot(Pow.C_hourly(resultfile.results_building.list_zones(ii)))
                     title(['Cooling Power, ' num2str(resultfile.results_building.building_saved.thermalzone.zone(resultfile.results_building.list_zones(ii)).name)]);
                     xlabel('Time')
-                    ylabel('Power (W)')
+                    ylabel('Power [W]')
                     grid on
                     xlim([datetime('31-Dec-2014 23:59:00') datetime('01-Jan-2016 00:00:00')])
                 end
@@ -2095,7 +2090,7 @@ classdef RES
                 plot(Pow.C_tot_hourly)
                 title(['Total Cooling Power']);
                 xlabel('Time')
-                ylabel('Power (W)')
+                ylabel('Power [W]')
                 grid on
                 xlim([datetime('31-Dec-2014 23:59:00') datetime('01-Jan-2016 00:00:00')])
             end

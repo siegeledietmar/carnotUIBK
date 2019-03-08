@@ -2,7 +2,7 @@
 % ***********************************************************************
 % This file is part of the uibkCARNOT Blockset.
 % 
-% Copyright (c) 2016-2018, University of Innsbruck, Unit for Energy 
+% Copyright (c) 2016-2019, University of Innsbruck, Unit for Energy 
 % Efficient Building.
 %   Dietmar Siegele     dietmar.siegele@uibk.ac.at
 %   Eleonora Leonardi   eleonora.leonardi@uibk.ac.at
@@ -37,13 +37,14 @@
 % THE POSSIBILITY OF SUCH DAMAGE.
 % **********************************************************************
 % 
-%% carnotUIBK version 1.3
-% Copyright (c) 2016-2018, University of Innsbruck, Unit for Energy 
+%% carnotUIBK version 2.0
+% Copyright (c) 2016-2019, University of Innsbruck, Unit for Energy 
 % Efficient Building.
 %
 % Author    Date         Description
 % DS,EL     2017-03-12   initial revision v1.0
 % EL        2018-05-25   v1.3: prepare for the import from Excel
+% DS,EL	    2019-01-24   updates for GUI v2.0
 
 %%
 classdef STRUCTURE
@@ -78,7 +79,19 @@ classdef STRUCTURE
                 if isstruct(parameter) %30_01_2018
                     obj.parameter = parameter;
                 else
-                    obj.parameter = load(parameter);
+                    if ~isempty(parameter)
+                        try
+                            obj.parameter = load(parameter);
+                        catch
+                            try
+                                obj.parameter = parameter;
+                            catch
+                                obj.parameter = [];
+                            end
+                        end
+                    else
+                        obj.parameter = [];
+                    end
                 end
                 obj.type = obj.parameter.type;
                 obj.model = obj.parameter.model;
@@ -100,7 +113,7 @@ classdef STRUCTURE
             % to plot the structures
             % number of structure that you want to plot
             if nargin == 1
-                for ii = 1: length(obj)
+                for ii = 1:length(obj)
                     % check if d is existing
                     if isfield(obj(ii).parameter,'d')  
                         if length(obj(ii).parameter.d) == 1 && (obj(ii).parameter.d) == 1
@@ -110,7 +123,7 @@ classdef STRUCTURE
                                 shape(jj+1) = shape(jj) + obj(ii).parameter.d(jj);
                             end
                             % open figure
-                            figure, hold all
+                                f1 = figure; hold all
                                 % if colors are existing
                                 if isfield(obj(ii).parameter,'layers_colors')
                                     for jj = 1:length(obj(ii).parameter.d)
@@ -263,7 +276,7 @@ classdef STRUCTURE
                 else
                     disp(['U value glass: ' num2str(obj(ii).parameter.U_g) ' W/(m²K),  U value frame: ' num2str(obj(ii).parameter.U_f) ' W/(m²K)'])
                 end
-                if nargin == 2
+%                 if nargin == 2
                     if obj(ii).type == 0 || obj(ii).type == 2
                         disp(['Emission: ' num2str(obj(ii).emission_1) ', Emission: ' num2str(obj(ii).emission_2) ', Absorbtion: ' num2str(obj(ii).absorption_2) ])
                         if isfield(obj(ii).parameter, 'tau')
@@ -281,7 +294,7 @@ classdef STRUCTURE
                             end
                         end
                     end
-                end
+%                 end
                 disp('   ')
             end
         end

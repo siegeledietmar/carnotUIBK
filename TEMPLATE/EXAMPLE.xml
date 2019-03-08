@@ -3297,7 +3297,7 @@
           </CartesianPoint>
         </PolyLoop>
       </PlanarGeometry>
-      <Opening id="Sub_Surface_5" openingType="NonSlidingDoor" constructionIdRef="door_out">
+      <Opening id="Sub_Surface_5" openingType="NonSlidingDoor" constructionIdRef="wall_out">
         <RectangularGeometry>
           <Azimuth>30</Azimuth>
           <CartesianPoint>
@@ -4533,7 +4533,7 @@
           </CartesianPoint>
         </PolyLoop>
       </PlanarGeometry>
-      <Opening id="Sub_Surface_4" openingType="NonSlidingDoor" constructionIdRef="door_out">
+      <Opening id="Sub_Surface_4" openingType="NonSlidingDoor" constructionIdRef="wall_out">
         <RectangularGeometry>
           <Azimuth>30</Azimuth>
           <CartesianPoint>
@@ -5885,7 +5885,7 @@
           </CartesianPoint>
         </PolyLoop>
       </PlanarGeometry>
-      <Opening id="Sub_Surface_139" openingType="NonSlidingDoor" constructionIdRef="door_out">
+      <Opening id="Sub_Surface_139" openingType="NonSlidingDoor" constructionIdRef="wall_out">
         <RectangularGeometry>
           <Azimuth>30</Azimuth>
           <CartesianPoint>
@@ -6737,7 +6737,7 @@
           </CartesianPoint>
         </PolyLoop>
       </PlanarGeometry>
-      <Opening id="Sub_Surface_82" openingType="NonSlidingDoor" constructionIdRef="door_out">
+      <Opening id="Sub_Surface_82" openingType="NonSlidingDoor" constructionIdRef="wall_out">
         <RectangularGeometry>
           <Azimuth>300</Azimuth>
           <CartesianPoint>
@@ -10965,7 +10965,7 @@
           </CartesianPoint>
         </PolyLoop>
       </PlanarGeometry>
-      <Opening id="Sub_Surface_3" openingType="NonSlidingDoor" constructionIdRef="door_out">
+      <Opening id="Sub_Surface_3" openingType="NonSlidingDoor" constructionIdRef="wall_out">
         <RectangularGeometry>
           <Azimuth>30</Azimuth>
           <CartesianPoint>
@@ -11935,7 +11935,7 @@
           </CartesianPoint>
         </PolyLoop>
       </PlanarGeometry>
-      <Opening id="Sub_Surface_2" openingType="NonSlidingDoor" constructionIdRef="door_out">
+      <Opening id="Sub_Surface_2" openingType="NonSlidingDoor" constructionIdRef="wall_out">
         <RectangularGeometry>
           <Azimuth>30</Azimuth>
           <CartesianPoint>
@@ -12202,7 +12202,7 @@
           </CartesianPoint>
         </PolyLoop>
       </PlanarGeometry>
-      <Opening id="Sub_Surface_86" openingType="NonSlidingDoor" constructionIdRef="door_out">
+      <Opening id="Sub_Surface_86" openingType="NonSlidingDoor" constructionIdRef="wall_out">
         <RectangularGeometry>
           <Azimuth>120</Azimuth>
           <CartesianPoint>
@@ -14883,7 +14883,7 @@
           </CartesianPoint>
         </PolyLoop>
       </PlanarGeometry>
-      <Opening id="Sub_Surface_1" openingType="NonSlidingDoor" constructionIdRef="door_out">
+      <Opening id="Sub_Surface_1" openingType="NonSlidingDoor" constructionIdRef="wall_out">
         <RectangularGeometry>
           <Azimuth>30</Azimuth>
           <CartesianPoint>
@@ -16140,7 +16140,7 @@
           </CartesianPoint>
         </PolyLoop>
       </PlanarGeometry>
-      <Opening id="Sub_Surface_169" openingType="NonSlidingDoor" constructionIdRef="door_out">
+      <Opening id="Sub_Surface_169" openingType="NonSlidingDoor" constructionIdRef="wall_out">
         <RectangularGeometry>
           <Azimuth>30</Azimuth>
           <CartesianPoint>
@@ -19264,7 +19264,7 @@
           </CartesianPoint>
         </PolyLoop>
       </PlanarGeometry>
-      <Opening id="Sub_Surface_156" openingType="NonSlidingDoor" constructionIdRef="door_out">
+      <Opening id="Sub_Surface_156" openingType="NonSlidingDoor" constructionIdRef="wall_out">
         <RectangularGeometry>
           <Azimuth>30</Azimuth>
           <CartesianPoint>
@@ -19798,7 +19798,7 @@
           </CartesianPoint>
         </PolyLoop>
       </PlanarGeometry>
-      <Opening id="Sub_Surface_275" openingType="NonSlidingDoor" constructionIdRef="door_out">
+      <Opening id="Sub_Surface_275" openingType="NonSlidingDoor" constructionIdRef="wall_out">
         <RectangularGeometry>
           <Azimuth>30</Azimuth>
           <CartesianPoint>
@@ -20216,7 +20216,7 @@
           </CartesianPoint>
         </PolyLoop>
       </PlanarGeometry>
-      <Opening id="Sub_Surface_172" openingType="NonSlidingDoor" constructionIdRef="door_out">
+      <Opening id="Sub_Surface_172" openingType="NonSlidingDoor" constructionIdRef="wall_out">
         <RectangularGeometry>
           <Azimuth>120</Azimuth>
           <CartesianPoint>
@@ -20416,7 +20416,7 @@
           </CartesianPoint>
         </PolyLoop>
       </PlanarGeometry>
-      <Opening id="Sub_Surface_238" openingType="NonSlidingDoor" constructionIdRef="door_out">
+      <Opening id="Sub_Surface_238" openingType="NonSlidingDoor" constructionIdRef="wall_out">
         <RectangularGeometry>
           <Azimuth>300</Azimuth>
           <CartesianPoint>
@@ -20606,7 +20606,7 @@
           </CartesianPoint>
         </PolyLoop>
       </PlanarGeometry>
-      <Opening id="Sub_Surface_189" openingType="NonSlidingDoor" constructionIdRef="door_out">
+      <Opening id="Sub_Surface_189" openingType="NonSlidingDoor" constructionIdRef="wall_out">
         <RectangularGeometry>
           <Azimuth>300</Azimuth>
           <CartesianPoint>
@@ -21424,7 +21424,7 @@
           </CartesianPoint>
         </PolyLoop>
       </PlanarGeometry>
-      <Opening id="Sub_Surface_184" openingType="NonSlidingDoor" constructionIdRef="door_out">
+      <Opening id="Sub_Surface_184" openingType="NonSlidingDoor" constructionIdRef="wall_out">
         <RectangularGeometry>
           <Azimuth>30</Azimuth>
           <CartesianPoint>
@@ -21624,7 +21624,7 @@
           </CartesianPoint>
         </PolyLoop>
       </PlanarGeometry>
-      <Opening id="Sub_Surface_191" openingType="NonSlidingDoor" constructionIdRef="door_out">
+      <Opening id="Sub_Surface_191" openingType="NonSlidingDoor" constructionIdRef="wall_out">
         <RectangularGeometry>
           <Azimuth>30</Azimuth>
           <CartesianPoint>
@@ -21967,7 +21967,7 @@
           </CartesianPoint>
         </PolyLoop>
       </PlanarGeometry>
-      <Opening id="Sub_Surface_253" openingType="NonSlidingDoor" constructionIdRef="door_out">
+      <Opening id="Sub_Surface_253" openingType="NonSlidingDoor" constructionIdRef="wall_out">
         <RectangularGeometry>
           <Azimuth>30</Azimuth>
           <CartesianPoint>
@@ -22478,7 +22478,7 @@
           </CartesianPoint>
         </PolyLoop>
       </PlanarGeometry>
-      <Opening id="Sub_Surface_273" openingType="NonSlidingDoor" constructionIdRef="door_out">
+      <Opening id="Sub_Surface_273" openingType="NonSlidingDoor" constructionIdRef="wall_out">
         <RectangularGeometry>
           <Azimuth>30</Azimuth>
           <CartesianPoint>
@@ -23740,7 +23740,7 @@
           </CartesianPoint>
         </PolyLoop>
       </PlanarGeometry>
-      <Opening id="Sub_Surface_237" openingType="NonSlidingDoor" constructionIdRef="door_out">
+      <Opening id="Sub_Surface_237" openingType="NonSlidingDoor" constructionIdRef="wall_out">
         <RectangularGeometry>
           <Azimuth>30</Azimuth>
           <CartesianPoint>
@@ -24313,7 +24313,7 @@
           </CartesianPoint>
         </PolyLoop>
       </PlanarGeometry>
-      <Opening id="Sub_Surface_243" openingType="NonSlidingDoor" constructionIdRef="door_out">
+      <Opening id="Sub_Surface_243" openingType="NonSlidingDoor" constructionIdRef="wall_out">
         <RectangularGeometry>
           <Azimuth>30</Azimuth>
           <CartesianPoint>
@@ -25079,7 +25079,7 @@
           </CartesianPoint>
         </PolyLoop>
       </PlanarGeometry>
-      <Opening id="Sub_Surface_272" openingType="NonSlidingDoor" constructionIdRef="door_out">
+      <Opening id="Sub_Surface_272" openingType="NonSlidingDoor" constructionIdRef="wall_out">
         <RectangularGeometry>
           <Azimuth>120</Azimuth>
           <CartesianPoint>
@@ -26200,8 +26200,8 @@
   <Construction id="wall_in">
     <Name>wall_in</Name>
   </Construction>
-  <Construction id="door_out">
-    <Name>door_out</Name>
+  <Construction id="wall_out">
+    <Name>wall_out</Name>
   </Construction>
   <Construction id="door_in">
     <Name>door_in</Name>

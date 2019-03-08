@@ -2,7 +2,7 @@
 % ***********************************************************************
 % This file is part of the uibkCARNOT Blockset.
 % 
-% Copyright (c) 2016-2018, University of Innsbruck, Unit for Energy 
+% Copyright (c) 2016-2019, University of Innsbruck, Unit for Energy 
 % Efficient Building.
 %   Dietmar Siegele     dietmar.siegele@uibk.ac.at
 %   Eleonora Leonardi   eleonora.leonardi@uibk.ac.at
@@ -41,44 +41,16 @@
 % THE POSSIBILITY OF SUCH DAMAGE.
 % **********************************************************************
 % 
-%% carnotUIBK version 1.3
-% Copyright (c) 2016-2018, University of Innsbruck, Unit for Energy 
+%% carnotUIBK version 2.0
+% Copyright (c) 2016-2019, University of Innsbruck, Unit for Energy 
 % Efficient Building.
 % 
 % Author    Date         Description
 % DS,EL     2017-03-12   initial revision
+% DS,EL	    2019-01-24   updates for GUI v2.0
 
-%% update thermalzone
-try
-    building.thermalzone(building.variant_thermalzone) = building.thermalzone(building.variant_thermalzone).update_thermalzone(building.geometry(building.variant_geometry),building,building.variant_gains);
-catch
-    disp('An error occured during the update of the thermalzones for the simulation.')
-end
-
-
-%% check building
-% building solar ratio
-for jj = 1:NUMBEROFZONES
-    if length(building.get_building().thermalzone.zone(jj).name) > 4 && strcmp(building.get_building().thermalzone.zone(jj).name(1:5), 'EMPTY')
-    else
-        building.get_building().thermalzone.check_solar_ratio(jj)
-    end
-end
-
-if PLOT
-    % zones
-    for jj = 1:NUMBEROFZONES
-        building.get_building().thermalzone.check_matrix(jj)
-    end
-
-    % intersections
-    for jj = 1:NUMBEROFZONES
-        for jk = (jj+1):NUMBEROFZONES
-            building.get_building().thermalzone.check_matrix(jj,jk)
-        end
-    end
-end
-
+%%
+check_building
 
 %% variant control condition matrices
 conditions_zone = (-1)*ones(NUMBEROFZONES,1);
@@ -87,7 +59,6 @@ conditions_zone_wall = (-1)*ones(NUMBEROFWALLSINZONES,4,NUMBEROFZONES);
 conditions_zone_window = (-1)*ones(NUMBEROFWINDOWSINZONES,4,NUMBEROFZONES);
 conditions_intersection_wall = (-1)*ones(NUMBEROFWALLSININTERSECTIONS,4,NUMBEROFZONES,NUMBEROFZONES);
 conditions_zone_gains = (-1)*ones(NUMBEROFGAINSINZONES,4,NUMBEROFZONES);
-
 
 %% VARIANTS for SIMULINK
 % zones
@@ -161,7 +132,6 @@ for jj = 1:size(conditions_zone,1)         % intersection 1
         end
     end
 end
-
 
 %% condition matrices
 for jj = 1:size(conditions_zone_wall,3)
@@ -237,4 +207,3 @@ for jj = 1:size(conditions_zone,1)         % intersection 1
 end
 
 clear jj jk jkk
-

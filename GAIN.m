@@ -2,7 +2,7 @@
 % ***********************************************************************
 % This file is part of the uibkCARNOT Blockset.
 % 
-% Copyright (c) 2016-2018, University of Innsbruck, Unit for Energy 
+% Copyright (c) 2016-2019, University of Innsbruck, Unit for Energy 
 % Efficient Building.
 %   Dietmar Siegele     dietmar.siegele@uibk.ac.at
 %   Eleonora Leonardi   eleonora.leonardi@uibk.ac.at
@@ -37,12 +37,13 @@
 % THE POSSIBILITY OF SUCH DAMAGE.
 % **********************************************************************
 % 
-%% carnotUIBK version 1.3
-% Copyright (c) 2016-2018, University of Innsbruck, Unit for Energy 
+%% carnotUIBK version 2.0
+% Copyright (c) 2016-2019, University of Innsbruck, Unit for Energy 
 % Efficient Building.
 %
 % Author    Date         Description
 % DS,EL     2017-03-12   initial revision v1.0
+% DS,EL	    2019-01-24   updates for GUI v2.0
 
 %%
 classdef GAIN
@@ -57,9 +58,9 @@ classdef GAIN
                                     % moisture: 0...kg/s
         timevalues = [];            % timeprofile
         timeduration = 0 ;          % timeduration of every values
-        values1 = [];               % for model 0, type 0 e 1: profile of people, for all the others: required profile
-        values2 = [];               % for model 0, type 0 e 1: activity profile
-        control = 1;                % 1 is the standard, if the gain is activated
+        values1 = [];               % for model 0, type 0 and 1: profile of people, for all the others: required profile
+        values2 = [];               % for model 0, type 0 and 1: activity profile
+        control = 2;                % 2 is the standard, if the gain is activated (1 is off)
     end
     
     methods
@@ -75,5 +76,3 @@ classdef GAIN
         end
     end 
 end
-
-
