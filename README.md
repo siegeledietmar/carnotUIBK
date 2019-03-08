@@ -16,7 +16,7 @@ Please use the version 6.0, because later versions have a bug in RC-model.
 Look [HERE](https://github.com/siegeledietmar/carnotUIBK/blob/master/CHANGELOG.md) for the Changelog!
 
 ## Licence
-Copyright (c) 2016-2018, University of Innsbruck, Unit for Energy Efficient Building.
+Copyright (c) 2016-2019, University of Innsbruck, Unit for Energy Efficient Building.
 
 Dietmar Siegele     dietmar.siegele@uibk.ac.at
 Eleonora Leonardi   eleonora.leonardi@uibk.ac.at
