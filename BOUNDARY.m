@@ -347,7 +347,7 @@ classdef BOUNDARY
             end
             
             matrix_to_write_weather = [{building.boundary(variant_boundary).weather.name} {building.boundary(variant_boundary).weather.path} {building.boundary(variant_boundary).weather.latitude} {''} {''} {''} {building.boundary(variant_boundary).weather.longitude} {''} {''} {''} ...
-                {building.boundary(variant_boundary).weather.latitude_timezone} {''} {''} {''}]; %I don t know how to do with the name of the txt and the time
+                {building.boundary(variant_boundary).weather.latitude_timezone} {''} {''} {''}];
            
             xlswrite1(name_xls,matrix_to_write_ground,'Boundary',['B4:O' num2str(count_ground+3)]) 
             xlswrite1(name_xls,matrix_to_write_neigbour,'Boundary',['B14:O' num2str(count_neighbour+13)]) 
