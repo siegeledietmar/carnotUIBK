@@ -1,4 +1,4 @@
-# carnotUIBK
+# carnotUIBK v.2.1.0
 MATLAB Simulink Toolbox for creating a thermal building simulation.
 The [Toolbox CARNOT](https://de.mathworks.com/matlabcentral/fileexchange/68890-carnot-toolbox) is required!
 Please use the version 6.0, because later versions have a bug in RC-model.
