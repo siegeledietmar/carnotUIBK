@@ -575,10 +575,13 @@ classdef GEOMETRY
                     raw_str_excel(1:3,:) = [];
                     raw_room_excel(1:6,:) = [];
                     raw_windoors_excel(1:3,:) = [];
-
+                    
+                    ProgramInfo = '';
                     try
                         if strcmp(name_XML.DocumentHistory.ProgramInfo.Attributes.id,'openstudio')
                             ProgramInfo = name_XML.DocumentHistory.ProgramInfo.Attributes.id;
+                        elseif strcmp(name_XML.DocumentHistory.ProgramInfo.Attributes.id,'aim0004')
+                            ProgramInfo = 'revit';
                         else
                             ProgramInfo = '';
                         end
@@ -593,6 +596,13 @@ classdef GEOMETRY
                         walls_list = [];
 
                         name_room = name_XML.Campus.Building.Space{jk}.Attributes.id;
+                        if strcmp(ProgramInfo,'openstudio')
+                            name_room_text = name_XML.Campus.Building.Space{jk}.Attributes.id;
+                        elseif strcmp(ProgramInfo,'revit')
+                            name_room_text = name_XML.Campus.Building.Space{jk}.Name.Text;
+                        else
+                            name_room_text = name_XML.Campus.Building.Space{jk}.Attributes.id;
+                        end
                         if strcmp(name_room,'') || strcmp(name_room,'Shading_Surface_Group_1')
                             return
                         end
@@ -793,7 +803,13 @@ classdef GEOMETRY
                                                 boundary_wa = 'AMBIENT';
                                         end
                                         try
-                                            construction_wa = name_XML.Campus.Surface{jjk}.Attributes.constructionIdRef;
+                                            if strcmp(ProgramInfo,'openstudio')
+                                                construction_wa = name_XML.Campus.Surface{jjk}.Attributes.constructionIdRef;
+                                            elseif strcmp(ProgramInfo,'revit')
+                                                construction_wa = name_XML.Campus.Surface{jjk}.CADObjectId.Text;
+                                            else
+                                                construction_wa = name_XML.Campus.Surface{jjk}.Attributes.constructionIdRef;
+                                            end
                                         catch
                                             warning(['No construction definied for surface ' name_XML.Campus.Surface{jjk}.Attributes.id])
                                             construction_wa = '';
@@ -880,7 +896,13 @@ classdef GEOMETRY
                                                         if length(name_XML.Campus.Surface{jjk}.Opening) > 1
                                                             name_wi = ['window_' name_wa ];
                                                             try
-                                                                construction_wi = name_XML.Campus.Surface{jjk}.Opening{jjjk}.Attributes.constructionIdRef;
+                                                                if strcmp(ProgramInfo,'openstudio')
+                                                                    construction_wi = name_XML.Campus.Surface{jjk}.Opening{jjjk}.Attributes.constructionIdRef;
+                                                                elseif strcmp(ProgramInfo,'revit')
+                                                                    construction_wi = name_XML.Campus.Surface{jjk}.Opening{jjjk}.CADObjectId.Text;
+                                                                else
+                                                                    construction_wi = name_XML.Campus.Surface{jjk}.Opening{jjjk}.Attributes.constructionIdRef;
+                                                                end
                                                             catch
                                                                 warning(['No construction definied for opening ' name_XML.Campus.Surface{jjk}.Opening{jjjk}.Attributes.id])
                                                                 construction_wi = '';
@@ -888,7 +910,7 @@ classdef GEOMETRY
                                                             width_wi = str2double(name_XML.Campus.Surface{jjk}.Opening{jjjk}.RectangularGeometry.Width.Text);
                                                             height_wi = str2double(name_XML.Campus.Surface{jjk}.Opening{jjjk}.RectangularGeometry.Height.Text);
                                                             if orientation_slope_wa == 90
-                                                                if (strcmp(ProgramInfo,'openstudio'))
+                                                                if (strcmp(ProgramInfo,'openstudio') || strcmp(ProgramInfo,'revit'))
                                                                     Xs = str2double(name_XML.Campus.Surface{jjk}.Opening{jjjk}.RectangularGeometry.CartesianPoint.Coordinate{1}.Text) - X_wa;
                                                                     Ys = str2double(name_XML.Campus.Surface{jjk}.Opening{jjjk}.RectangularGeometry.CartesianPoint.Coordinate{2}.Text) - Y_wa;
                                                                     X_wi = sqrt(Xs^2+Ys^2);
@@ -904,7 +926,13 @@ classdef GEOMETRY
                                                         else
                                                             name_wi = ['window_' name_wa ];
                                                             try
-                                                                construction_wi = name_XML.Campus.Surface{jjk}.Opening.Attributes.constructionIdRef;
+                                                                if strcmp(ProgramInfo,'openstudio')
+                                                                    construction_wi = name_XML.Campus.Surface{jjk}.Opening{jjjk}.Attributes.constructionIdRef;
+                                                                elseif strcmp(ProgramInfo,'revit')
+                                                                    construction_wi = name_XML.Campus.Surface{jjk}.Opening{jjjk}.CADObjectId.Text;
+                                                                else
+                                                                    construction_wi = name_XML.Campus.Surface{jjk}.Opening{jjjk}.Attributes.constructionIdRef;
+                                                                end
                                                             catch
                                                                 warning(['No construction definied for opening ' name_XML.Campus.Surface{jjk}.Opening.Attributes.id])
                                                                 construction_wi = '';
@@ -912,7 +940,7 @@ classdef GEOMETRY
                                                             width_wi = str2double(name_XML.Campus.Surface{jjk}.Opening.RectangularGeometry.Width.Text);
                                                             height_wi = str2double(name_XML.Campus.Surface{jjk}.Opening.RectangularGeometry.Height.Text);
                                                             if orientation_slope_wa == 90
-                                                                if (strcmp(ProgramInfo,'openstudio'))
+                                                                if (strcmp(ProgramInfo,'openstudio') || strcmp(ProgramInfo,'revit'))
                                                                     Xs = str2double(name_XML.Campus.Surface{jjk}.Opening.RectangularGeometry.CartesianPoint.Coordinate{1}.Text) - X_wa;
                                                                     Ys = str2double(name_XML.Campus.Surface{jjk}.Opening.RectangularGeometry.CartesianPoint.Coordinate{2}.Text) - Y_wa;
                                                                     X_wi = sqrt(Xs^2+Ys^2);
@@ -1057,14 +1085,20 @@ classdef GEOMETRY
                                                         if length(name_XML.Campus.Surface{jjk}.Opening) > 1
                                                             name_do = ['door_' name_wa ];
                                                             try
-                                                                construction_do = name_XML.Campus.Surface{jjk}.Opening{jjjk}.Attributes.constructionIdRef;
+                                                                if strcmp(ProgramInfo,'openstudio')
+                                                                    construction_do = name_XML.Campus.Surface{jjk}.Opening{jjjk}.Attributes.constructionIdRef;
+                                                                elseif strcmp(ProgramInfo,'revit')
+                                                                    construction_do = name_XML.Campus.Surface{jjk}.Opening{jjjk}.CADObjectId.Text;
+                                                                else
+                                                                    construction_do = name_XML.Campus.Surface{jjk}.Opening{jjjk}.Attributes.constructionIdRef;
+                                                                end
                                                             catch
                                                                 warning(['No construction definied for opening ' name_XML.Campus.Surface{jjk}.Opening{jjjk}.Attributes.id])
                                                                 construction_do = '';
                                                             end
                                                             width_do = str2double(name_XML.Campus.Surface{jjk}.Opening{jjjk}.RectangularGeometry.Width.Text);
                                                             height_do = str2double(name_XML.Campus.Surface{jjk}.Opening{jjjk}.RectangularGeometry.Height.Text);
-                                                            if (strcmp(ProgramInfo,'openstudio'))
+                                                            if (strcmp(ProgramInfo,'openstudio') || strcmp(ProgramInfo,'revit'))
                                                                 Xs = str2double(name_XML.Campus.Surface{jjk}.Opening{jjjk}.RectangularGeometry.CartesianPoint.Coordinate{1}.Text) - X_wa;
                                                                 Ys = str2double(name_XML.Campus.Surface{jjk}.Opening{jjjk}.RectangularGeometry.CartesianPoint.Coordinate{2}.Text) - Y_wa;
                                                                 X_do = sqrt(Xs^2+Ys^2);
@@ -1077,14 +1111,20 @@ classdef GEOMETRY
                                                         else
                                                             name_do = ['door_' name_wa ];
                                                             try
-                                                                construction_do = name_XML.Campus.Surface{jjk}.Opening.Attributes.constructionIdRef;
+                                                                if strcmp(ProgramInfo,'openstudio')
+                                                                    construction_do = name_XML.Campus.Surface{jjk}.Opening{jjjk}.Attributes.constructionIdRef;
+                                                                elseif strcmp(ProgramInfo,'revit')
+                                                                    construction_do = name_XML.Campus.Surface{jjk}.Opening{jjjk}.CADObjectId.Text;
+                                                                else
+                                                                    construction_do = name_XML.Campus.Surface{jjk}.Opening{jjjk}.Attributes.constructionIdRef;
+                                                                end
                                                             catch
                                                                 warning(['No construction definied for opening ' name_XML.Campus.Surface{jjk}.Opening.Attributes.id])
                                                                 construction_do = '';
                                                             end
                                                             width_do = str2double(name_XML.Campus.Surface{jjk}.Opening.RectangularGeometry.Width.Text);
                                                             height_do = str2double(name_XML.Campus.Surface{jjk}.Opening.RectangularGeometry.Height.Text);
-                                                            if (strcmp(ProgramInfo,'openstudio'))
+                                                            if (strcmp(ProgramInfo,'openstudio') || strcmp(ProgramInfo,'revit'))
                                                                 Xs = str2double(name_XML.Campus.Surface{jjk}.Opening.RectangularGeometry.CartesianPoint.Coordinate{1}.Text) - X_wa;
                                                                 Ys = str2double(name_XML.Campus.Surface{jjk}.Opening.RectangularGeometry.CartesianPoint.Coordinate{2}.Text) - Y_wa;
                                                                 X_do = sqrt(Xs^2+Ys^2);
@@ -1172,7 +1212,7 @@ classdef GEOMETRY
                                                             width_do = str2double(name_XML.Campus.Surface{jjk}.Opening.RectangularGeometry.Width.Text);
                                                             height_do = str2double(name_XML.Campus.Surface{jjk}.Opening.RectangularGeometry.Height.Text);
                                                         end
-                                                        if (strcmp(ProgramInfo,'openstudio'))
+                                                        if (strcmp(ProgramInfo,'openstudio') || strcmp(ProgramInfo,'revit'))
                                                             Xs = str2double(name_XML.Campus.Surface{jjk}.Opening{jjjk}.RectangularGeometry.CartesianPoint.Coordinate{1}.Text) - X_wa;
                                                             Ys = str2double(name_XML.Campus.Surface{jjk}.Opening{jjjk}.RectangularGeometry.CartesianPoint.Coordinate{2}.Text) - Y_wa;
                                                             X_do = sqrt(Xs^2+Ys^2);
@@ -1240,7 +1280,7 @@ classdef GEOMETRY
                                 end
                             end
                         end
-                        obj = obj.add_room(name_room, area_room, heated_volume/area_room, walls_list, n50_room);
+                        obj = obj.add_room(name_room_text, area_room, heated_volume/area_room, walls_list, n50_room);
                     end
 
                     Excel.ActiveWorkbook.Save
@@ -1291,7 +1331,7 @@ classdef GEOMETRY
                         end
                         
                         % walls
-                        range = 'K40:AL140';
+                        range = 'K40:AL500';
                         [~, ~, data] = xlsread1(filename, sheet, range);
                         index_namenumb_wa = 1;
                         index_name_wa = 2;
@@ -1346,7 +1386,7 @@ classdef GEOMETRY
                         else
                             sheet = 'Windows';
                         end
-                        range = 'L24:BQ175';
+                        range = 'L24:BQ484';
                         [~, ~, data1] = xlsread1(filename, sheet, range);
                         index_wall_wi = 8;
                         index_name_wi = 2;
@@ -1377,7 +1417,7 @@ classdef GEOMETRY
                         else
                             sheet = 'Shading';
                         end
-                        range = 'S17:AR168';
+                        range = 'S17:AR477';
                         [~, ~, data2] = xlsread1(filename, sheet, range);
                         index_name_sh = 1;
                         index_shtop1_sh = 12;
