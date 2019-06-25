@@ -395,7 +395,7 @@ classdef THERMALZONE
                 end
                 
                 mm_gains = 1;
-                % does it for each room of the zone
+                % assign the gains to the zone
                 for ll = 1 : size(building.gains(variant_gains).gain_to_zone,2)
                     my_gain = [];
                     if building.gains(variant_gains).gain_to_zone(1,ll).number_of_zone == ind
@@ -463,8 +463,6 @@ classdef THERMALZONE
                             obj.zone(ind).matrix_wd{ind_sum,16} = room(kk).wall(ll).doors(mm).n; % n matrix
                             obj.zone(ind).matrix_wd{ind_sum,17} = room(kk).wall(ll).doors(mm).V; % V matrix
                             obj.zone(ind).matrix_wd{ind_sum,18} = room(kk).wall(ll).doors(mm).control_i; % control_i
-%                             ind
-%                             obj.zone(ind).matrix_wd{ind_sum,18}
                             obj.zone(ind).matrix_wd{ind_sum,19} = room(kk).name;
                             ind_sum = ind_sum+1;
                         end

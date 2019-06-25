@@ -153,7 +153,7 @@ classdef BOUNDARY
             
             filename = name_xls_PHPP;
             
-            switch version
+             switch version
                 case '9.1'
                     if language
                         sheet = 'Klima';
@@ -162,6 +162,8 @@ classdef BOUNDARY
                     end
                     range = 'E24:P24';
                     [~, ~, data] = xlsread(filename, sheet, range);
+                    range = 'E32:P32';
+                    [~, ~, data_B] = xlsread(filename, sheet, range);
                     
                     if language
                         sheet = 'Flächen';
@@ -170,6 +172,9 @@ classdef BOUNDARY
                     end
                     range = 'AB21';
                     [~, ~, data1] = xlsread(filename, sheet, range);
+                    range = 'K19:K20';
+                    [~, ~, data1_B] = xlsread(filename, sheet, range);
+                    
                     if language
                         sheet = 'Nachweis';
                     else
@@ -179,9 +184,11 @@ classdef BOUNDARY
                     [~, ~, data2] = xlsread(filename, sheet, range);
                     index_raw_setpointwin = 1;
                     index_column_setpointwin = 1;
-%                     index_raw_setpointsum = 1;
-%                     index_column_setpointsum = 4;
-            end
+                     index_raw_setpointsum = 1;
+                     index_column_setpointsum = 4;
+             end
+            
+             
             teta_i(1:12) = data2{index_raw_setpointwin,index_column_setpointwin};
             for ii = 1:12
                 teta_e(ii) = data{1,ii};
@@ -196,6 +203,56 @@ classdef BOUNDARY
             else
                 obj = obj.add_neighbour_set_temperature(building, 4, 'neighbour_with_red_factor', 2, temperature_time, temperature_value);
             end
+            
+            %definition ground temperature
+            for ii = 1:12
+                temp_ground(ii) = data_B{1,ii};
+            end
+            
+            %definition internal temperature
+            for jj=1:5
+                temp_int(jj)= data2{index_raw_setpointwin,index_column_setpointwin};
+            end
+            
+            for jj=6:8
+                temp_int(jj)= data2{index_raw_setpointsum,index_column_setpointsum};
+            end
+            
+            for jj=9:12
+                temp_int(jj)= data2{index_raw_setpointwin,index_column_setpointwin};
+            end
+            
+            % NEIGHBOUR_1 is I
+            obj = obj.add_neighbour_set_temperature(building, 1, 'internal temperature', 2, temperature_time, temp_int);
+            
+            switch data1_B{1,1}
+                case 'B'
+                    obj = obj.add_neighbour_set_temperature(building, 2, 'ground temperature', 2, temperature_time, temp_ground);
+                    
+                case 'A'
+                    obj = obj.add_neighbour_set_temperature(building, 2, 'external temperature', 2, temperature_time, teta_e);
+                    
+                case 'P'
+                    obj = obj.add_neighbour_set_temperature(building, 2, 'ground temperature', 2, temperature_time, temp_ground);
+                    
+                case 'X'
+                    obj = obj.add_neighbour_set_temperature(building, 2, 'neighbour_with_red_factor', 2, temperature_time, temperature_value);
+            end
+            
+            switch data1_B{2,1}
+                case 'B'
+                    obj = obj.add_neighbour_set_temperature(building, 3, 'ground temperature', 2, temperature_time, temp_ground);
+                    
+                case 'A'
+                    obj = obj.add_neighbour_set_temperature(building, 3, 'external temperature', 2, temperature_time, teta_e);
+                    
+                case 'P'
+                    obj = obj.add_neighbour_set_temperature(building, 3, 'ground temperature', 2, temperature_time, temp_ground);
+                    
+                case 'X'
+                    obj = obj.add_neighbour_set_temperature(building, 3, 'neighbour_with_red_factor', 2, temperature_time, temperature_value);
+            end
+            
         end
         
         function obj = add_ground_neighbour_weather_from_excel(obj, building, name_xls)
@@ -222,7 +279,7 @@ classdef BOUNDARY
             % to add the ground temperature
             for ii = 1:size(raw_ground,1)
                 if isnan(raw_ground{ii,2})
-                    break
+                    %break
                 else
                     number = raw_ground{ii,1};
                     name = raw_ground{ii,2};
@@ -247,7 +304,7 @@ classdef BOUNDARY
             % to add the neighbour temperature
             for ii = 1:size(raw_neighbour,1)
                 if isnan(raw_neighbour{ii,2})
-                    break
+                    %break
                 else
                     number = raw_neighbour{ii,1};
                     name = raw_neighbour{ii,2};
@@ -278,9 +335,9 @@ classdef BOUNDARY
                         
                         if sum(isnan(temper_value))
                             warning('Neighbour temperature with NaNs')
-                            obj = obj.add_neighbour_set_temperature(building, number, name, model, ones(size(temper_value))*20);
+                            obj = obj.add_neighbour_set_temperature(building, number, name, model, temper_time, ones(size(temper_value))*20);
                         else
-                            obj = obj.add_neighbour_set_temperature(building, number, name, model, temper_value);
+                            obj = obj.add_neighbour_set_temperature(building, number, name, model, temper_time, temper_value);
                         end
                     end
                 end
@@ -321,9 +378,10 @@ classdef BOUNDARY
             count_neighbour = 0;
             
             for ii = 1:size(building.boundary(variant_boundary).ground,2)
+                count_ground = count_ground+1;
                 if strcmp(building.boundary(variant_boundary).ground(ii).name, 'none')
+                    matrix_to_write_ground(count_ground,:) = [{''} {''} {''} {''} {''} {''} {''} {''} {''} {''} {''} {''} {''} {''}];
                 else
-                    count_ground = count_ground+1;
                     ground_pfad = building.boundary(variant_boundary);
                     matrix_to_write_ground(count_ground,:) = [{ground_pfad.ground(count_ground).name} {2}...
                         {ground_pfad.ground(count_ground).temperature(1,2)} {ground_pfad.ground(count_ground).temperature(2,2)} {ground_pfad.ground(count_ground).temperature(3,2)}...
@@ -334,20 +392,21 @@ classdef BOUNDARY
             end
             
             for ii = 1:size(building.boundary(variant_boundary).neighbour,2)
-                if strcmp(building.boundary(variant_boundary).neighbour(ii).name, 'none')
-                else
-                    count_neighbour = count_neighbour+1;
+                count_neighbour = count_neighbour+1;
+                 if strcmp(building.boundary(variant_boundary).neighbour(ii).name, 'none')
+                    matrix_to_write_neigbour(count_neighbour,:) = [{''} {''} {''} {''} {''} {''} {''} {''} {''} {''} {''} {''} {''} {''}];
+                 else
                     neighbour_pfad = building.boundary(variant_boundary);
                     matrix_to_write_neigbour(count_neighbour,:) = [{neighbour_pfad.neighbour(count_neighbour).name} {2}...
                         {neighbour_pfad.neighbour(count_neighbour).temperature(1,2)} {neighbour_pfad.neighbour(count_neighbour).temperature(2,2)} {neighbour_pfad.neighbour(count_neighbour).temperature(3,2)}...
                         {neighbour_pfad.neighbour(count_neighbour).temperature(4,2)} {neighbour_pfad.neighbour(count_neighbour).temperature(5,2)} {neighbour_pfad.neighbour(count_neighbour).temperature(6,2)}...
                         {neighbour_pfad.neighbour(count_neighbour).temperature(7,2)} {neighbour_pfad.neighbour(count_neighbour).temperature(8,2)} {neighbour_pfad.neighbour(count_neighbour).temperature(9,2)}...
                         {neighbour_pfad.neighbour(count_neighbour).temperature(10,2)} {neighbour_pfad.neighbour(count_neighbour).temperature(11,2)} {neighbour_pfad.neighbour(count_neighbour).temperature(12,2)}];
-                end
+                 end
             end
             
             matrix_to_write_weather = [{building.boundary(variant_boundary).weather.name} {building.boundary(variant_boundary).weather.path} {building.boundary(variant_boundary).weather.latitude} {''} {''} {''} {building.boundary(variant_boundary).weather.longitude} {''} {''} {''} ...
-                {building.boundary(variant_boundary).weather.latitude_timezone} {''} {''} {''}]; %I don t know how to do with the name of the txt and the time
+                {building.boundary(variant_boundary).weather.latitude_timezone} {''} {''} {''}];
            
             xlswrite1(name_xls,matrix_to_write_ground,'Boundary',['B4:O' num2str(count_ground+3)]) 
             xlswrite1(name_xls,matrix_to_write_neigbour,'Boundary',['B14:O' num2str(count_neighbour+13)]) 
