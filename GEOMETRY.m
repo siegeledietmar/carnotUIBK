@@ -495,6 +495,8 @@ classdef GEOMETRY
             % 2 ... building object
             % 3 ... name of the excel file (optional)
             % 4 ... flag to create excel file (optional)
+			
+			% bugfixing ongoing
             
             if nargin < 3
                 error('number of input not correct')
