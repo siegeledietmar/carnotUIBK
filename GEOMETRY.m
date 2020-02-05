@@ -499,8 +499,12 @@ classdef GEOMETRY
 			% bugfixing ongoing
             
             if nargin < 3
-                error('number of input not correct')
+                error('number of input not correct (at least 2)')
             else
+                if nargin < 4
+                    name_xls = 'temp.xlsx';
+                end
+                
                 vollpfad = [pwd '\' name_xls];
                 
                 if exist(vollpfad, 'file')
@@ -596,20 +600,29 @@ classdef GEOMETRY
                     raw_windoors = 0;
                     for jk=1:length(name_XML.Campus.Building.Space)
                         walls_list = [];
-
-                        name_room = name_XML.Campus.Building.Space{jk}.Attributes.id;
-                        if strcmp(ProgramInfo,'openstudio')
-                            name_room_text = name_XML.Campus.Building.Space{jk}.Attributes.id;
-                        elseif strcmp(ProgramInfo,'revit')
-                            name_room_text = name_XML.Campus.Building.Space{jk}.Name.Text;
+                        
+                        name_XML.Campus.Building.Space
+                        
+                        if length(name_XML.Campus.Building.Space) == 1
+                            Space = name_XML.Campus.Building.Space;
                         else
-                            name_room_text = name_XML.Campus.Building.Space{jk}.Attributes.id;
+                            Space = name_XML.Campus.Building.Space{jk};
+                        end
+                        
+                        name_room = Space.Attributes.id;
+                        
+                        if strcmp(ProgramInfo,'openstudio')
+                            name_room_text = Space.Attributes.id;
+                        elseif strcmp(ProgramInfo,'revit')
+                            name_room_text = Space.Name.Text;
+                        else
+                            name_room_text = Space.Attributes.id;
                         end
                         if strcmp(name_room,'') || strcmp(name_room,'Shading_Surface_Group_1')
                             return
                         end
-                        area_room = str2double(name_XML.Campus.Building.Space{jk}.Area.Text);
-                        heated_volume = str2double(name_XML.Campus.Building.Space{jk}.Volume.Text);
+                        area_room = str2double(Space.Area.Text);
+                        heated_volume = str2double(Space.Volume.Text);
                         check = 0;
                         for ii = 1:size(raw_room_excel,1)
                             if strcmp(raw_room_excel{ii,1},name_room)
