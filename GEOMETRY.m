@@ -407,9 +407,9 @@ classdef GEOMETRY
                                wall_orientation{wall_count} = 'E';
                            end
                         elseif wall_pfad.orientation_slope == 180 || wall_pfad.orientation_slope == (-180)
-                            wall_orientation{wall_count} = 'ceil';
+                            wall_orientation{wall_count} = 'floor';%'ceil'; %EV
                         elseif wall_pfad.orientation_slope == 0
-                            wall_orientation{wall_count} = 'floor';
+                            wall_orientation{wall_count} = 'ceil';%'floor'; %EV
                         else
                             wall_orientation{wall_count} = 'roof';
                         end
@@ -460,20 +460,16 @@ classdef GEOMETRY
                         end
                     end
                 end    
-
                 xlswrite1(name_xls,matrix_to_write_room,'Rooms',['A7:D' num2str(room_count+6)]) 
                 xlswrite1(name_xls,matrix_to_write_wall,'Walls',['A4:AD' num2str(wall_count+3)])
                 xlswrite1(name_xls,matrix_to_write_windoor,'WinDoors',['A4:AZ' num2str(windoor_count+3)])
-                
                 Excel.ActiveWorkbook.Save
                 Excel.Quit
                 Excel.delete
                 clear Excel
                 warning('Excel file closed!')
             catch ME
-                warning('Export to Excel was not possible!')
-                ME
-                
+                warning('Export to Excel was not possible!')              
                 Excel.ActiveWorkbook.Save
                 Excel.Quit
                 Excel.delete
@@ -679,7 +675,11 @@ classdef GEOMETRY
                                         width_wa = str2double(name_XML.Campus.Surface{jjk}.RectangularGeometry.Width.Text);
                                         height_wa = str2double(name_XML.Campus.Surface{jjk}.RectangularGeometry.Height.Text);
                                         
-                                        orientation_azimuth_wa = (str2double(name_XML.Campus.Surface{jjk}.RectangularGeometry.Azimuth.Text)-180)*(-1);
+                                        if (str2double(name_XML.Campus.Surface{jjk}.RectangularGeometry.Azimuth.Text))== 0 %EV: east and west were wrong. Before: orientation_azimuth_wa = (str2double(name_XML.Campus.Surface{jjk}.RectangularGeometry.Azimuth.Text)-180)*(-1);
+                                            orientation_azimuth_wa = 180;
+                                        else
+                                            orientation_azimuth_wa = (str2double(name_XML.Campus.Surface{jjk}.RectangularGeometry.Azimuth.Text)-180);
+                                        end
                                         orientation_slope_wa = str2double(name_XML.Campus.Surface{jjk}.RectangularGeometry.Tilt.Text);
                                         if orientation_azimuth_wa >= 360
                                             orientation_azimuth_wa = orientation_azimuth_wa-360;
@@ -698,6 +698,7 @@ classdef GEOMETRY
                                                     or = 'N';
                                                     count_n = count_n+1;
                                                     n = count_n;
+                                                    orientation_azimuth_wa=orientation_azimuth_wa+180; %EV
                                                 end
                                             elseif orientation_azimuth_wa<(-45) && orientation_azimuth_wa>(-135) || orientation_azimuth_wa>225 && orientation_azimuth_wa<315
                                                 if jjjk == 1
@@ -708,6 +709,7 @@ classdef GEOMETRY
                                                     or = 'W';
                                                     count_w = count_w+1;
                                                     n = count_w;
+                                                    orientation_azimuth_wa=orientation_azimuth_wa+180; %EV
                                                 end
                                             elseif orientation_azimuth_wa<135 && orientation_azimuth_wa>45
                                                 if jjjk == 1
@@ -718,6 +720,7 @@ classdef GEOMETRY
                                                     or = 'E';
                                                     count_e = count_e+1;
                                                     n = count_e;
+                                                    orientation_azimuth_wa=orientation_azimuth_wa-180; %EV
                                                 end
                                             elseif orientation_azimuth_wa<=225 && orientation_azimuth_wa>=135 || orientation_azimuth_wa<=(-135) && orientation_azimuth_wa>=(-225)
                                                 if jjjk == 1
@@ -728,6 +731,7 @@ classdef GEOMETRY
                                                     or = 'S';
                                                     count_s = count_s+1;
                                                     n = count_s;
+                                                    orientation_azimuth_wa=orientation_azimuth_wa-180; %EV
                                                 end
                                             end
                                             name_wa = [name_room '_wall_' or num2str(n)];
@@ -740,6 +744,7 @@ classdef GEOMETRY
                                                 or = 'ceil';
                                                 count_c = count_c+1;
                                                 n = count_c;
+                                                orientation_slope_wa = 0; %EV
                                             end
                                             name_wa = [name_room '_' or num2str(n)];
                                         elseif orientation_slope_wa == 0
@@ -751,6 +756,7 @@ classdef GEOMETRY
                                                 or = 'floor';
                                                 count_f = count_f+1;
                                                 n = count_f;
+                                                orientation_slope_wa =180; %EV
                                             end
                                             name_wa = [name_room '_' or num2str(n)];
                                         else
@@ -831,10 +837,10 @@ classdef GEOMETRY
                                         end
                                         if strcmp(boundary_wa, 'AMBIENT') && orientation_slope_wa == 0
                                             view_factor_wa = 1.0;
-                                            amb_factor_wa = 1.0;
-                                        elseif strcmp(boundary_wa, 'AMBIENT') && orientation_slope_wa == 0
-                                            view_factor_wa = 1.0;
-                                            amb_factor_wa = 0.0;
+                                            amb_factor_wa = 0.0; %EV
+%                                         elseif strcmp(boundary_wa, 'AMBIENT') && orientation_slope_wa == 0 %EV
+%                                             view_factor_wa = 1.0;
+%                                             amb_factor_wa = 0.0;
                                         elseif strcmp(boundary_wa, 'AMBIENT')
                                             view_factor_wa = 1.0;
                                             amb_factor_wa = 0.5;
@@ -912,7 +918,12 @@ classdef GEOMETRY
                                                             name_wi = ['window_' name_wa ];
                                                             try
                                                                 if strcmp(ProgramInfo,'openstudio')
-                                                                    construction_wi = name_XML.Campus.Surface{jjk}.Opening{jjjk}.Attributes.constructionIdRef;
+                                                                    try     %EV, before: construction_wi = name_XML.Campus.Surface{jjk}.Opening{jjjk}.Attributes.constructionIdRef;
+                                                                        construction_wi = name_XML.Campus.Surface{jjk}.Opening{jjjk}.Attributes.windowTypeIdRef; 
+                                                                    end
+                                                                    try
+                                                                        construction_wi = name_XML.Campus.Surface{jjk}.Opening{jjjk}.Attributes.constructionIdRef;
+                                                                    end
                                                                 elseif strcmp(ProgramInfo,'revit')
                                                                     construction_wi = name_XML.Campus.Surface{jjk}.Opening{jjjk}.CADObjectId.Text;
                                                                 else
@@ -942,7 +953,12 @@ classdef GEOMETRY
                                                             name_wi = ['window_' name_wa ];
                                                             try
                                                                 if strcmp(ProgramInfo,'openstudio')
-                                                                    construction_wi = name_XML.Campus.Surface{jjk}.Opening{jjjk}.Attributes.constructionIdRef;
+                                                                    try     %EV, before: construction_wi = name_XML.Campus.Surface{jjk}.Opening{jjjk}.Attributes.constructionIdRef;
+                                                                        construction_wi = name_XML.Campus.Surface{jjk}.Opening.Attributes.windowTypeIdRef; 
+                                                                    end
+                                                                    try
+                                                                        construction_wi = name_XML.Campus.Surface{jjk}.Opening.Attributes.constructionIdRef; 
+                                                                    end    
                                                                 elseif strcmp(ProgramInfo,'revit')
                                                                     construction_wi = name_XML.Campus.Surface{jjk}.Opening{jjjk}.CADObjectId.Text;
                                                                 else
@@ -969,8 +985,8 @@ classdef GEOMETRY
                                                                 Y_wi = 0.0;
                                                             end
                                                         end
-                                                        width_glass_wi = width_wi - 2*0.12;
-                                                        height_glass_wi = height_wi - 2*0.12;
+                                                        width_glass_wi = width_wi - 2*0.11; %width_wi - 2*0.12; %EV: to be modified
+                                                        height_glass_wi = height_wi - 2*0.11; %height_wi - 2*0.12; %EV: to be modified
                                                         amb_factor_wi = amb_factor_wa;
 
                                                         if nargin == 5
@@ -1045,8 +1061,8 @@ classdef GEOMETRY
 %                                                                 warning(['Window ' name_wi ' does not exist in excel file'])
                                                             end
                                                             model_cons_wi = 0;
-                                                            width_glass_wi = width_wi - 2*0.12;
-                                                            height_glass_wi = height_wi - 2*0.12;
+                                                            width_glass_wi = width_wi - 2*0.11; %width_wi - 2*0.12; %EV: to be modified
+                                                            height_glass_wi = height_wi - 2*0.11; %height_wi - 2*0.12; %EV: to be modified
                                                             view_factor_wi = 1.0;
                                                             amb_factor_wi = amb_factor_wa;
                                                             shadingtop_wi(1) = 0.0;
@@ -1127,7 +1143,7 @@ classdef GEOMETRY
                                                             name_do = ['door_' name_wa ];
                                                             try
                                                                 if strcmp(ProgramInfo,'openstudio')
-                                                                    construction_do = name_XML.Campus.Surface{jjk}.Opening{jjjk}.Attributes.constructionIdRef;
+                                                                    construction_do = name_XML.Campus.Surface{jjk}.Opening.Attributes.constructionIdRef; %EV, before: construction_do = name_XML.Campus.Surface{jjk}.Opening{jjjk}.Attributes.constructionIdRef;
                                                                 elseif strcmp(ProgramInfo,'revit')
                                                                     construction_do = name_XML.Campus.Surface{jjk}.Opening{jjjk}.CADObjectId.Text;
                                                                 else
@@ -1346,7 +1362,7 @@ classdef GEOMETRY
                         end
                         
                         % walls
-                        range = 'K40:AL500';
+                        range = 'K40:AL140'; %EV, before: 'K40:AL240';
                         [~, ~, data] = xlsread1(filename, sheet, range);
                         index_namenumb_wa = 1;
                         index_name_wa = 2;
@@ -1362,6 +1378,7 @@ classdef GEOMETRY
                         index_construction_wa = 19;
                         indicator_walls = ones(size(data,1),1);
                         for ii = 1:size(data,1)
+%                             ii
                             if data{ii,index_number_wa}==0 || isempty(data{ii,index_number_wa}) || sum(isnan(data{ii,index_number_wa})) 
                                 indicator_walls(ii,1)=0;
                             end
@@ -1401,7 +1418,7 @@ classdef GEOMETRY
                         else
                             sheet = 'Windows';
                         end
-                        range = 'L24:BQ484';
+                        range = 'L24:BQ175'; %EV, before: 'L24:BQ580';
                         [~, ~, data1] = xlsread1(filename, sheet, range);
                         index_wall_wi = 8;
                         index_name_wi = 2;
@@ -1432,7 +1449,7 @@ classdef GEOMETRY
                         else
                             sheet = 'Shading';
                         end
-                        range = 'S17:AR477';
+                        range = 'S17:AR570';
                         [~, ~, data2] = xlsread1(filename, sheet, range);
                         index_name_sh = 1;
                         index_shtop1_sh = 12;
