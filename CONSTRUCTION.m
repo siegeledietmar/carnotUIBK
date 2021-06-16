@@ -1,3 +1,4 @@
+
 %% CONSTRUCTION.m
 % ***********************************************************************
 % This file is part of the uibkCARNOT Blockset.
@@ -107,6 +108,7 @@ classdef CONSTRUCTION
                     break
                 end
             end
+            
             
             if ind
                 structure = obj.structure(ind);
@@ -482,7 +484,7 @@ classdef CONSTRUCTION
                     else
                         sheet = 'Windows';
                     end
-                    range = 'L24:BQ175';
+                    range = 'L24:BQ585';
                     [~, ~, data1] = xlsread(filename, sheet, range);
                     index_name_wi = 2;
                     index_constr1_wi = 9; % constr Glass
@@ -493,7 +495,7 @@ classdef CONSTRUCTION
                     index_gw = 12;
                     for ii = 1:size(data1,1)
                         if strcmp(data1(ii,index_name_wi),'-') || sum(isnan(data1{ii,index_name_wi})) || isempty(data1{ii,index_name_wi})
-                            last_win = ii-1;
+                            last_win = ii;
                             break
                         end
                     end
@@ -795,11 +797,36 @@ classdef CONSTRUCTION
                                 layers_d(ll) = building.construction(variant_construction).structure(jj).parameter.d(ll);
                                 layers_lambda(ll) = building.construction(variant_construction).structure(jj).parameter.layers_lambda(ll);
                                 layers_rho(ll) = building.construction(variant_construction).structure(jj).parameter.layers_rho(ll);
+%                                 try %was inserted because of problems
+%                                 with names of previous version of
+%                                 carnotUIBK
+%                                 aaaaa=building.construction(variant_construction).structure(jj).parameter.rho_layer(ll);
+%                                 end
+%                                 if exist('aaaaa','var')==1;
+%                                 layers_rho(ll) = building.construction(variant_construction).structure(jj).parameter.rho_layer(ll); %rho_layer
+%                                 else
+%                                 layers_rho(ll) = building.construction(variant_construction).structure(jj).parameter.layers_rho(ll); %rho_layer
+%                                 end
+%                                 try
+%                                 cp=building.construction(variant_construction).structure(jj).parameter.c_layer(ll);
+%                                 end
+%                                 if exist('cp','var')==1;
+%                                 layers_cp(ll) = building.construction(variant_construction).structure(jj).parameter.c_layer(ll); %rho_layer
+%                                 else
                                 layers_cp(ll) = building.construction(variant_construction).structure(jj).parameter.layers_cp(ll);
+%                                 end
+% %                                 layers_cp(ll) = building.construction(variant_construction).structure(jj).parameter.layers_cp(ll);
+%                                 try
+%                                 nl=building.construction(variant_construction).structure(jj).parameter.layers_N_layer(ll);
+%                                 end
+%                                 if exist('nl','var')==1;
                                 layers_n_layer_beuken(ll) = building.construction(variant_construction).structure(jj).parameter.layers_N_layer(ll);
-                                %layers_n_layer_hygrothermal(ll) = 1;%building.construction(variant_construction).structure(jj).parameter.xmesh_hygro(ll);
+%                                 else
+%                                 layers_n_layer_beuken(ll) = building.construction(variant_construction).structure(jj).parameter.N_layer(ll);
+%                                 end
                                 layers_T_ini(ll) = nan;
                                 layers_phi_ini(ll) = nan;
+%                                 clear aaaaa cp
                             end
 
                             for kk = size(building.construction(variant_construction).structure(jj).parameter.layers_names,2)+1: 10
@@ -872,7 +899,6 @@ classdef CONSTRUCTION
                             {'emission 2'} {building.construction(variant_construction).structure(jj).emission_2} {''} {''}
                             {'absorption 2'} {building.construction(variant_construction).structure(jj).absorption_2} {''} {''}
                             ];
-                        
                         xlswrite1(name_xls,matrix_to_write_constr,'Structures',['M' num2str(3+(count_win-1)*19) ':P' num2str(20+(count_win-1)*19)]) 
                     end
                 end

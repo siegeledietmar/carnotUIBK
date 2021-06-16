@@ -1,3 +1,4 @@
+
 %% THERMALZONE.m
 % ***********************************************************************
 % This file is part of the uibkCARNOT Blockset.
@@ -426,7 +427,7 @@ classdef THERMALZONE
                         obj.zone(ind).matrix_wd{ind_sum,2} = area;
                         obj.zone(ind).matrix_wd{ind_sum,3} = room(kk).wall(ll).boundary;
                         obj.zone(ind).matrix_wd{ind_sum,4} = room(kk).wall(ll).orientation_slope;
-                        obj.zone(ind).matrix_wd{ind_sum,5} = room(kk).wall(ll).orientation_azimuth*(-1);    % (BUG) DS 31.10.16: azimuth multiplied with (-1)
+                        obj.zone(ind).matrix_wd{ind_sum,5} = room(kk).wall(ll).orientation_azimuth;    %EV 18.01.2021: azimuth = azimuth (not anymore *(-1). Correction already made in geometry. % (BUG) DS 31.10.16: azimuth multiplied with (-1)
                         obj.zone(ind).matrix_wd{ind_sum,6} = room(kk).wall(ll).orientation_rotation;
                         obj.zone(ind).matrix_wd{ind_sum,7} = room(kk).wall(ll).model_cons;
                         obj.zone(ind).matrix_wd{ind_sum,8} = room(kk).wall(ll).model_heattrans;
@@ -449,7 +450,7 @@ classdef THERMALZONE
                             obj.zone(ind).matrix_wd{ind_sum,2} = area;
                             obj.zone(ind).matrix_wd{ind_sum,3} = room(kk).wall(ll).boundary;
                             obj.zone(ind).matrix_wd{ind_sum,4} = room(kk).wall(ll).orientation_slope;
-                            obj.zone(ind).matrix_wd{ind_sum,5} = room(kk).wall(ll).orientation_azimuth*(-1);    % (BUG) DS 31.10.16
+                            obj.zone(ind).matrix_wd{ind_sum,5} = room(kk).wall(ll).orientation_azimuth;    %EV 18.01.2021: azimuth = azimuth (not anymore *(-1). Correction already made in geometry. % (BUG) DS 31.10.16
                             obj.zone(ind).matrix_wd{ind_sum,6} = room(kk).wall(ll).orientation_rotation;
                             obj.zone(ind).matrix_wd{ind_sum,7} = room(kk).wall(ll).doors(mm).model_cons;
                             obj.zone(ind).matrix_wd{ind_sum,8} = room(kk).wall(ll).doors(mm).model_heattrans;
@@ -477,7 +478,7 @@ classdef THERMALZONE
                             obj.zone(ind).matrix_wi{ind_sum_wi,3} = room(kk).wall(ll).windows(nn).height;
                             obj.zone(ind).matrix_wi{ind_sum_wi,4} = room(kk).wall(ll).boundary;
                             obj.zone(ind).matrix_wi{ind_sum_wi,5} = room(kk).wall(ll).orientation_slope;
-                            obj.zone(ind).matrix_wi{ind_sum_wi,6} = room(kk).wall(ll).orientation_azimuth*(-1);     % (BUG) DS 31.10.16
+                            obj.zone(ind).matrix_wi{ind_sum_wi,6} = room(kk).wall(ll).orientation_azimuth;     %EV 18.01.2021: azimuth = azimuth (not anymore *(-1) ). Correction already made in geometry. Before: obj.zone(ind).matrix_wi{ind_sum_wi,6} = room(kk).wall(ll).orientation_azimuth*(-1) % (BUG) DS 31.10.16
                             obj.zone(ind).matrix_wi{ind_sum_wi,7} = room(kk).wall(ll).orientation_rotation;
                             obj.zone(ind).matrix_wi{ind_sum_wi,8} = room(kk).wall(ll).windows(nn).model_cons; 
                             obj.zone(ind).matrix_wi{ind_sum_wi,9} = frame; % part of frame
@@ -626,12 +627,16 @@ classdef THERMALZONE
                                 area_oo_glass = obj.zone(ind).matrix_wi{oo,10};
                                 area_pp_glass = obj.zone(ind).matrix_wi{pp,10};
                                 obj.zone(ind).matrix_wi{oo,2} = obj.zone(ind).matrix_wi{oo,2}+obj.zone(ind).matrix_wi{pp,2};
-                                obj.zone(ind).matrix_wi{oo,3} = (obj.zone(ind).matrix_wi{oo,3}+obj.zone(ind).matrix_wi{pp,3})/2;
+                                obj.zone(ind).matrix_wi{oo,3} = area_tot/ obj.zone(ind).matrix_wi{oo,2}; %(obj.zone(ind).matrix_wi{oo,3}+obj.zone(ind).matrix_wi{pp,3})/2;
                                 area = area_oo_glass+area_pp_glass;
                                 obj.zone(ind).matrix_wi{oo,10} = obj.zone(ind).matrix_wi{oo,10}+obj.zone(ind).matrix_wi{pp,10};
                                 obj.zone(ind).matrix_wi{oo,9} = 1-obj.zone(ind).matrix_wi{oo,10}/area_tot;
                                 obj.zone(ind).matrix_wi{oo,11} = (area_oo_glass*obj.zone(ind).matrix_wi{oo,11}+area_pp_glass*obj.zone(ind).matrix_wi{pp,11})/area;
                                 obj.zone(ind).matrix_wi{oo,12} = (area_oo_glass*obj.zone(ind).matrix_wi{oo,12}+area_pp_glass*obj.zone(ind).matrix_wi{pp,12})/area;
+                                
+                                if obj.zone(ind).matrix_wi{oo,2}*obj.zone(ind).matrix_wi{oo,3}-area_tot>0.3
+                                    display(['Attention mistake oo=' num2str(oo) ' pp=' num2str(pp) 'AreaWi= ' num2str(obj.zone(ind).matrix_wi{oo,2}*obj.zone(ind).matrix_wi{oo,3}) ' area_tot= ' num2str(area_tot)])
+                                end
                                 obj.zone(ind).matrix_wi{oo,13} = (area_oo_glass*obj.zone(ind).matrix_wi{oo,13}+area_pp_glass*obj.zone(ind).matrix_wi{pp,13})/area;
                                 obj.zone(ind).matrix_wi{oo,14} = (area_oo_glass*obj.zone(ind).matrix_wi{oo,14}+area_pp_glass*obj.zone(ind).matrix_wi{pp,14})/area;
                                 obj.zone(ind).matrix_wi{oo,15} = (area_oo_glass*obj.zone(ind).matrix_wi{oo,15}+area_pp_glass*obj.zone(ind).matrix_wi{pp,15})/area;
@@ -763,9 +768,9 @@ classdef THERMALZONE
                 for ii = 1:size(obj.zone(jj).matrix_wd,1)
                     obj.zone(jj).matrix_wd{ii,11} = obj.zone(jj).matrix_wd{ii,2}/A_tot;
                     
-                    switch obj.zone(jj).matrix_wd{ii,3}
+                    switch obj.zone(jj).matrix_wd{ii,3} 
                         case 'INTERNAL'
-                            obj.zone(jj).matrix_wd{ii,11} = obj.zone(jj).matrix_wd{ii,11} / 2;
+                            obj.zone(jj).matrix_wd{ii,11} = obj.zone(jj).matrix_wd{ii,11}/ 2;
                     end
                 end
             end
