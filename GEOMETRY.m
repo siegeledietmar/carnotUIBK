@@ -1362,8 +1362,19 @@ classdef GEOMETRY
                         end
                         
                         % walls
-                        range = 'K40:AL140'; %EV, before: 'K40:AL240';
+                        range = 'K40:AL1000'; %EV, before: 'K40:AL240';
                         [~, ~, data] = xlsread1(filename, sheet, range);
+                        if language
+                            sheet = 'Flächen';
+                            idx_fl=find(strcmp(data(:,1),{'Wärmebrückeneingabe'}))-3;
+                        else
+                            sheet = 'Areas';
+                            idx_fl=find(strcmp(data(:,1),{'Thermal bridge inputs'}))-3;
+                        end
+                        %reshape the data matrix to avoid to include the
+                        %thermal bridges part
+                        data=data(1:idx_fl,:);
+                        
                         index_namenumb_wa = 1;
                         index_name_wa = 2;
                         index_group_bound = 3;
