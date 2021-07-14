@@ -1512,7 +1512,7 @@ classdef GEOMETRY
                             end
                             height_wa = height_wa - data{ii,index_additionm_wa}/width_wa;
                         end
-                        orientation_azimuth_wa = (data{ii,index_azimuth_wa}-180)*(-1);
+                        orientation_azimuth_wa = (data{ii,index_azimuth_wa}-180); %EV, before: orientation_azimuth_wa = (data{ii,index_azimuth_wa}-180)*(-1);
                         orientation_slope_wa = data{ii,index_slope_wa}; 
                         orientation_rotation_wa = 0;
                         for iik = 1:size(data3,1)
