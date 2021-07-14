@@ -402,9 +402,9 @@ classdef GEOMETRY
                            elseif (wall_pfad.orientation_azimuth>=135 && wall_pfad.orientation_azimuth<225) || (wall_pfad.orientation_azimuth>=-225 && wall_pfad.orientation_azimuth<-135)
                                wall_orientation{wall_count} = 'N';
                            elseif (wall_pfad.orientation_azimuth>=225 && wall_pfad.orientation_azimuth<315) || (wall_pfad.orientation_azimuth>=-135 && wall_pfad.orientation_azimuth<-45)
-                               wall_orientation{wall_count} = 'W';
+                               wall_orientation{wall_count} = 'E'; %EV, before: 'W'
                            elseif (wall_pfad.orientation_azimuth>=45 && wall_pfad.orientation_azimuth<135) || (wall_pfad.orientation_azimuth>=45-360 && wall_pfad.orientation_azimuth<135-360)
-                               wall_orientation{wall_count} = 'E';
+                               wall_orientation{wall_count} = 'W'; %EV, before: 'E'
                            end
                         elseif wall_pfad.orientation_slope == 180 || wall_pfad.orientation_slope == (-180)
                             wall_orientation{wall_count} = 'floor';%'ceil'; %EV
