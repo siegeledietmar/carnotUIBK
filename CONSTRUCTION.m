@@ -253,7 +253,7 @@ classdef CONSTRUCTION
                         parameter.type = type;
                         parameter.U = U;
                         parameter.d = d;
-                        parameter.N_layer = xmesh_beu;
+%                         parameter.N_layer = xmesh_beu; %not needed
                         parameter.xmesh_beu = xmesh_beu;
                         parameter.lambda = lambda;
                         parameter.rho = rho;
