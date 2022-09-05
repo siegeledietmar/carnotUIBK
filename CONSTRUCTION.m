@@ -229,9 +229,8 @@ classdef CONSTRUCTION
                         model = 0;
                         parameter.model = model;
                         parameter.type = type;
-                        parameter.U = U;
-                        parameter.d = d;
-                        parameter.N_layer = d;
+                        parameter.U = U;                        
+%                         parameter.N_layer = d; %not needed
                         parameter.xmesh_beu = d;
                         parameter.lambda = lambda;
                         parameter.rho = rho;
@@ -247,13 +246,14 @@ classdef CONSTRUCTION
                         parameter.layers_lambda = lambda_layer;
                         parameter.layers_rho = rho_layer;
                         parameter.layers_cp = c_layer;
+                        parameter.layers_d = d;
+                        
                     elseif strcmp(model_cons_wall,'RC')
                         model = 1;
                         parameter.model = model;
                         parameter.type = type;
                         parameter.U = U;
-                        parameter.d = d;
-                        parameter.N_layer = xmesh_beu;
+                        %  parameter.N_layer = xmesh_beu; %not needed
                         parameter.xmesh_beu = xmesh_beu;
                         parameter.lambda = lambda;
                         parameter.rho = rho;
@@ -269,6 +269,7 @@ classdef CONSTRUCTION
                         parameter.layers_lambda = lambda_layer;
                         parameter.layers_rho = rho_layer;
                         parameter.layers_cp = c_layer;
+                        parameter.layers_d = d;
                     end
                     
                     emission_1 = 0.94;
@@ -367,26 +368,25 @@ classdef CONSTRUCTION
                 parameter.model = model;
                 parameter.type = type;
                 parameter.U = U;
-                parameter.d = d;
-                parameter.layers_names = layers_names;
-                parameter.layers_colors = layers_colors;
                 emission_1 = 0.94;
                 emission_2 = 0.94;
-                
-                parameter.N_layer = d;
+%                 parameter.N_layer = d; %not needed
                 parameter.xmesh_beu = d;
                 parameter.lambda = U;
                 parameter.rho = 50;
                 parameter.cp = 1000;
-                parameter.tau = parameter.rho*parameter.cp/2;
-                parameter.layers_lambda = parameter.lambda;
-                parameter.layers_rho = parameter.rho;
-                parameter.layers_cp = parameter.cp;
-                parameter.layers_N_layer = 1;
+                parameter.tau = parameter.rho*parameter.cp/2;                
                 parameter.T_ini_beuken = 20;
                 parameter.d_active = -1;
                 parameter.T_dactive = -1;
                 parameter.Phi_dactive = -1;
+                parameter.layers_lambda = parameter.lambda;
+                parameter.layers_rho = parameter.rho;
+                parameter.layers_cp = parameter.cp;
+                parameter.layers_N_layer = 1;
+                parameter.layers_d = d;
+                parameter.layers_names = layers_names;
+                parameter.layers_colors = layers_colors;
                 
                 obj = obj.add_structure(savename, parameter, emission_1, emission_2, 0);
             end
@@ -404,26 +404,27 @@ classdef CONSTRUCTION
                 parameter.model = model;
                 parameter.type = type;
                 parameter.U = U;
-                parameter.d = d;
-                parameter.layers_names = layers_names;
-                parameter.layers_colors = layers_colors;
+
                 emission_1 = 0.94;
                 emission_2 = 0.94;
                 
-                parameter.N_layer = d;
+%                 parameter.N_layer = d;
                 parameter.xmesh_beu = d;
                 parameter.lambda = U;
                 parameter.rho = 50;
                 parameter.cp = 1000;
-                parameter.tau = parameter.rho*parameter.cp/2;
-                parameter.layers_lambda = parameter.lambda;
-                parameter.layers_rho = parameter.rho;
-                parameter.layers_cp = parameter.cp;
-                parameter.layers_N_layer = 1;
+                parameter.tau = parameter.rho*parameter.cp/2;                
                 parameter.T_ini_beuken = 20;
                 parameter.d_active = -1;
                 parameter.T_dactive = -1;
                 parameter.Phi_dactive = -1;
+                parameter.layers_lambda = parameter.lambda;
+                parameter.layers_rho = parameter.rho;
+                parameter.layers_cp = parameter.cp;
+                parameter.layers_N_layer = 1;
+                parameter.layers_d = d;
+                parameter.layers_names = layers_names;
+                parameter.layers_colors = layers_colors;
                 
                 obj = obj.add_structure(savename, parameter, emission_1, emission_2, 0);
             end
@@ -441,26 +442,25 @@ classdef CONSTRUCTION
                 parameter.model = model;
                 parameter.type = type;
                 parameter.U = U;
-                parameter.d = d;
-                parameter.layers_names = layers_names;
-                parameter.layers_colors = layers_colors;
                 emission_1 = 0.94;
-                emission_2 = 0.94;
-                
-                parameter.N_layer = d;
+                emission_2 = 0.94;              
+%                 parameter.N_layer = d;
                 parameter.xmesh_beu = d;
                 parameter.lambda = U;
                 parameter.rho = 50;
                 parameter.cp = 1000;
-                parameter.tau = parameter.rho*parameter.cp/2;
-                parameter.layers_lambda = parameter.lambda;
-                parameter.layers_rho = parameter.rho;
-                parameter.layers_cp = parameter.cp;
-                parameter.layers_N_layer = 1;
+                parameter.tau = parameter.rho*parameter.cp/2;                
                 parameter.T_ini_beuken = 20;
                 parameter.d_active = -1;
                 parameter.T_dactive = -1;
                 parameter.Phi_dactive = -1;
+                parameter.layers_lambda = parameter.lambda;
+                parameter.layers_rho = parameter.rho;
+                parameter.layers_cp = parameter.cp;
+                parameter.layers_N_layer = 1;
+                parameter.layers_d = d; 
+                parameter.layers_names = layers_names;
+                parameter.layers_colors = layers_colors;
                 
                 obj = obj.add_structure(savename, parameter, emission_1, emission_2, 0);
             end
@@ -619,7 +619,7 @@ classdef CONSTRUCTION
                         Phi_source = zeros(sum(raw_n_layer_hygrothermal_layer),1);
                         parameter = create_parameter_structure_hygrothermal(obj, raw_name_structure, parameter.model, jj-1, raw_d_layer, raw_n_layer_beuken_layer, raw_n_layer_hygrothermal_layer, raw_path_layer, raw_name_layer, raw_T_ini, raw_phi_ini, T_source, Phi_source);
                     else    % UA
-                        parameter.d = raw_d_layer;
+                        parameter.d = raw_d_layer; %controlla
                         Rsi = 0.13;
                         R_tot = 0;
                         for jk = 1:length(raw_d_layer)
@@ -647,7 +647,7 @@ classdef CONSTRUCTION
                     parameter.Phi_dactive = raw_Phi_active;
                     parameter.T_dactive = raw_T_active;
                     
-                    parameter.d = raw_d_layer;
+%                     parameter.d = raw_d_layer; & controlla
                     
                     parameter.type = 0;
                                         
@@ -689,9 +689,9 @@ classdef CONSTRUCTION
                             % UA
                             for ll = 1:size(building.construction(variant_construction).structure(jj).parameter.layers_names,2)
                                 layers_names(ll) = building.construction(variant_construction).structure(jj).parameter.layers_names(ll);
-                                layers_d(ll) = building.construction(variant_construction).structure(jj).parameter.d(ll);
+                                layers_d(ll) = building.construction(variant_construction).structure(jj).parameter.layers_d(ll);
                                 layers_lambda(ll) = building.construction(variant_construction).structure(jj).parameter.layers_lambda(ll);
-                                layers_n_layer_beuken(ll) = 1;
+                                layers_N_layer(ll) = 1;
                                 layers_T_ini(ll) = nan;
                                 layers_phi_ini(ll) = nan;
                             end
@@ -700,23 +700,23 @@ classdef CONSTRUCTION
                                 layers_names{kk} = '';
                                 layers_d(kk) = nan;
                                 layers_lambda(kk) = nan;
-                                layers_n_layer_beuken(kk) = nan;
+                                layers_N_layer(kk) = nan;
                                 layers_T_ini(kk) = nan;
                                 layers_phi_ini(kk) = nan;
                             end
 
                             matrix_to_write_constr = [{'NAME'} {building.construction(variant_construction).structure(jj).name} {''} {''} {''} {''} {''} {''} {'T_ini'} {'phi_ini'}
                                 {'name'} {'path'} {'d'} {'lambda'} {'rho'} {'cp'} {'n_layer_beuken'} {'n_layer_hygrothermal'} {''} {''} 
-                                {layers_names{1}} {''} {layers_d(1)} {layers_lambda(1)} {''} {''} {layers_n_layer_beuken(1)} {''} {layers_T_ini(1)} {layers_phi_ini(1)}
-                                {layers_names{2}} {''} {layers_d(2)} {layers_lambda(2)} {''} {''} {layers_n_layer_beuken(2)} {''} {layers_T_ini(2)} {layers_phi_ini(2)}
-                                {layers_names{3}} {''} {layers_d(3)} {layers_lambda(3)} {''} {''} {layers_n_layer_beuken(3)} {''} {layers_T_ini(3)} {layers_phi_ini(3)}
-                                {layers_names{4}} {''} {layers_d(4)} {layers_lambda(4)} {''} {''} {layers_n_layer_beuken(4)} {''} {layers_T_ini(4)} {layers_phi_ini(4)}
-                                {layers_names{5}} {''} {layers_d(5)} {layers_lambda(5)} {''} {''} {layers_n_layer_beuken(5)} {''} {layers_T_ini(5)} {layers_phi_ini(5)}
-                                {layers_names{6}} {''} {layers_d(6)} {layers_lambda(6)} {''} {''} {layers_n_layer_beuken(6)} {''} {layers_T_ini(6)} {layers_phi_ini(6)}
-                                {layers_names{7}} {''} {layers_d(7)} {layers_lambda(7)} {''} {''} {layers_n_layer_beuken(7)} {''} {layers_T_ini(7)} {layers_phi_ini(7)}
-                                {layers_names{8}} {''} {layers_d(8)} {layers_lambda(8)} {''} {''} {layers_n_layer_beuken(8)} {''} {layers_T_ini(8)} {layers_phi_ini(8)}
-                                {layers_names{9}} {''} {layers_d(9)} {layers_lambda(9)} {''} {''} {layers_n_layer_beuken(9)} {''} {layers_T_ini(9)} {layers_phi_ini(9)}
-                                {layers_names{10}} {''} {layers_d(10)} {layers_lambda(10)} {''} {''} {layers_n_layer_beuken(10)} {''} {layers_T_ini(10)} {layers_phi_ini(10)}
+                                {layers_names{1}} {''} {layers_d(1)} {layers_lambda(1)} {''} {''} {layers_N_layer(1)} {''} {layers_T_ini(1)} {layers_phi_ini(1)}
+                                {layers_names{2}} {''} {layers_d(2)} {layers_lambda(2)} {''} {''} {layers_N_layer(2)} {''} {layers_T_ini(2)} {layers_phi_ini(2)}
+                                {layers_names{3}} {''} {layers_d(3)} {layers_lambda(3)} {''} {''} {layers_N_layer(3)} {''} {layers_T_ini(3)} {layers_phi_ini(3)}
+                                {layers_names{4}} {''} {layers_d(4)} {layers_lambda(4)} {''} {''} {layers_N_layer(4)} {''} {layers_T_ini(4)} {layers_phi_ini(4)}
+                                {layers_names{5}} {''} {layers_d(5)} {layers_lambda(5)} {''} {''} {layers_N_layer(5)} {''} {layers_T_ini(5)} {layers_phi_ini(5)}
+                                {layers_names{6}} {''} {layers_d(6)} {layers_lambda(6)} {''} {''} {layers_N_layer(6)} {''} {layers_T_ini(6)} {layers_phi_ini(6)}
+                                {layers_names{7}} {''} {layers_d(7)} {layers_lambda(7)} {''} {''} {layers_N_layer(7)} {''} {layers_T_ini(7)} {layers_phi_ini(7)}
+                                {layers_names{8}} {''} {layers_d(8)} {layers_lambda(8)} {''} {''} {layers_N_layer(8)} {''} {layers_T_ini(8)} {layers_phi_ini(8)}
+                                {layers_names{9}} {''} {layers_d(9)} {layers_lambda(9)} {''} {''} {layers_N_layer(9)} {''} {layers_T_ini(9)} {layers_phi_ini(9)}
+                                {layers_names{10}} {''} {layers_d(10)} {layers_lambda(10)} {''} {''} {layers_N_layer(10)} {''} {layers_T_ini(10)} {layers_phi_ini(10)}
                                 {'d_active'} {-1} {''} {''} {''} {''} {''} {''} {''} {''}
                                 {'T_active'} {-1} {''} {''} {''} {''} {''} {''} {''} {''}
                                 {'Phi_active'} {-1} {''} {''} {''} {''} {''} {''} {''} {''}
@@ -737,11 +737,11 @@ classdef CONSTRUCTION
                                 else
                                     layers_path{ll} = 'not defined';
                                 end
-                                layers_d(ll) = building.construction(variant_construction).structure(jj).parameter.d(ll);
+                                layers_d(ll) = building.construction(variant_construction).structure(jj).parameter.layers_d(ll);
                                 %layers_lambda(ll) = building.construction(variant_construction).structure(jj).parameter.layers_names(ll);
                                 %layers_rho(ll) = building.construction(variant_construction).structure(jj).parameter.layers_names(ll);
                                 %layers_cp(ll) = building.construction(variant_construction).structure(jj).parameter.layers_names(ll);
-                                layers_n_layer_beuken(ll) = building.construction(variant_construction).structure(jj).parameter.N_layer(ll);
+                                layers_N_layer(ll) = building.construction(variant_construction).structure(jj).parameter.layers_N_layer(ll);
                                 if isfield(building.construction(variant_construction).structure(jj).parameter, 'n_layer_hygrothermal_layer')
                                     layers_n_layer_hygrothermal(ll) = building.construction(variant_construction).structure(jj).parameter.n_layer_hygrothermal_layer(ll);
                                     n_layer_progressive = n_layer_progressive + building.construction(variant_construction).structure(jj).parameter.n_layer_hygrothermal_layer(ll);
@@ -762,7 +762,7 @@ classdef CONSTRUCTION
                                 %layers_lambda(kk) ='';
                                 %layers_rho(kk) ='';
                                 %layers_cp(kk) ='';
-                                layers_n_layer_beuken(kk) = nan;
+                                layers_N_layer(kk) = nan;
                                 layers_n_layer_hygrothermal(kk) = nan;
                                 layers_T_ini(kk) = nan;
                                 layers_phi_ini(kk) = nan;
@@ -770,16 +770,16 @@ classdef CONSTRUCTION
 
                             matrix_to_write_constr = [{'NAME'} {building.construction(variant_construction).structure(jj).name} {''} {''} {''} {''} {''} {''} {'T_ini'} {'phi_ini'}
                             {'name'} {'path'} {'d'} {'lambda'} {'rho'} {'cp'} {'n_layer_beuken'} {'n_layer_hygrothermal'} {building.construction(variant_construction).structure(jj).parameter.T_ini_hygro(1)-273.15} {building.construction(variant_construction).structure(jj).parameter.Phi_ini_hygro(1)*100} 
-                            {layers_names{1}} {layers_path{1}} {layers_d(1)} {''} {''} {''} {layers_n_layer_beuken(1)} {layers_n_layer_hygrothermal(1)} {layers_T_ini(1)} {layers_phi_ini(1)}
-                            {layers_names{2}} {layers_path{2}} {layers_d(2)} {''} {''} {''} {layers_n_layer_beuken(2)} {layers_n_layer_hygrothermal(2)} {layers_T_ini(2)} {layers_phi_ini(2)}
-                            {layers_names{3}} {layers_path{3}} {layers_d(3)} {''} {''} {''} {layers_n_layer_beuken(3)} {layers_n_layer_hygrothermal(3)} {layers_T_ini(3)} {layers_phi_ini(3)}
-                            {layers_names{4}} {layers_path{4}} {layers_d(4)} {''} {''} {''} {layers_n_layer_beuken(4)} {layers_n_layer_hygrothermal(4)} {layers_T_ini(4)} {layers_phi_ini(4)}
-                            {layers_names{5}} {layers_path{5}} {layers_d(5)} {''} {''} {''} {layers_n_layer_beuken(5)} {layers_n_layer_hygrothermal(5)} {layers_T_ini(5)} {layers_phi_ini(5)}
-                            {layers_names{6}} {layers_path{6}} {layers_d(6)} {''} {''} {''} {layers_n_layer_beuken(6)} {layers_n_layer_hygrothermal(6)} {layers_T_ini(6)} {layers_phi_ini(6)}
-                            {layers_names{7}} {layers_path{7}} {layers_d(7)} {''} {''} {''} {layers_n_layer_beuken(7)} {layers_n_layer_hygrothermal(7)} {layers_T_ini(7)} {layers_phi_ini(7)}
-                            {layers_names{8}} {layers_path{8}} {layers_d(8)} {''} {''} {''} {layers_n_layer_beuken(8)} {layers_n_layer_hygrothermal(8)} {layers_T_ini(8)} {layers_phi_ini(8)}
-                            {layers_names{9}} {layers_path{9}} {layers_d(9)} {''} {''} {''} {layers_n_layer_beuken(9)} {layers_n_layer_hygrothermal(9)} {layers_T_ini(9)} {layers_phi_ini(9)}
-                            {layers_names{10}} {layers_path{10}} {layers_d(10)} {''} {''} {''} {layers_n_layer_beuken(10)} {layers_n_layer_hygrothermal(10)} {layers_T_ini(10)} {layers_phi_ini(10)}
+                            {layers_names{1}} {layers_path{1}} {layers_d(1)} {''} {''} {''} {layers_N_layer(1)} {layers_n_layer_hygrothermal(1)} {layers_T_ini(1)} {layers_phi_ini(1)}
+                            {layers_names{2}} {layers_path{2}} {layers_d(2)} {''} {''} {''} {layers_N_layer(2)} {layers_n_layer_hygrothermal(2)} {layers_T_ini(2)} {layers_phi_ini(2)}
+                            {layers_names{3}} {layers_path{3}} {layers_d(3)} {''} {''} {''} {layers_N_layer(3)} {layers_n_layer_hygrothermal(3)} {layers_T_ini(3)} {layers_phi_ini(3)}
+                            {layers_names{4}} {layers_path{4}} {layers_d(4)} {''} {''} {''} {layers_N_layer(4)} {layers_n_layer_hygrothermal(4)} {layers_T_ini(4)} {layers_phi_ini(4)}
+                            {layers_names{5}} {layers_path{5}} {layers_d(5)} {''} {''} {''} {layers_N_layer(5)} {layers_n_layer_hygrothermal(5)} {layers_T_ini(5)} {layers_phi_ini(5)}
+                            {layers_names{6}} {layers_path{6}} {layers_d(6)} {''} {''} {''} {layers_N_layer(6)} {layers_n_layer_hygrothermal(6)} {layers_T_ini(6)} {layers_phi_ini(6)}
+                            {layers_names{7}} {layers_path{7}} {layers_d(7)} {''} {''} {''} {layers_N_layer(7)} {layers_n_layer_hygrothermal(7)} {layers_T_ini(7)} {layers_phi_ini(7)}
+                            {layers_names{8}} {layers_path{8}} {layers_d(8)} {''} {''} {''} {layers_N_layer(8)} {layers_n_layer_hygrothermal(8)} {layers_T_ini(8)} {layers_phi_ini(8)}
+                            {layers_names{9}} {layers_path{9}} {layers_d(9)} {''} {''} {''} {layers_N_layer(9)} {layers_n_layer_hygrothermal(9)} {layers_T_ini(9)} {layers_phi_ini(9)}
+                            {layers_names{10}} {layers_path{10}} {layers_d(10)} {''} {''} {''} {layers_N_layer(10)} {layers_n_layer_hygrothermal(10)} {layers_T_ini(10)} {layers_phi_ini(10)}
                             {'d_active'} {building.construction(variant_construction).structure(jj).parameter.d_active} {''} {''} {''} {''} {''} {''} {''} {''}
                             {'T_active'} {building.construction(variant_construction).structure(jj).parameter.T_dactive} {''} {''} {''} {''} {''} {''} {''} {''}
                             {'Phi_active'} {building.construction(variant_construction).structure(jj).parameter.Phi_dactive} {''} {''} {''} {''} {''} {''} {''} {''}
@@ -794,7 +794,7 @@ classdef CONSTRUCTION
                            for ll = 1: size(building.construction(variant_construction).structure(jj).parameter.layers_names,2)
                                 layers_names(ll) = building.construction(variant_construction).structure(jj).parameter.layers_names(ll);
                                 %layers_path(ll) = building.construction(variant_construction).structure(jj).parameter.layers_names(ll); %path
-                                layers_d(ll) = building.construction(variant_construction).structure(jj).parameter.d(ll);
+                                layers_d(ll) = building.construction(variant_construction).structure(jj).parameter.layers_d(ll);
                                 layers_lambda(ll) = building.construction(variant_construction).structure(jj).parameter.layers_lambda(ll);
                                 layers_rho(ll) = building.construction(variant_construction).structure(jj).parameter.layers_rho(ll);
 %                                 try %was inserted because of problems
@@ -820,7 +820,7 @@ classdef CONSTRUCTION
 %                                 nl=building.construction(variant_construction).structure(jj).parameter.layers_N_layer(ll);
 %                                 end
 %                                 if exist('nl','var')==1;
-                                layers_n_layer_beuken(ll) = building.construction(variant_construction).structure(jj).parameter.layers_N_layer(ll);
+                                layers_N_layer(ll) = building.construction(variant_construction).structure(jj).parameter.layers_N_layer(ll);
 %                                 else
 %                                 layers_n_layer_beuken(ll) = building.construction(variant_construction).structure(jj).parameter.N_layer(ll);
 %                                 end
@@ -836,7 +836,7 @@ classdef CONSTRUCTION
                                 layers_lambda(kk) =nan;
                                 layers_rho(kk) =nan;
                                 layers_cp(kk) =nan;
-                                layers_n_layer_beuken(kk) = nan;
+                                layers_N_layer(kk) = nan;
                                 %layers_n_layer_hygrothermal(kk) = nan;
                                 layers_T_ini(kk) = nan;
                                 layers_phi_ini(kk) = nan;
@@ -844,16 +844,16 @@ classdef CONSTRUCTION
 
                             matrix_to_write_constr = [{'NAME'} {building.construction(variant_construction).structure(jj).name} {''} {''} {''} {''} {''} {''} {'T_ini'} {'phi_ini'}
                                 {'name'} {'path'} {'d'} {'lambda'} {'rho'} {'cp'} {'n_layer_beuken'} {'n_layer_hygrothermal'} {''} {''} 
-                                {layers_names{1}} {''} {layers_d(1)} {layers_lambda(1)} {layers_rho(1)} {layers_cp(1)} {layers_n_layer_beuken(1)} {''} {layers_T_ini(1)} {layers_phi_ini(1)}
-                                {layers_names{2}} {''} {layers_d(2)} {layers_lambda(2)} {layers_rho(2)} {layers_cp(2)} {layers_n_layer_beuken(2)} {''} {layers_T_ini(2)} {layers_phi_ini(2)}
-                                {layers_names{3}} {''} {layers_d(3)} {layers_lambda(3)} {layers_rho(3)} {layers_cp(3)} {layers_n_layer_beuken(3)} {''} {layers_T_ini(3)} {layers_phi_ini(3)}
-                                {layers_names{4}} {''} {layers_d(4)} {layers_lambda(4)} {layers_rho(4)} {layers_cp(4)} {layers_n_layer_beuken(4)} {''} {layers_T_ini(4)} {layers_phi_ini(4)}
-                                {layers_names{5}} {''} {layers_d(5)} {layers_lambda(5)} {layers_rho(5)} {layers_cp(5)} {layers_n_layer_beuken(5)} {''} {layers_T_ini(5)} {layers_phi_ini(5)}
-                                {layers_names{6}} {''} {layers_d(6)} {layers_lambda(6)} {layers_rho(6)} {layers_cp(6)} {layers_n_layer_beuken(6)} {''} {layers_T_ini(6)} {layers_phi_ini(6)}
-                                {layers_names{7}} {''} {layers_d(7)} {layers_lambda(7)} {layers_rho(7)} {layers_cp(7)} {layers_n_layer_beuken(7)} {''} {layers_T_ini(7)} {layers_phi_ini(7)}
-                                {layers_names{8}} {''} {layers_d(8)} {layers_lambda(8)} {layers_rho(8)} {layers_cp(8)} {layers_n_layer_beuken(8)} {''} {layers_T_ini(8)} {layers_phi_ini(8)}
-                                {layers_names{9}} {''} {layers_d(9)} {layers_lambda(9)} {layers_rho(9)} {layers_cp(9)} {layers_n_layer_beuken(9)} {''} {layers_T_ini(9)} {layers_phi_ini(9)}
-                                {layers_names{10}} {''} {layers_d(10)} {layers_lambda(10)} {layers_rho(10)} {layers_cp(10)} {layers_n_layer_beuken(10)} {''} {layers_T_ini(10)} {layers_phi_ini(10)}
+                                {layers_names{1}} {''} {layers_d(1)} {layers_lambda(1)} {layers_rho(1)} {layers_cp(1)} {layers_N_layer(1)} {''} {layers_T_ini(1)} {layers_phi_ini(1)}
+                                {layers_names{2}} {''} {layers_d(2)} {layers_lambda(2)} {layers_rho(2)} {layers_cp(2)} {layers_N_layer(2)} {''} {layers_T_ini(2)} {layers_phi_ini(2)}
+                                {layers_names{3}} {''} {layers_d(3)} {layers_lambda(3)} {layers_rho(3)} {layers_cp(3)} {layers_N_layer(3)} {''} {layers_T_ini(3)} {layers_phi_ini(3)}
+                                {layers_names{4}} {''} {layers_d(4)} {layers_lambda(4)} {layers_rho(4)} {layers_cp(4)} {layers_N_layer(4)} {''} {layers_T_ini(4)} {layers_phi_ini(4)}
+                                {layers_names{5}} {''} {layers_d(5)} {layers_lambda(5)} {layers_rho(5)} {layers_cp(5)} {layers_N_layer(5)} {''} {layers_T_ini(5)} {layers_phi_ini(5)}
+                                {layers_names{6}} {''} {layers_d(6)} {layers_lambda(6)} {layers_rho(6)} {layers_cp(6)} {layers_N_layer(6)} {''} {layers_T_ini(6)} {layers_phi_ini(6)}
+                                {layers_names{7}} {''} {layers_d(7)} {layers_lambda(7)} {layers_rho(7)} {layers_cp(7)} {layers_N_layer(7)} {''} {layers_T_ini(7)} {layers_phi_ini(7)}
+                                {layers_names{8}} {''} {layers_d(8)} {layers_lambda(8)} {layers_rho(8)} {layers_cp(8)} {layers_N_layer(8)} {''} {layers_T_ini(8)} {layers_phi_ini(8)}
+                                {layers_names{9}} {''} {layers_d(9)} {layers_lambda(9)} {layers_rho(9)} {layers_cp(9)} {layers_N_layer(9)} {''} {layers_T_ini(9)} {layers_phi_ini(9)}
+                                {layers_names{10}} {''} {layers_d(10)} {layers_lambda(10)} {layers_rho(10)} {layers_cp(10)} {layers_N_layer(10)} {''} {layers_T_ini(10)} {layers_phi_ini(10)}
                                 {'d_active'} {building.construction(variant_construction).structure(jj).parameter.d_active} {''} {''} {''} {''} {''} {''} {''} {''}
                                 {'T_active'} {building.construction(variant_construction).structure(jj).parameter.T_dactive} {''} {''} {''} {''} {''} {''} {''} {''}
                                 {'Phi_active'} {building.construction(variant_construction).structure(jj).parameter.Phi_dactive} {''} {''} {''} {''} {''} {''} {''} {''}
@@ -986,20 +986,20 @@ classdef CONSTRUCTION
                 parameter.colors(ii,:) = rand*[0.8 0.8 0.8];
             end
             parameter.names = names;
-            parameter.d_layer = d;
-            parameter.d = d;
-            parameter.N_layer = n_layer_beuken; 
-            parameter.lambda_layer = lambda; 
-            parameter.c_layer = cp; 
-            parameter.rho_layer = rho;
+            parameter.layers_d = d; %%
+%             parameter.d = d;
+            parameter.layers_N_layer = n_layer_beuken; 
+            parameter.layers_lambda = lambda; 
+            parameter.layers_cp = cp; 
+            parameter.layers_rho = rho;
             parameter.R_si = 0.0; 
             parameter.R_se = 0.0;
             parameter.T_active = 0;
             
             [parameter.xmesh_beu parameter.lambda parameter.rho parameter.cp ...
             parameter.tau_all parameter.D parameter.R parameter.U ...
-            parameter.C parameter.tau] = wall_node_optim_(obj, parameter.d_layer, parameter.lambda_layer, ...
-            parameter.rho_layer, parameter.c_layer, parameter.N_layer, ...
+            parameter.C parameter.tau] = wall_node_optim_(obj, parameter.layers_d, parameter.layers_lambda, ...
+            parameter.layers_rho, parameter.layers_cp, parameter.layers_N_layer, ...
             parameter.T_active, parameter.R_si,...
             parameter.R_se, 0);
             
@@ -1046,7 +1046,7 @@ classdef CONSTRUCTION
             for ii=1:number_layer
                 parameter.layers_colors(ii,:)=rand*[0.8 0.8 0.8];
             end
-            parameter.N_layer = n_layer_beuken; 
+            parameter.layers_N_layer = n_layer_beuken; 
 %             parameter.d_layer = parameter.d;
 %             parameter.lambda = parameter.lambda;
 %             parameter.c_layer = parameter.cp;
