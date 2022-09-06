@@ -618,6 +618,8 @@ classdef CONSTRUCTION
                         T_source = zeros(sum(raw_n_layer_hygrothermal_layer),1);
                         Phi_source = zeros(sum(raw_n_layer_hygrothermal_layer),1);
                         parameter = create_parameter_structure_hygrothermal(obj, raw_name_structure, parameter.model, jj-1, raw_d_layer, raw_n_layer_beuken_layer, raw_n_layer_hygrothermal_layer, raw_path_layer, raw_name_layer, raw_T_ini, raw_phi_ini, T_source, Phi_source);
+                        parameter.layers_d = raw_d_layer;  %& controlla
+
                     else    % UA
                         parameter.d = raw_d_layer; %controlla
                         Rsi = 0.13;
@@ -647,7 +649,6 @@ classdef CONSTRUCTION
                     parameter.Phi_dactive = raw_Phi_active;
                     parameter.T_dactive = raw_T_active;
                     
-%                     parameter.d = raw_d_layer; & controlla
                     
                     parameter.type = 0;
                                         
@@ -1041,7 +1042,7 @@ classdef CONSTRUCTION
             % UA and RC
             parameter.name = name;
             parameter.model = model;
-            parameter.d = d;
+            parameter.layers_d = d;
             parameter.layers_names = names;
             for ii=1:number_layer
                 parameter.layers_colors(ii,:)=rand*[0.8 0.8 0.8];
@@ -1055,7 +1056,7 @@ classdef CONSTRUCTION
             parameter.R_se = 0.0;
             
             % parameters for the RC model model
-            [parameter.xmesh_beu parameter.lambda parameter.rho parameter.cp parameter.tau_all parameter.D parameter.R parameter.U parameter.C parameter.tau] = wall_node_optim_(obj, parameter.d, parameter.lambda_hygro, parameter.rho_hygro, parameter.cp_hygro, parameter.N_layer, parameter.T_dactive, parameter.R_si, parameter.R_se, 0); 
+            [parameter.xmesh_beu parameter.lambda parameter.rho parameter.cp parameter.tau_all parameter.D parameter.R parameter.U parameter.C parameter.tau] = wall_node_optim_(obj, parameter.layers_d, parameter.lambda_hygro, parameter.rho_hygro, parameter.cp_hygro, parameter.layers_N_layer, parameter.T_dactive, parameter.R_si, parameter.R_se, 0); 
             
         end
         
