@@ -621,16 +621,18 @@ classdef CONSTRUCTION
                         parameter.layers_d = raw_d_layer;  %& controlla
 
                     else    % UA
-                        parameter.d = raw_d_layer; %controlla
-                        Rsi = 0.13;
+                        parameter.layers_d = raw_d_layer; 
+                        Rsi = 0; %0.13;
                         R_tot = 0;
                         for jk = 1:length(raw_d_layer)
                             if ~isempty(raw_d_layer(jk))
                                 R_tot = R_tot + raw_d_layer(jk) / raw_lambda_layer(jk);
                             end
                         end
-                        Rse = 0.04;
+                        Rse = 0; %0.04;
                         parameter.U = 1/(Rsi+R_tot+Rse);
+                        parameter.Rsi = Rsi;
+                        parameter.Rse = Rse;
                     end
                     
                     parameter.layers_names = raw_name_layer;
@@ -649,6 +651,8 @@ classdef CONSTRUCTION
                     parameter.Phi_dactive = raw_Phi_active;
                     parameter.T_dactive = raw_T_active;
                     
+%                     parameter.d = raw_d_layer; % controlla
+
                     
                     parameter.type = 0;
                                         
