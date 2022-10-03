@@ -296,6 +296,7 @@ classdef CONSTRUCTION
                         parameter.Rse = 0.0;
                         %  parameter.N_layer = xmesh_beu; %not needed
                         parameter.xmesh_beu = xmesh_beu;
+                        parameter.d = xmesh_beu;
                         parameter.lambda = lambda;
                         parameter.rho = rho;
                         parameter.cp = cp;
@@ -473,6 +474,7 @@ classdef CONSTRUCTION
                 emission_2 = 0.94;
 %                 parameter.N_layer = d; %not needed
                 parameter.xmesh_beu = d;
+                parameter.d = d;
                 parameter.lambda = U;
                 parameter.rho = 50;
                 parameter.cp = 1000;
@@ -511,6 +513,7 @@ classdef CONSTRUCTION
                 
 %                 parameter.N_layer = d;
                 parameter.xmesh_beu = d;
+                parameter.d = d;
                 parameter.lambda = U;
                 parameter.rho = 50;
                 parameter.cp = 1000;
@@ -547,6 +550,7 @@ classdef CONSTRUCTION
                 emission_2 = 0.94;              
 %                 parameter.N_layer = d;
                 parameter.xmesh_beu = d;
+                parameter.d = d;
                 parameter.lambda = U;
                 parameter.rho = 50;
                 parameter.cp = 1000;
@@ -1176,6 +1180,7 @@ classdef CONSTRUCTION
             T_active, parameter.R_si,...
             parameter.R_se, 0);
             
+            parameter.d = parameter.xmesh_beu;
             parameter.d_active = -1;
         end
        
