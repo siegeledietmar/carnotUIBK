@@ -136,6 +136,41 @@ classdef BOUNDARY
                     end
                     range = 'E32:P32';
                     [~, ~, data] = xlsread(filename, sheet, range);
+            
+            for ii = 1:12
+            temp_ground(ii) = data{1,ii};
+            end
+            temperature_time = [0 31 59 90 120 151 181 212 243 273 304 334]*24*3600;
+            temperature_value = temp_ground;
+            obj = obj.add_ground_set_temperature(building, 1, 'ground_from_PHPP', 2, temperature_time, temperature_value);
+            
+             case '10.2'
+    %                     if language
+    %                         sheet = 'Erdreich';
+    %                     else
+    %                         sheet = 'Ground';
+    %                     end
+    %                     range = 'E110:P111';
+    %                     [~, ~, data] = xlsread(filename, sheet, range);
+    %                     index_raw_win = 1;
+    %                     index_column_win = 1:12;
+    %                     index_raw_sum = 2;
+    %                     index_column_sum = 1:12;
+    %             end
+    %             for ii = 1:12
+    %             temp_ground_win(ii) = data{index_raw_win,index_column_win(ii)};
+    %             temp_ground_sum(ii) = data{index_raw_sum,index_column_sum(ii)};
+    %             end
+    %             temperature_time = [0 31 59 90 120 151 181 212 243 273 304 334]*24*3600;
+    %             temperature_value = [temp_ground_win(1:4) temp_ground_sum(5:9) temp_ground_win(10:12)];
+    %             obj = obj.add_ground_set_temperature(building, 1, 'ground_from_PHPP', 2, temperature_time, temperature_value);
+                    if language
+                        sheet = 'Klima';
+                    else
+                        sheet = 'Climate';
+                    end
+                    range = 'E35:P35';
+                    [~, ~, data] = xlsread(filename, sheet, range);
             end
             for ii = 1:12
             temp_ground(ii) = data{1,ii};
@@ -181,6 +216,39 @@ classdef BOUNDARY
                         sheet = 'Verification';
                     end
                     range = 'K27:N29';
+                    [~, ~, data2] = xlsread(filename, sheet, range);
+                    index_raw_setpointwin = 1;
+                    index_column_setpointwin = 1;
+                     index_raw_setpointsum = 1;
+                     index_column_setpointsum = 4;
+                     
+                 case '10.2'
+                    if language
+                        sheet = 'Klima';
+                    else
+                        sheet = 'Climate';
+                    end
+                    range = 'E26:P26';
+                    [~, ~, data] = xlsread(filename, sheet, range);
+                    range = 'E35:P35';
+                    [~, ~, data_B] = xlsread(filename, sheet, range);
+                    
+                    if language
+                        sheet = 'Flächen';
+                    else
+                        sheet = 'Areas';
+                    end
+                    range = 'Z19:Z21';
+                    [~, ~, data1] = xlsread(filename, sheet, range);
+                    range = 'K19:K21';
+                    [~, ~, data1_B] = xlsread(filename, sheet, range);
+                    
+                    if language
+                        sheet = 'Nachweis';
+                    else
+                        sheet = 'Verification';
+                    end
+                    range = 'K28:N30';
                     [~, ~, data2] = xlsread(filename, sheet, range);
                     index_raw_setpointwin = 1;
                     index_column_setpointwin = 1;

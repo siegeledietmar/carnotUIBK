@@ -1290,6 +1290,15 @@ classdef THERMALZONE
                     end
                     range = 'K29';
                     [~, ~, data] = xlsread(filename, sheet, range);
+                
+                 case '10.2'
+                    if language
+                        sheet = 'Nachweis';
+                    else
+                        sheet = 'Verification';
+                    end
+                    range = 'K30';
+                    [~, ~, data] = xlsread(filename, sheet, range);
             end
             obj.zone(number_zone).cp_spec = data{1,1}*3600;
             obj.zone(number_zone).orientation_important = orientation_important;
