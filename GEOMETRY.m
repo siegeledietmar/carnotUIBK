@@ -397,14 +397,14 @@ classdef GEOMETRY
 
                         %definition wall_orientation
                         if wall_pfad.orientation_slope == 90
-                           if (wall_pfad.orientation_azimuth>=-45 && wall_pfad.orientation_azimuth<45) || (wall_pfad.orientation_azimuth>=315 && wall_pfad.orientation_azimuth<=405)
+                           if (wall_pfad.orientation_azimuth>=-45-360 && wall_pfad.orientation_azimuth<45-360) || (wall_pfad.orientation_azimuth>=-45 && wall_pfad.orientation_azimuth<45) || (wall_pfad.orientation_azimuth>=315 && wall_pfad.orientation_azimuth<=405)
                                wall_orientation{wall_count} = 'S';
                            elseif (wall_pfad.orientation_azimuth>=135 && wall_pfad.orientation_azimuth<225) || (wall_pfad.orientation_azimuth>=-225 && wall_pfad.orientation_azimuth<-135)
                                wall_orientation{wall_count} = 'N';
                            elseif (wall_pfad.orientation_azimuth>=225 && wall_pfad.orientation_azimuth<315) || (wall_pfad.orientation_azimuth>=-135 && wall_pfad.orientation_azimuth<-45)
-                               wall_orientation{wall_count} = 'W';
-                           elseif (wall_pfad.orientation_azimuth>=45 && wall_pfad.orientation_azimuth<135)
-                               wall_orientation{wall_count} = 'E';
+                               wall_orientation{wall_count} = 'E'; %EV, before: 'W'
+                           elseif (wall_pfad.orientation_azimuth>=45 && wall_pfad.orientation_azimuth<135) || (wall_pfad.orientation_azimuth>=45-360 && wall_pfad.orientation_azimuth<135-360)
+                               wall_orientation{wall_count} = 'W'; %EV, before: 'E'
                            end
                         elseif wall_pfad.orientation_slope == 180 || wall_pfad.orientation_slope == (-180)
                             wall_orientation{wall_count} = 'floor';%'ceil'; %EV
@@ -1362,8 +1362,19 @@ classdef GEOMETRY
                         end
                         
                         % walls
-                        range = 'K40:AL140'; %EV, before: 'K40:AL240';
+                        range = 'K40:AL1000'; %EV, before: 'K40:AL240';
                         [~, ~, data] = xlsread1(filename, sheet, range);
+                        if language
+                            sheet = 'Flächen';
+                            idx_fl=find(strcmp(data(:,1),{'Wärmebrückeneingabe'}))-3;
+                        else
+                            sheet = 'Areas';
+                            idx_fl=find(strcmp(data(:,1),{'Thermal bridge inputs'}))-3;
+                        end
+                        %reshape the data matrix to avoid to include the
+                        %thermal bridges part
+                        data=data(1:idx_fl,:);
+                        
                         index_namenumb_wa = 1;
                         index_name_wa = 2;
                         index_group_bound = 3;
@@ -1411,6 +1422,8 @@ classdef GEOMETRY
                         index_raw_wind_e = 17;
                         index_n50 = 1;
                         index_volume_2 = 3;
+                        index_raw_volume_2 = index_raw_n50;
+
 
                         % windows
                         if language
@@ -1467,6 +1480,157 @@ classdef GEOMETRY
                                 break
                             end
                         end
+                        
+                   case '10.2'
+                        if language
+                            sheet = 'Flächen';
+                        else
+                            sheet = 'Areas';
+                        end
+                        
+                        % walls
+                        range = 'K40:AJ1000'; %EV, before: 'K40:AL240';
+                        [~, ~, data] = xlsread1(filename, sheet, range);
+                        if language
+                            sheet = 'Flächen';
+                            idx_fl=find(strcmp(data(:,1),{'Wärmebrückeneingabe'}))-3;
+                        else
+                            sheet = 'Areas';
+                            idx_fl=find(strcmp(data(:,1),{'Thermal bridge inputs'}))-3;
+                        end
+                        %reshape the data matrix to avoid to include the
+                        %thermal bridges part
+                        data=data(1:idx_fl,:);
+                        for jj = 1 : length({data{:,2}})
+                            if isnan(data{jj,2})
+                                idx=jj-1;
+                                break
+                            end
+                        end
+                        data=data(1:idx,:);
+
+                        index_namenumb_wa = 1;
+                        index_name_wa = 2;
+                        index_group_bound = 3;
+                        index_number_wa = 4;
+                        index_width_wa = 6;
+                        index_height_wa = 8;
+                        index_addition_wa = 10;
+                        index_additionm_wa = 12;
+                        index_azimuth_wa = 21;
+                        index_sum_wa = 16;
+                        index_slope_wa = 22;
+                        index_construction_wa = 17;
+                        indicator_walls = ones(size(data,1),1);
+                        for ii = 1:size(data,1)
+%                             ii
+                            if data{ii,index_number_wa}==0 || isempty(data{ii,index_number_wa}) || sum(isnan(data{ii,index_number_wa})) 
+                                indicator_walls(ii,1)=0;
+                            end
+                        end
+                        
+                        for hh= 1:length({data{:,index_group_bound}})
+                            GRUPPE=char(data{hh,index_group_bound});
+                            GRUPPE=str2num(GRUPPE(1:find(GRUPPE=='-')-1));        
+                            data(hh,index_group_bound)=  num2cell(GRUPPE);
+                            clear GRUPPE
+                        end
+
+                        % thermal bridges
+                        range = 'K8:N27';
+                        [~, ~, data3] = xlsread1(filename, sheet, range);
+                        index_temp_bo = 1;
+                        index_group_bo = 3;
+                        index_groupnumb_bo =4;
+                        index_raw_tb = 16:18;
+                        index_column_tbarea = 2;
+                        index_column_tbname = 3;
+                        index_column_tbbo = 1;
+
+                        heated_area = xlsread1(filename, sheet, 'Z34');
+
+                        % ventilation
+                        if language
+                            sheet = 'Lüftung';
+                        else
+                            sheet = 'Ventilation';
+                        end
+                        range = 'M8:N27';
+                        [~, ~, data5] = xlsread1(filename, sheet, range);
+                        index_raw_volume_1 = 1;
+                        index_volume_1 = 1;
+                        index_raw_n50 = 16;
+                        index_raw_wind_e = 12;
+                        index_n50 = 1;
+                        index_volume_2 = 1;
+                        index_raw_volume_2 = 15;
+
+                        % windows
+                        if language
+                            sheet = 'Fenster';
+                        else
+                            sheet = 'Windows';
+                        end
+                        range = 'L23:ET169'; %EV, before: 'L24:BQ580';
+                        [~, ~, data1] = xlsread1(filename, sheet, range);
+                        index_wall_wi = 9;
+                        index_name_wi = 3;
+                        index_number_wi = 1; 
+                        index_width_wi = 7;
+                        index_height_wi = 8;
+                        index_framelinks_wi = 44; %Rahmenmaße aus Blatt 'Komponenten' -> Breite links (not sure what this is in 10.2, breite rahmen öffenbar?)
+                        index_frameright_wi = 45;
+                        index_framebottom_wi = 47; 
+                        index_frametop_wi = 46;
+                        index_psitop_wi = 125;
+                        index_psibottom_wi = 126;
+                        index_psileft_wi = 123;
+                        index_psiright_wi = 124;
+                        index_constr1_wi = 10; % constr Glass
+                        index_constr2_wi = 11; % constr Frame
+                        indicator_windows = ones(size(data1,1),1);
+                        for ii = 1:size(data1,1)
+                            if data1{ii,index_number_wi}==0 || isempty(data1{ii,index_number_wi}) || sum(isnan(data1{ii,index_number_wi})) 
+                                % strcmp(data1(ii,index_name_wi),'-') || sum(isnan(data1{ii,index_name_wi})) || isempty(data1{ii,index_name_wi})
+                                indicator_windows(ii,1) = 0;
+                            end
+                        end
+                        
+                        
+                        ispos=find(not(sum(isspace(char(data1{:,2}))')));
+                        nopos=find(sum(isspace(char(data1{:,2}))'));
+                        
+                        if not(isempty(ispos))
+                           data1(ispos,3)=cellstr([char(data1{ispos,2})  char(ones(length(data1(ispos,2)),1) * ' ') char(data1{ispos,3})]);
+                        end
+                        if not(isempty(nopos))
+                           data1(nopos,3)=cellstr([char(ones(length(data1(nopos,2)),1) * ' ') char(data1{nopos,3})]);
+                        end
+                        
+                        % shading
+                        if language
+                            sheet = 'Verschattung';
+                        else
+                            sheet = 'Shading';
+                        end
+                        range = 'U23:AT174';
+                        [~, ~, data2] = xlsread1(filename, sheet, range);
+                        index_name_sh = 1;
+                        index_shtop1_sh = 12;
+                        index_shtop2_sh = 13;
+                        index_shside1_sh = 10;
+                        index_shside2_sh = 11;
+                        index_shhor1_sh = 9;
+                        index_shhor2_sh = 8;
+                        index_fswint_sh = 21;
+                        index_fssum_sh = 25;
+                        indicator_shading = ones(size(data1,1),1);                    
+                        for ii = 1:size(data2,1)
+                            if strcmp(data2(ii,index_name_sh),'-') || sum(isnan(data2{ii,index_name_sh})) || isempty(data2{ii,index_name_sh})
+                                indicator_shading(ii) = 0;
+                                break
+                            end
+                        end
 
                 end
 
@@ -1501,7 +1665,7 @@ classdef GEOMETRY
                             end
                             height_wa = height_wa - data{ii,index_additionm_wa}/width_wa;
                         end
-                        orientation_azimuth_wa = (data{ii,index_azimuth_wa}-180)*(-1);
+                        orientation_azimuth_wa = (data{ii,index_azimuth_wa}-180); %EV, before: orientation_azimuth_wa = (data{ii,index_azimuth_wa}-180)*(-1);
                         orientation_slope_wa = data{ii,index_slope_wa}; 
                         orientation_rotation_wa = 0;
                         for iik = 1:size(data3,1)
@@ -1770,7 +1934,7 @@ classdef GEOMETRY
                 wind_e_room = data5{index_raw_wind_e,index_n50};
                 area_room = heated_area;
                 volume = data5{index_raw_volume_1,index_volume_1};
-                heated_volume = data5{index_raw_n50,index_volume_2};
+                heated_volume = data5{index_raw_volume_2,index_volume_2};
                 if heated_volume == volume
                 else
                     warning('In PHPP heated volume different from the n50 volume')

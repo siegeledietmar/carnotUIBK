@@ -188,6 +188,71 @@ classdef HVAC
                         end
                         range = 'Q62';
                         [~, ~, data4] = xlsread(filename, sheet, range);
+                        
+                        
+                    case '10.2'
+                        if language
+                            sheet = 'Nachweis';
+                        else
+                            sheet = 'Verification';
+                        end
+                        range = 'K28:N30';
+                        [~, ~, data] = xlsread(filename, sheet, range);
+                        index_raw_setpointwin = 1;
+                        index_column_setpointwin = 1;
+                        index_raw_setpointsum = 1;
+                        index_column_setpointsum = 4;
+                        index_raw_mechcool = 3;
+                        index_column_mechcool = 4;
+                        index_raw_intgainssum = 2;
+                        index_column_intgainssum = 4;
+                        index_raw_intgainswin = 2;
+                        index_column_intgainswin = 1;
+                        
+                        if language
+                            sheet = 'Lüftung';
+                        else
+                            sheet = 'Ventilation';
+                        end
+                        range = 'N23:P100';
+                        [~, ~, data1] = xlsread(filename, sheet, range);
+                        index_raw_vdot = 57;
+                        index_column_vdot = 3;
+                        index_raw_eta = 78;
+                        index_column_eta = 1;
+                        
+                        if language
+                            sheet = 'Heizlast';
+                        else
+                            sheet = 'Heating load';
+                        end
+                        range = 'Q90';
+                        [~, ~, data2] = xlsread(filename, sheet, range);
+                        
+                        if language
+                            sheet = 'SommLuft';
+                        else
+                            sheet = 'SummVent';
+                        end
+                        range = 'L14:R57';
+                        [~, ~, data3] = xlsread(filename, sheet, range);
+                        index_raw_rate_s = 1;
+                        index_column_rate_s = 1;
+                        index_raw_vdot_s = 26;
+                        index_column_vdot_s = 1;
+                        index_raw_dec_no = 2:4;
+                        index_raw_dec_yes = 5;
+                        index_column_dec = 7;
+                        index_raw_add_1 = 40;
+                        index_raw_add_2 = 42;
+                        index_column_add = 4;
+                        if language
+                            sheet = 'Kühllast';
+                        else
+                            sheet = 'Cooling load';
+                        end
+                        range = 'Q66';
+                        [~, ~, data4] = xlsread(filename, sheet, range);
                 end
                 
             parameter.setpointwin = data{index_raw_setpointwin, index_column_setpointwin};
@@ -219,7 +284,7 @@ classdef HVAC
             hr_2 = data3{index_raw_dec_no(2), index_column_dec};
             hr_3 = data3{index_raw_dec_no(3), index_column_dec};
             hr_4 = data3{index_raw_dec_yes, index_column_dec};
-            if ~isnan(hr_1) || ~isnan(hr_2) || ~isnan(hr_3)
+            if ~isnan(hr_1) || ~isnan(hr_2) || ~isnan(hr_3) || (isnan(hr_1) & isnan(hr_2) &isnan(hr_3) & isnan(hr_4))
                 eta_s = 0;
             elseif ~isnan(hr_4)
                 eta_s = data1{index_raw_eta, index_column_eta};
