@@ -363,6 +363,19 @@ classdef GAINS
                     index_column_intloads = 3;
                     index_raw_area = 7;
                     index_column_area = 1;
+                    
+               case '10.2'
+                if language
+                    sheet = 'Nachweis';
+                else
+                    sheet = 'Verification';
+                end
+                range = 'I29:K35';
+                [~, ~, data] = xlsread(filename, sheet, range);
+                index_raw_intloads = 1;
+                index_column_intloads = 3;
+                index_raw_area = 7;
+                index_column_area = 1;
             end
             timevalues = [0:24]*3600;
             values1 = ones(1,24)*data{index_raw_intloads,index_column_intloads};
