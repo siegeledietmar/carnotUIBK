@@ -266,23 +266,25 @@ classdef CONSTRUCTION
                         model = 0;
                         parameter.model = model;
                         parameter.type = type;
-                        parameter.U = U;                        
+                        parameter.U = U;
+                        parameter.Rsi = 0.0;
+                        parameter.Rse = 0.0;
 %                         parameter.N_layer = d; %not needed
-                        parameter.xmesh_beu = d;
-                        parameter.lambda = lambda;
-                        parameter.rho = rho;
-                        parameter.cp = cp;
-                        parameter.tau = tau;
+%                         parameter.xmesh_beu = xmesh_beu; %d %not needed
+%                         parameter.lambda = lambda; %not needed
+%                         parameter.rho = rho; %not needed
+%                         parameter.cp = cp; %not needed
+%                         parameter.tau = tau; %not needed
                         parameter.T_ini_beuken = T_ini_beuken;
                         parameter.d_active = d_active;
                         parameter.T_dactive = T_dactive;
                         parameter.Phi_dactive = Phi_active;
-                        parameter.layers_N_layer = N_layer;
+%                         parameter.layers_N_layer = N_layer; %not needed
                         parameter.layers_names = layers_names;
                         parameter.layers_colors = layers_colors;
                         parameter.layers_lambda = lambda_layer;
-                        parameter.layers_rho = rho_layer;
-                        parameter.layers_cp = c_layer;
+%                         parameter.layers_rho = rho_layer; %not needed
+%                         parameter.layers_cp = c_layer; %not needed
                         parameter.layers_d = d;
                         
                     elseif strcmp(model_cons_wall,'RC')
@@ -290,6 +292,8 @@ classdef CONSTRUCTION
                         parameter.model = model;
                         parameter.type = type;
                         parameter.U = U;
+                        parameter.Rsi = 0.0;
+                        parameter.Rse = 0.0;
                         %  parameter.N_layer = xmesh_beu; %not needed
                         parameter.xmesh_beu = xmesh_beu;
                         parameter.lambda = lambda;
@@ -308,6 +312,7 @@ classdef CONSTRUCTION
                         parameter.layers_cp = c_layer;
                         parameter.layers_d = d;
                     end
+                    
                     
                     emission_1 = 0.94;
                     emission_2 = 0.94;
@@ -784,37 +789,39 @@ classdef CONSTRUCTION
                         parameter.layers_d = raw_d_layer;  %& controlla
 
                     else    % UA
-                        parameter.d = raw_d_layer; %controlla
-                        Rsi = 0.13;
+%                         
+                        Rsi = 0; %0.13;
                         R_tot = 0;
                         for jk = 1:length(raw_d_layer)
                             if ~isempty(raw_d_layer(jk))
                                 R_tot = R_tot + raw_d_layer(jk) / raw_lambda_layer(jk);
                             end
                         end
-                        Rse = 0.04;
+                        Rse = 0; %0.04;
                         parameter.U = 1/(Rsi+R_tot+Rse);
+                        parameter.Rsi = Rsi;
+                        parameter.Rse = Rse;
                     end
-                    
-                    parameter.layers_names = raw_name_layer;
-                    parameter.layers_lambda = raw_lambda_layer;
-                    parameter.layers_colors = [];
-                    for iii=1:(jj-1)
-                        parameter.layers_colors(iii,:) = rand*[0.85 0.85 0.85];
-                    end
-                    
-                    raw_emission_1 = raw_walls{ii+15,2};
-                    raw_emission_2 = raw_walls{ii+16,2};
-                    raw_absorption_2 = raw_walls{ii+17,2};
                     
                     parameter.T_ini_beuken = 20;
                     parameter.d_active = raw_d_active;
                     parameter.Phi_dactive = raw_Phi_active;
                     parameter.T_dactive = raw_T_active;
                     
+                    parameter.layers_names = raw_name_layer;
+                    parameter.layers_colors = [];
+                    for iii=1:(jj-1)
+                        parameter.layers_colors(iii,:) = rand*[0.85 0.85 0.85];
+                    end
+                    parameter.layers_lambda = raw_lambda_layer;
+                    parameter.layers_d = raw_d_layer; % check
                     
-                    parameter.type = 0;
-                                        
+                    raw_emission_1 = raw_walls{ii+15,2};
+                    raw_emission_2 = raw_walls{ii+16,2};
+                    raw_absorption_2 = raw_walls{ii+17,2};
+                    
+                  parameter.type = 0;  
+          
                     obj = add_structure(obj, raw_name_structure, parameter, raw_emission_1, raw_emission_2, raw_absorption_2);
                 end
             end
@@ -1158,13 +1165,15 @@ classdef CONSTRUCTION
             parameter.layers_rho = rho;
             parameter.R_si = 0.0; 
             parameter.R_se = 0.0;
-            parameter.T_active = 0;
+%             parameter.T_active = 0;
+            T_active =0;
+            
             
             [parameter.xmesh_beu parameter.lambda parameter.rho parameter.cp ...
             parameter.tau_all parameter.D parameter.R parameter.U ...
             parameter.C parameter.tau] = wall_node_optim_(obj, parameter.layers_d, parameter.layers_lambda, ...
             parameter.layers_rho, parameter.layers_cp, parameter.layers_N_layer, ...
-            parameter.T_active, parameter.R_si,...
+            T_active, parameter.R_si,...
             parameter.R_se, 0);
             
             parameter.d_active = -1;
@@ -1608,6 +1617,7 @@ classdef CONSTRUCTION
                 end
             end
 
+            
             C = zeros(1,length(d)+1);
             D_tot = sum(d);
             R_tot = sum(d./lambda);
