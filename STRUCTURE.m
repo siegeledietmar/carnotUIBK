@@ -286,11 +286,11 @@ classdef STRUCTURE
                         disp(['Emission: ' num2str(obj(ii).emission_1) ', Emission: ' num2str(obj(ii).emission_2) ', Absorbtion: ' num2str(obj(ii).absorption_2) ', Tau: ' num2str(obj(ii).parameter.tau_g_w) ])
                     end
                     if obj(ii).type == 0 || obj(ii).type == 2
-                        if length(obj(ii).parameter.d) ==1 && obj(ii).parameter.d==1
+                        if length(obj(ii).parameter.layers_d) ==1 && obj(ii).parameter.d==1
                         else
                             disp(['Layers: '])
-                            for ll = 1:length(obj(ii).parameter.d)
-                                disp([obj(ii).parameter.layers_names{ll} ' -> ' num2str(obj(ii).parameter.d(ll)*100) ' cm']);
+                            for ll = 1:length(obj(ii).parameter.layers_d)
+                                disp([obj(ii).parameter.layers_names{ll} ' -> ' num2str(obj(ii).parameter.layers_d(ll)*100) ' cm']);
                             end
                         end
                     end

@@ -171,6 +171,7 @@ classdef HVAC
                         end
                         range = 'L20:R63';
                         [~, ~, data3] = xlsread(filename, sheet, range);
+                        [~, ~, Vol_vent] = xlsread(filename, sheet, 'L7'); %to be improved (include this in data3 and change the indexes)
                         index_raw_rate_s = 1;
                         index_column_rate_s = 1;
                         index_raw_vdot_s = 26;
@@ -236,6 +237,7 @@ classdef HVAC
                         end
                         range = 'L14:R57';
                         [~, ~, data3] = xlsread(filename, sheet, range);
+                        [~, ~, Vol_vent] = xlsread(filename, sheet, 'L7'); %to be improved (include this in data3 and change the indexes)
                         index_raw_rate_s = 1;
                         index_column_rate_s = 1;
                         index_raw_vdot_s = 26;
@@ -251,7 +253,7 @@ classdef HVAC
                         else
                             sheet = 'Cooling load';
                         end
-                        range = 'Q66';
+                        range = 'Q66'; 
                         [~, ~, data4] = xlsread(filename, sheet, range);
                 end
                 
@@ -276,15 +278,17 @@ classdef HVAC
             else
                 parameter.mechcool = 1;
             end
+            
+            data3(cellfun(@isempty,data3)) = {NaN};
 
             vdot_w = data1{index_raw_vdot, index_column_vdot};
             vdot_s = data3{index_raw_rate_s, index_column_rate_s}*data3{index_raw_vdot_s, index_column_vdot_s};
-
+            
             hr_1 = data3{index_raw_dec_no(1), index_column_dec};
             hr_2 = data3{index_raw_dec_no(2), index_column_dec};
             hr_3 = data3{index_raw_dec_no(3), index_column_dec};
             hr_4 = data3{index_raw_dec_yes, index_column_dec};
-            if ~isnan(hr_1) || ~isnan(hr_2) || ~isnan(hr_3) || (isnan(hr_1) & isnan(hr_2) &isnan(hr_3) & isnan(hr_4))
+            if ~isnan(hr_1) || ~isnan(hr_2) || ~isnan(hr_3) || (isnan(hr_1) & isnan(hr_2) & isnan(hr_3) & isnan(hr_4))
                 eta_s = 0;
             elseif ~isnan(hr_4)
                 eta_s = data1{index_raw_eta, index_column_eta};
@@ -314,7 +318,7 @@ classdef HVAC
                 add_2 = 0;
             end
             add = add_1 + add_2;
-            parameter.night_vent_s.value = [add 0 add];
+            parameter.night_vent_s.value = [add 0 add]*Vol_vent;
             obj.system = [obj.system SYSTEM_HVAC(name, number, parameter, 1)];
             end
         end
