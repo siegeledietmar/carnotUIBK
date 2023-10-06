@@ -113,6 +113,7 @@ classdef RES
         results_HVAC = [];
         date_of_sim = '';
         description = '';
+        versions = '';
         time_simulation = 0;
         time_compilation = 0;
         list_zones = [];            %list of the zones (number) that are present in the model
@@ -130,6 +131,16 @@ classdef RES
         function obj = RES(number, building_saved, results_AIB, results_BDB, results_BOUNDARY, results_HVAC, date_of_sim, pre_time, time, description, PHPP, EXCEL, variant_geometry, variant_construction, variant_thermalzone, variant_boundary, variant_gains, variant_hvac)
             if nargin == 0
             else
+                AA=strfind(path, ';');
+                BB=strfind(path, 'CARNOT');
+                CC=sort(AA-BB(1));
+                DD=CC(1:2)+BB(1);
+                PP=path;
+                EE=strfind(path, 'carnotUIBK');
+                FF=sort(AA-EE(1));
+                GG=FF(1:2)+EE(1);
+                obj.versions = ['Matlab: ' version '; Carnot: ' PP(DD(1)+1:DD(2)) ' CarnotUIBK: ' PP(GG(1)+1:GG(2))];
+                clear AA BB CC DD PP EE FF DD GG;
                 obj.number = number;
                 obj.building_saved = building_saved;
                 obj.results_AIB = results_AIB;
