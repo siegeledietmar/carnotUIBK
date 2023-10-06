@@ -113,7 +113,8 @@ classdef RES
         results_HVAC = [];
         date_of_sim = '';
         description = '';
-        time_sim = 0;
+        time_simulation = 0;
+        time_compilation = 0;
         list_zones = [];            %list of the zones (number) that are present in the model
         PHPP = [];
         EXCEL = [];
@@ -126,7 +127,7 @@ classdef RES
     end
     
     methods
-        function obj = RES(number, building_saved, results_AIB, results_BDB, results_BOUNDARY, results_HVAC, date_of_sim, time_sim, description, PHPP, EXCEL, variant_geometry, variant_construction, variant_thermalzone, variant_boundary, variant_gains, variant_hvac)
+        function obj = RES(number, building_saved, results_AIB, results_BDB, results_BOUNDARY, results_HVAC, date_of_sim, pre_time, time, description, PHPP, EXCEL, variant_geometry, variant_construction, variant_thermalzone, variant_boundary, variant_gains, variant_hvac)
             if nargin == 0
             else
                 obj.number = number;
@@ -136,7 +137,8 @@ classdef RES
                 obj.results_BOUNDARY = results_BOUNDARY;
                 obj.results_HVAC = results_HVAC;
                 obj.date_of_sim = date_of_sim;
-                obj.time_sim = time_sim;
+                obj.time_compilation = pre_time;
+                obj.time_simulation = time;
                 obj.description = description;
                 obj.PHPP = PHPP;
                 obj.EXCEL = EXCEL;
