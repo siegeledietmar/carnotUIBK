@@ -424,7 +424,7 @@ classdef RES
             % 2 ... building object
             [En Pow area] = different_monthly_energies(obj, number_result, build, 1, 1);
             disp(['Result number ' num2str(number_result) ': INFORMATION'])
-            loaddir = eval(['''' build.name '\result_' num2str(number_result) '.mat''']);
+            loaddir = eval(['''' build.name '\result_' num2str(number_result) '.mat''']); %build.name
             if exist(loaddir, 'file') == 2
                 resultfile = load(loaddir);
                 disp (['Zones number = ' num2str(length(resultfile.results_building.list_zones))])
@@ -559,7 +559,7 @@ classdef RES
                 nargin_temp = 5;
             end
             if nargin_temp == 5 || nargin_temp == 6
-                loaddir = eval(['''' build.name '\result_' num2str(number_result) '.mat''']);
+                loaddir = eval(['''' build.name '\result_' num2str(number_result) '.mat''']); %build.name
                 if exist(loaddir, 'file') == 2
                     resultfile = load(loaddir);
                     for ii = 1:length(resultfile.results_building.list_zones)
@@ -773,7 +773,7 @@ classdef RES
                 disp(['Result number ' num2str(number_result) ': ENERGY DEMAND'])
             end
             if nargin == 3 || nargin == 4 || nargin == 5
-                loaddir = eval(['''' build.name '\result_' num2str(number_result) '.mat''']);
+                loaddir = eval(['''' build.name '\result_' num2str(number_result) '.mat''']); %build.name
                 if exist(loaddir, 'file') == 2
                     resultfile = load(loaddir);
                     if (resultfile.results_building.building_saved.runtime)<(24*365*3600)
@@ -901,7 +901,7 @@ classdef RES
                 end
             end
             if nargin == 5
-                loaddir = eval(['''' build.name '\result_' num2str(number_result) '.mat''']);
+                loaddir = eval(['''' build.name '\result_' num2str(number_result) '.mat''']); %build.name
                 if exist(loaddir, 'file') == 2
                     resultfile = load(loaddir);
                     if (resultfile.results_building.building_saved.runtime)<(24*365*3600)
@@ -995,7 +995,7 @@ classdef RES
                 disp(['Result number ' num2str(number_result) ': PLOT THE MONTHLY BALANCES'])
             end
             if nargin == 3 || nargin == 4 || nargin == 5
-                loaddir = eval(['''' build.name '\result_' num2str(number_result) '.mat''']);
+                loaddir = eval(['''' build.name '\result_' num2str(number_result) '.mat''']); %build.name
                 if exist(loaddir, 'file') == 2
                     resultfile = load(loaddir);
                     if (resultfile.results_building.building_saved.runtime)<(24*365*3600)
@@ -1553,7 +1553,7 @@ classdef RES
             disp(' ')
             
             if nargin == 3 || nargin == 4
-                loaddir = eval(['''' build.name '\result_' num2str(number_result) '.mat''']);
+                loaddir = eval(['''' build.name '\result_' num2str(number_result) '.mat''']); %build.name
                 if exist(loaddir, 'file') == 2
                     resultfile = load(loaddir);
                     if (resultfile.results_building.building_saved.runtime)<(24*365*3600)
@@ -1741,7 +1741,7 @@ classdef RES
                 disp(['Result number ' num2str(number_result) ': PLOT AMBIENT, BUILDING AND SOIL TEMPERATURE'])
             end
             if nargin == 3 || nargin == 4
-                loaddir = eval(['''' build.name '\result_' num2str(number_result) '.mat''']);
+                loaddir = eval(['''' build.name '\result_' num2str(number_result) '.mat''']); %build.name
                 if exist(loaddir, 'file') == 2
                     resultfile = load(loaddir);
                     if (resultfile.results_building.building_saved.runtime)<(24*365*3600)
@@ -1801,7 +1801,7 @@ classdef RES
                 disp(['Result number ' num2str(number_result) ': PLOT TEMPERATURE ARRANGED BY THE HOURS'])
             end
             if nargin == 3 || nargin == 4
-                loaddir = eval(['''' build.name '\result_' num2str(number_result) '.mat''']);
+                loaddir = eval(['''' build.name '\result_' num2str(number_result) '.mat''']); %build.name
                 if exist(loaddir, 'file') == 2
                     resultfile = load(loaddir);
                     if (resultfile.results_building.building_saved.runtime)<(24*365*3600)
@@ -1861,7 +1861,7 @@ classdef RES
                 disp(['Result number ' num2str(number_result) ': PLOT THE MONTHLY LOSSES AND GAINS'])
             end
             if nargin == 3 || nargin == 4
-                loaddir = eval(['''' build.name '\result_' num2str(number_result) '.mat''']);
+                loaddir = eval(['''' build.name '\result_' num2str(number_result) '.mat''']); %build.name
                 if exist(loaddir, 'file') == 2
                     resultfile = load(loaddir);
                     if (resultfile.results_building.building_saved.runtime)<(24*365*3600)
@@ -2057,7 +2057,7 @@ classdef RES
             
             [En Pow Area] = different_monthly_energies(obj, number_result, build, 1, 1);
             
-            loaddir = eval(['''' build.name '\result_' num2str(number_result) '.mat''']);
+            loaddir = eval(['''' build.name '\result_' num2str(number_result) '.mat''']); %build.name
             if exist(loaddir, 'file') == 2
                 resultfile = load(loaddir);
                 for ii = 1:length(resultfile.results_building.list_zones)
@@ -2260,7 +2260,7 @@ classdef RES
                     end
                 end
             end
-            loaddir = eval(['''' build.name '\result_' num2str(number_result) '.mat''']);
+            loaddir = eval(['''' build.name '\result_' num2str(number_result) '.mat''']); %build.name 
             if exist(loaddir, 'file') == 2
                 resultfile = load(loaddir);
                 if strcmp(resultfile.results_building.PHPP.choice_modelconswall, 'RC')
