@@ -71,7 +71,7 @@ classdef BUILDING
         EXCEL = [];
         XML = [];
         maxruntime = 5; % years of maximium simulation (5 years)
-        preruntime = 3*30*24*3600; % time of pre-simulation (3 months)
+        preruntime = 20*24*3600; % time of pre-simulation (20 days)
         runtime = 365*24*3600; % time of simulation (1 year)
         sampletime_1 = 600; % seconds
         sampletime_2 = 3600; % seconds
@@ -231,13 +231,13 @@ classdef BUILDING
 %                         disp(['   XML Used: ' obj.result(ii).XML.name])
 %                     end
                     
-                    if ~ischar(obj.result(ii).time_sim)
-                        if obj.result(ii).time_sim/3600>1
-                            time_sim = [num2str(obj.result(ii).time_sim/3600) ' h'];
+                    if ~ischar(obj.result(ii).time_simulation)
+                        if obj.result(ii).time_simulation/3600>1
+                            time_simulation = [num2str(obj.result(ii).time_simulation/3600) ' h'];
                         else
-                            time_sim = [num2str(obj.result(ii).time_sim/3600*60) ' min'];
+                            time_simulation = [num2str(obj.result(ii).time_simulation/3600*60) ' min'];
                         end
-                        disp(['   Simulation Time: ' time_sim])
+                        disp(['   Simulation Time: ' time_simulation])
                     end
                     disp(['   Number of zones: ' num2str(length(obj.result(ii).list_zones))])
                     disp('  VARIANT  ')
@@ -398,18 +398,20 @@ classdef BUILDING
             end
         end
         
-        function obj = add_simulation(obj, number, description_simulation, saveAIB, saveBDB, saveBOUNDARY, saveHVAC, overwrite)
+        function obj = add_simulation(obj, number, description_simulation, pre_time, time, saveAIB, saveBDB, saveBOUNDARY, saveHVAC, overwrite)
             % to save results of an existing simulation
             % 1 ... number
             % 2 ... description of simulation
-            % 3 ... saveAIB
-            % 4 ... saveBDB
-            % 5 ... saveBOUNDARY
-            % 6 ... saveHVAC
-            % 7 ... optional if you want to overwrite the simulation number
+            % 3 ... time for compilation of the model (min)
+            % 4 ... time for simulating (computational time) (min)
+            % 5 ... saveAIB
+            % 6 ... saveBDB
+            % 7 ... saveBOUNDARY
+            % 8 ... saveHVAC
+            % 9 ... optional if you want to overwrite the simulation number
             
             % check if the result number "number" is already existing
-            if nargin == 7
+            if nargin == 9
                 ind = [];
                 for ii = 1:length(obj.result)
                     if obj.result(ii).number == number
@@ -420,7 +422,7 @@ classdef BUILDING
                 end
             
             % to overwrite a result
-            elseif nargin == 8
+            elseif nargin == 10
                 if overwrite
                     ind = [];
                 else
@@ -433,7 +435,8 @@ classdef BUILDING
             else
                 date_of_sim = datestr(now);
                 building_saved = obj.get_building();
-                obj.result(number) = RES(number, building_saved, saveAIB, saveBDB, saveBOUNDARY, saveHVAC, date_of_sim, 'no time of simulation', description_simulation, obj.PHPP, obj.EXCEL, obj.variant_geometry, obj.variant_construction, obj.variant_thermalzone, obj.variant_boundary, obj.variant_gains, obj.variant_hvac);
+                obj.result(number) = RES(number, building_saved, saveAIB, saveBDB, saveBOUNDARY, saveHVAC, date_of_sim, pre_time, time, description_simulation, obj.PHPP, obj.EXCEL, obj.variant_geometry, obj.variant_construction, obj.variant_thermalzone, obj.variant_boundary, obj.variant_gains, obj.variant_hvac);
+
             end
             
             % to save the result in the folder "building.name" under the name "result_number"
@@ -484,7 +487,7 @@ classdef BUILDING
             % to run the simulation and save the result in the actual building object
             if ind
             else
-                tic
+                % tic
                 date_of_sim = datestr(now);
                 building_saved = obj.get_building();
                 PHPP_save = obj.PHPP;
@@ -498,11 +501,11 @@ classdef BUILDING
                 try
                     disp(['Simulation started with model ' obj.model '.'])
                     sim(obj.model);
-                    disp(['Simulation finished within ' num2str(toc/3600) ' hours.'])
+                    disp(['Simulation finished within ' num2str(time_simulation/60) ' hours.'])
                 catch
                     warning('During the simulation an error occured.')
                 end
-                time_sim = toc;
+                % time_sim = toc;
                 % load building again
                 try
                     load(building.name)
@@ -511,8 +514,9 @@ classdef BUILDING
                 end
                 
                 % save result
-                obj.result(number) = RES(number, building_saved, saveAIB, saveBDB, saveBOUNDARY, saveHVAC, date_of_sim, time_sim, description_simulation, PHPP_save, EXCEL_save, variant_geometry_save, variant_construction_save, variant_thermalzone_save, variant_boundary_save, variant_gains_save, variant_hvac_save);
+                % obj.result(number) = RES(number, building_saved, saveAIB, saveBDB, saveBOUNDARY, saveHVAC, date_of_sim, time_sim, description_simulation, PHPP_save, EXCEL_save, variant_geometry_save, variant_construction_save, variant_thermalzone_save, variant_boundary_save, variant_gains_save, variant_hvac_save);
 %                 obj.result(number) = RES(number, building_saved, saveAIB, saveBDB, saveBOUNDARY, saveHVAC, date_of_sim, time_sim, description_simulation, obj.PHPP, obj.EXCEL, obj.variant_geometry, obj.variant_construction, obj.variant_thermalzone, obj.variant_boundary, obj.variant_gains, obj.variant_hvac);
+                obj.result(number) = RES(number, building_saved, saveAIB, saveBDB, saveBOUNDARY, saveHVAC, date_of_sim, pre_time, time, description_simulation, obj.PHPP, obj.EXCEL, obj.variant_geometry, obj.variant_construction, obj.variant_thermalzone, obj.variant_boundary, obj.variant_gains, obj.variant_hvac);
             end
             
             % save the result in the folder "building.name" under the name "result_number"
@@ -544,7 +548,8 @@ classdef BUILDING
                 result_mod(1,ii).number = obj.result(1,ii).number;
                 result_mod(1,ii).date_of_sim = obj.result(1,ii).date_of_sim;
                 result_mod(1,ii).description = obj.result(1,ii).description;
-                result_mod(1,ii).time_sim = obj.result(1,ii).time_sim;
+                result_mod(1,ii).time_compilation = obj.result(1,ii).time_compilation;
+                result_mod(1,ii).time_simulation = obj.result(1,ii).time_simulation;
                 result_mod(1,ii).EXCEL = obj.result(1,ii).EXCEL;
                 result_mod(1,ii).PHPP = obj.result(1,ii).PHPP;
                 result_mod(1,ii).variant_geometry = obj.result(1,ii).variant_geometry;
