@@ -1,6 +1,6 @@
 # carnotUIBK
 MATLAB Simulink Toolbox for creating a thermal building simulation.
-Matlab 2018b and the [Toolbox CARNOT](https://de.mathworks.com/matlabcentral/fileexchange/68890-carnot-toolbox) are required!
+Matlab 2018b (for carnotUIBK version up to 2.1.4) and Matlab 2023b (for carnotUIBK version newer than 2.2.0) and the [Toolbox CARNOT](https://de.mathworks.com/matlabcentral/fileexchange/68890-carnot-toolbox) are required!
 
 Please use the possiblity to follow further updates via GitHub by watching our channel.
 
@@ -17,7 +17,7 @@ Please use the possiblity to follow further updates via GitHub by watching our c
 Look [HERE](https://github.com/siegeledietmar/carnotUIBK/blob/master/CHANGELOG.md) for the Changelog!
 
 ## Licence
-Copyright (c) 2016-2020, University of Innsbruck, Unit for Energy Efficient Building.
+Copyright (c) 2016-2023, University of Innsbruck, Unit for Energy Efficient Building.
 
 Dietmar Siegele     dietmar.siegele@uibk.ac.at
 Eleonora Leonardi   eleonora.leonardi@uibk.ac.at
