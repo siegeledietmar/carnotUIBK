@@ -1369,7 +1369,7 @@ classdef GEOMETRY
                             idx_fl=find(strcmp(data(:,1),{'Wärmebrückeneingabe'}))-3;
                         else
                             sheet = 'Areas';
-                            idx_fl=find(strcmp(data(:,1),{'Thermal bridge inputs'}))-3;
+                            idx_fl=find(strcmp(data(:,1),{'Thermal bridge input'}))-3;
                         end
                         %reshape the data matrix to avoid to include the
                         %thermal bridges part
@@ -1496,7 +1496,7 @@ classdef GEOMETRY
                             idx_fl=find(strcmp(data(:,1),{'Wärmebrückeneingabe'}))-3;
                         else
                             sheet = 'Areas';
-                            idx_fl=find(strcmp(data(:,1),{'Thermal bridge inputs'}))-3;
+                            idx_fl=find(strcmp(data(:,1),{'Thermal bridge input'}))-3;
                         end
                         %reshape the data matrix to avoid to include the
                         %thermal bridges part

@@ -285,11 +285,11 @@ classdef HVAC
             parameter.valves.valve_up = 1;
             parameter.valves.valve_low = 0;
             if strcmp(choice_heatload, 'limited')
-                parameter.heatload = data2{1,1};
-                parameter.coolload = data4{1,1};
+                parameter.heatload = data2(1,1);
+                parameter.coolload = data4(1,1);
             elseif strcmp(choice_heatload, 'unlimited')
-                parameter.heatload = 2*data2{1,1};
-                parameter.coolload = 2*data4{1,1};
+                parameter.heatload = 2*data2(1,1);
+                parameter.coolload = 2*data4(1,1);
             end
 
             if isnan(parameter.mechcool)
