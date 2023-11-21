@@ -1,7 +1,6 @@
-# carnotUIBK v.2.1.1
+# carnotUIBK
 MATLAB Simulink Toolbox for creating a thermal building simulation.
-The [Toolbox CARNOT](https://de.mathworks.com/matlabcentral/fileexchange/68890-carnot-toolbox) is required!
-Please use the version 6.0, because later versions have a bug in RC-model.
+Matlab 2018b (for carnotUIBK version up to 2.1.4) and Matlab 2023b (for carnotUIBK version newer than 2.2.0) and the [Toolbox CARNOT](https://de.mathworks.com/matlabcentral/fileexchange/68890-carnot-toolbox) are required!
 
 Please use the possiblity to follow further updates via GitHub by watching our channel.
 
@@ -18,7 +17,7 @@ Please use the possiblity to follow further updates via GitHub by watching our c
 Look [HERE](https://github.com/siegeledietmar/carnotUIBK/blob/master/CHANGELOG.md) for the Changelog!
 
 ## Licence
-Copyright (c) 2016-2020, University of Innsbruck, Unit for Energy Efficient Building.
+Copyright (c) 2016-2023, University of Innsbruck, Unit for Energy Efficient Building.
 
 Dietmar Siegele     dietmar.siegele@uibk.ac.at
 Eleonora Leonardi   eleonora.leonardi@uibk.ac.at
@@ -42,10 +41,13 @@ University of Innsbruck
 
 Unit for Energy Efficient Building
 
-Dipl.-Ing. Dietmar Siegele, BSc MSc
-
 Technikerstraße 13, AT-6020 Innsbruck
 
-Telefon  +43 512 507-63614
+Elisa Venturi, Dott. mag.
+E-Mail  elisa.venturi@uibk.ac.at
 
-E-Mail    dietmar.siegele@uibk.ac.at
+Mara Magni, Dott. mag.
+E-Mail  mara.magni@uibk.ac.at
+
+Ass. Prof. Dr.-Ing. Fabian Ochs
+E-Mail  fabian.ochs@uibk.ac.at
