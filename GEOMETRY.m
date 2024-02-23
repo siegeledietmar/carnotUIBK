@@ -1370,6 +1370,9 @@ classdef GEOMETRY
                         else
                             sheet = 'Areas';
                             idx_fl=find(strcmp(data(:,1),{'Thermal bridge input'}))-3;
+                            if isempty(idx_fl)
+                                idx_fl=find(strcmp(data(:,1),{'Thermal bridge inputs'}))-3;
+                            end
                         end
                         %reshape the data matrix to avoid to include the
                         %thermal bridges part
