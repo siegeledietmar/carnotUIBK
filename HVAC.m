@@ -284,6 +284,20 @@ classdef HVAC
             parameter.valves.Tn = 418.6787;
             parameter.valves.valve_up = 1;
             parameter.valves.valve_low = 0;
+
+            if iscell(data2(1,1))
+                HL = data2{1,1};
+            else
+                HL = data2(1,1);
+            end
+
+            if iscell(data4(1,1))
+                CL = data4{1,1};
+            else
+                CL = data4(1,1);
+            end
+
+
             if strcmp(choice_heatload, 'limited')
                 parameter.heatload = data2(1,1);
                 parameter.coolload = data4(1,1);
