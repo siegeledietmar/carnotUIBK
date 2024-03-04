@@ -1369,7 +1369,10 @@ classdef GEOMETRY
                             idx_fl=find(strcmp(data(:,1),{'Wärmebrückeneingabe'}))-3;
                         else
                             sheet = 'Areas';
-                            idx_fl=find(strcmp(data(:,1),{'Thermal bridge inputs'}))-3;
+                            idx_fl=find(strcmp(data(:,1),{'Thermal bridge input'}))-3;
+                            if isempty(idx_fl)
+                                idx_fl=find(strcmp(data(:,1),{'Thermal bridge inputs'}))-3;
+                            end
                         end
                         %reshape the data matrix to avoid to include the
                         %thermal bridges part
@@ -1431,7 +1434,7 @@ classdef GEOMETRY
                         else
                             sheet = 'Windows';
                         end
-                        range = 'L24:BQ175'; %EV, before: 'L24:BQ580';
+                        range = 'L24:BQ385'; %EV, before: 'L24:BQ580';
                         [~, ~, data1] = xlsread1(filename, sheet, range);
                         index_wall_wi = 8;
                         index_name_wi = 2;
@@ -1496,7 +1499,7 @@ classdef GEOMETRY
                             idx_fl=find(strcmp(data(:,1),{'Wärmebrückeneingabe'}))-3;
                         else
                             sheet = 'Areas';
-                            idx_fl=find(strcmp(data(:,1),{'Thermal bridge inputs'}))-3;
+                            idx_fl=find(strcmp(data(:,1),{'Thermal bridge input'}))-3;
                         end
                         %reshape the data matrix to avoid to include the
                         %thermal bridges part
@@ -1571,7 +1574,7 @@ classdef GEOMETRY
                         else
                             sheet = 'Windows';
                         end
-                        range = 'L23:ET169'; %EV, before: 'L24:BQ580';
+                        range = 'L23:ET1000'; %EV, before: 'L24:BQ580';
                         [~, ~, data1] = xlsread1(filename, sheet, range);
                         index_wall_wi = 9;
                         index_name_wi = 3;
@@ -1588,7 +1591,17 @@ classdef GEOMETRY
                         index_psiright_wi = 124;
                         index_constr1_wi = 10; % constr Glass
                         index_constr2_wi = 11; % constr Frame
+                        
+                        %clean the data eliminating the rows where we have
+                        %no windows (only at the end of the list not in the
+                        %middle)
+                        idx_win=min(find(cell2mat(cellfun(@isnan, data1(:,1)', 'UniformOutput', false))))-1;
+                        
+                        %reshape the data matrix to avoid to include empty
+                        %windows
+                        data1=data1(1:idx_win,:);
                         indicator_windows = ones(size(data1,1),1);
+                        
                         for ii = 1:size(data1,1)
                             if data1{ii,index_number_wi}==0 || isempty(data1{ii,index_number_wi}) || sum(isnan(data1{ii,index_number_wi})) 
                                 % strcmp(data1(ii,index_name_wi),'-') || sum(isnan(data1{ii,index_name_wi})) || isempty(data1{ii,index_name_wi})

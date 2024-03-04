@@ -380,19 +380,23 @@ classdef THERMALZONE
                 volume_zz = [];
                 room_ = [];
                 for tt = 1:length(obj.zone(ind).rooms)
-                    uuu(tt) = tt;
-                    for zz = 1:length(obj.zone(ind).rooms)
-                        if  tt ~= zz && all(zz ~= uuu)
-                            room_tt = geometry.get_room(obj.zone(ind).rooms(tt));
-                            room_zz = geometry.get_room(obj.zone(ind).rooms(zz));
-                            volume_tt = room_tt.area*room_tt.height;
-                            volume_zz = room_zz.area*room_zz.height;
-                            obj.zone(ind).n50 = (room_tt.n50*volume_tt+room_zz.n50*volume_zz)/(volume_tt+volume_zz);
-                        elseif length(obj.zone(ind).rooms)==1
-                            room_ = geometry.get_room(obj.zone(ind).rooms(1));
-                            obj.zone(ind).n50 = room_.n50;
-                        end
-                    end
+                    % uuu(tt) = tt;
+                    % for zz = 1:length(obj.zone(ind).rooms)
+                    %     if  tt ~= zz && all(zz ~= uuu)
+                    %         room_tt = geometry.get_room(obj.zone(ind).rooms(tt));
+                    %         room_zz = geometry.get_room(obj.zone(ind).rooms(zz));
+                    %         volume_tt = room_tt.area*room_tt.height;
+                    %         volume_zz = room_zz.area*room_zz.height;
+                    %         obj.zone(ind).n50 = (room_tt.n50*volume_tt+room_zz.n50*volume_zz)/(volume_tt+volume_zz);
+                    %     elseif length(obj.zone(ind).rooms)==1
+                    %         room_ = geometry.get_room(obj.zone(ind).rooms(1));
+                    %         obj.zone(ind).n50 = room_.n50;
+                    %     end
+                    % end
+
+                   volume(tt) = geometry.get_room(obj.zone(ind).rooms(tt)).height * geometry.get_room(obj.zone(ind).rooms(tt)).area;
+                   n50(tt) =   geometry.get_room(obj.zone(ind).rooms(tt)).n50;
+
                 end
                 
                 mm_gains = 1;

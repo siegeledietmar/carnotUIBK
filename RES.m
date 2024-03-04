@@ -113,7 +113,9 @@ classdef RES
         results_HVAC = [];
         date_of_sim = '';
         description = '';
-        time_sim = 0;
+        versions = '';
+        time_simulation = 0;
+        time_compilation = 0;
         list_zones = [];            %list of the zones (number) that are present in the model
         PHPP = [];
         EXCEL = [];
@@ -126,9 +128,24 @@ classdef RES
     end
     
     methods
-        function obj = RES(number, building_saved, results_AIB, results_BDB, results_BOUNDARY, results_HVAC, date_of_sim, time_sim, description, PHPP, EXCEL, variant_geometry, variant_construction, variant_thermalzone, variant_boundary, variant_gains, variant_hvac)
+        function obj = RES(number, building_saved, results_AIB, results_BDB, results_BOUNDARY, results_HVAC, date_of_sim, pre_time, time, description, PHPP, EXCEL, variant_geometry, variant_construction, variant_thermalzone, variant_boundary, variant_gains, variant_hvac)
             if nargin == 0
             else
+                
+                AA=strfind(path, ';');
+                try % to be fixed (this is needed to save the libraries version
+                BB=strfind(path, 'Carnot');
+                EE=strfind(path, 'carnotUIBK');
+                end
+
+                CC=sort(AA-BB(1));
+                DD=CC(1:2)+BB(1);
+                PP=path;
+                FF=sort(AA-EE(1));
+                GG=FF(1:2)+EE(1);
+                
+                obj.versions = ['Matlab: ' version '; Carnot: ' PP(DD(1)+1:DD(2)) ' CarnotUIBK: ' PP(GG(1)+1:GG(2))];
+                clear AA BB CC DD PP EE FF DD GG;
                 obj.number = number;
                 obj.building_saved = building_saved;
                 obj.results_AIB = results_AIB;
@@ -136,7 +153,8 @@ classdef RES
                 obj.results_BOUNDARY = results_BOUNDARY;
                 obj.results_HVAC = results_HVAC;
                 obj.date_of_sim = date_of_sim;
-                obj.time_sim = time_sim;
+                obj.time_compilation = pre_time;
+                obj.time_simulation = time;
                 obj.description = description;
                 obj.PHPP = PHPP;
                 obj.EXCEL = EXCEL;
@@ -422,7 +440,7 @@ classdef RES
             % 2 ... building object
             [En Pow area] = different_monthly_energies(obj, number_result, build, 1, 1);
             disp(['Result number ' num2str(number_result) ': INFORMATION'])
-            loaddir = eval(['''' build.name '\result_' num2str(number_result) '.mat''']);
+            loaddir = eval(['''' build.name '\result_' num2str(number_result) '.mat''']); %build.name
             if exist(loaddir, 'file') == 2
                 resultfile = load(loaddir);
                 disp (['Zones number = ' num2str(length(resultfile.results_building.list_zones))])
@@ -557,7 +575,7 @@ classdef RES
                 nargin_temp = 5;
             end
             if nargin_temp == 5 || nargin_temp == 6
-                loaddir = eval(['''' build.name '\result_' num2str(number_result) '.mat''']);
+                loaddir = eval(['''' build.name '\result_' num2str(number_result) '.mat''']); %build.name
                 if exist(loaddir, 'file') == 2
                     resultfile = load(loaddir);
                     for ii = 1:length(resultfile.results_building.list_zones)
@@ -771,7 +789,7 @@ classdef RES
                 disp(['Result number ' num2str(number_result) ': ENERGY DEMAND'])
             end
             if nargin == 3 || nargin == 4 || nargin == 5
-                loaddir = eval(['''' build.name '\result_' num2str(number_result) '.mat''']);
+                loaddir = eval(['''' build.name '\result_' num2str(number_result) '.mat''']); %build.name
                 if exist(loaddir, 'file') == 2
                     resultfile = load(loaddir);
                     if (resultfile.results_building.building_saved.runtime)<(24*365*3600)
@@ -899,7 +917,7 @@ classdef RES
                 end
             end
             if nargin == 5
-                loaddir = eval(['''' build.name '\result_' num2str(number_result) '.mat''']);
+                loaddir = eval(['''' build.name '\result_' num2str(number_result) '.mat''']); %build.name
                 if exist(loaddir, 'file') == 2
                     resultfile = load(loaddir);
                     if (resultfile.results_building.building_saved.runtime)<(24*365*3600)
@@ -993,7 +1011,7 @@ classdef RES
                 disp(['Result number ' num2str(number_result) ': PLOT THE MONTHLY BALANCES'])
             end
             if nargin == 3 || nargin == 4 || nargin == 5
-                loaddir = eval(['''' build.name '\result_' num2str(number_result) '.mat''']);
+                loaddir = eval(['''' build.name '\result_' num2str(number_result) '.mat''']); %build.name
                 if exist(loaddir, 'file') == 2
                     resultfile = load(loaddir);
                     if (resultfile.results_building.building_saved.runtime)<(24*365*3600)
@@ -1551,7 +1569,7 @@ classdef RES
             disp(' ')
             
             if nargin == 3 || nargin == 4
-                loaddir = eval(['''' build.name '\result_' num2str(number_result) '.mat''']);
+                loaddir = eval(['''' build.name '\result_' num2str(number_result) '.mat''']); %build.name
                 if exist(loaddir, 'file') == 2
                     resultfile = load(loaddir);
                     if (resultfile.results_building.building_saved.runtime)<(24*365*3600)
@@ -1739,7 +1757,7 @@ classdef RES
                 disp(['Result number ' num2str(number_result) ': PLOT AMBIENT, BUILDING AND SOIL TEMPERATURE'])
             end
             if nargin == 3 || nargin == 4
-                loaddir = eval(['''' build.name '\result_' num2str(number_result) '.mat''']);
+                loaddir = eval(['''' build.name '\result_' num2str(number_result) '.mat''']); %build.name
                 if exist(loaddir, 'file') == 2
                     resultfile = load(loaddir);
                     if (resultfile.results_building.building_saved.runtime)<(24*365*3600)
@@ -1799,7 +1817,7 @@ classdef RES
                 disp(['Result number ' num2str(number_result) ': PLOT TEMPERATURE ARRANGED BY THE HOURS'])
             end
             if nargin == 3 || nargin == 4
-                loaddir = eval(['''' build.name '\result_' num2str(number_result) '.mat''']);
+                loaddir = eval(['''' build.name '\result_' num2str(number_result) '.mat''']); %build.name
                 if exist(loaddir, 'file') == 2
                     resultfile = load(loaddir);
                     if (resultfile.results_building.building_saved.runtime)<(24*365*3600)
@@ -1859,7 +1877,7 @@ classdef RES
                 disp(['Result number ' num2str(number_result) ': PLOT THE MONTHLY LOSSES AND GAINS'])
             end
             if nargin == 3 || nargin == 4
-                loaddir = eval(['''' build.name '\result_' num2str(number_result) '.mat''']);
+                loaddir = eval(['''' build.name '\result_' num2str(number_result) '.mat''']); %build.name
                 if exist(loaddir, 'file') == 2
                     resultfile = load(loaddir);
                     if (resultfile.results_building.building_saved.runtime)<(24*365*3600)
@@ -2055,7 +2073,7 @@ classdef RES
             
             [En Pow Area] = different_monthly_energies(obj, number_result, build, 1, 1);
             
-            loaddir = eval(['''' build.name '\result_' num2str(number_result) '.mat''']);
+            loaddir = eval(['''' build.name '\result_' num2str(number_result) '.mat''']); %build.name
             if exist(loaddir, 'file') == 2
                 resultfile = load(loaddir);
                 for ii = 1:length(resultfile.results_building.list_zones)
@@ -2258,7 +2276,7 @@ classdef RES
                     end
                 end
             end
-            loaddir = eval(['''' build.name '\result_' num2str(number_result) '.mat''']);
+            loaddir = eval(['''' build.name '\result_' num2str(number_result) '.mat''']); %build.name 
             if exist(loaddir, 'file') == 2
                 resultfile = load(loaddir);
                 if strcmp(resultfile.results_building.PHPP.choice_modelconswall, 'RC')

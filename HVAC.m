@@ -124,6 +124,18 @@ classdef HVAC
             else
                 
                 filename = name_xls_PHPP;
+                vollpfad = [pwd '\' name_xls_PHPP];
+            
+                    if exist(vollpfad, 'file')
+                        warning('Existing Excel file used.')
+                    else
+                        warning('PHPP does not exist')
+                    end
+
+                Excel = actxserver('Excel.Application');
+                Excel.Workbooks.Open(vollpfad);
+                warning('Excel file opened! Do not interrupt this script!')
+
                 switch version
                     case '9.1'
                         if language
@@ -132,7 +144,7 @@ classdef HVAC
                             sheet = 'Verification';
                         end
                         range = 'K27:N29';
-                        [~, ~, data] = xlsread(filename, sheet, range);
+                        [~, ~, data] = xlsread1(filename, sheet, range);
                         index_raw_setpointwin = 1;
                         index_column_setpointwin = 1;
                         index_raw_setpointsum = 1;
@@ -150,7 +162,7 @@ classdef HVAC
                             sheet = 'Ventilation';
                         end
                         range = 'N27:P97';
-                        [~, ~, data1] = xlsread(filename, sheet, range);
+                        [~, ~, data1] = xlsread1(filename, sheet, range);
                         index_raw_vdot = 50;
                         index_column_vdot = 3;
                         index_raw_eta = 71;
@@ -162,15 +174,17 @@ classdef HVAC
                             sheet = 'Heating load';
                         end
                         range = 'Q90';
-                        [~, ~, data2] = xlsread(filename, sheet, range);
-                        
+                        [~, ~, data2] = xlsread1(filename, sheet, range);
+                        data2 = {data2}; %from matlab 2023b if we import only one cell this is a structure and not a cell
+
                         if language
                             sheet = 'SommLuft';
                         else
                             sheet = 'SummVent';
                         end
                         range = 'L20:R63';
-                        [~, ~, data3] = xlsread(filename, sheet, range);
+                        [~, ~, data3] = xlsread1(filename, sheet, range);
+                        [~, ~, Vol_vent] = xlsread1(filename, sheet, 'L7'); %to be improved (include this in data3 and change the indexes)
                         index_raw_rate_s = 1;
                         index_column_rate_s = 1;
                         index_raw_vdot_s = 26;
@@ -187,8 +201,9 @@ classdef HVAC
                             sheet = 'Cooling load';
                         end
                         range = 'Q62';
-                        [~, ~, data4] = xlsread(filename, sheet, range);
-                        
+                        [~, ~, data4] = xlsread1(filename, sheet, range);
+                        data4 = {data4}; %from matlab 2023b if we import only one cell this is a structure and not a cell
+
                         
                     case '10.2'
                         if language
@@ -197,7 +212,7 @@ classdef HVAC
                             sheet = 'Verification';
                         end
                         range = 'K28:N30';
-                        [~, ~, data] = xlsread(filename, sheet, range);
+                        [~, ~, data] = xlsread1(filename, sheet, range);
                         index_raw_setpointwin = 1;
                         index_column_setpointwin = 1;
                         index_raw_setpointsum = 1;
@@ -215,7 +230,7 @@ classdef HVAC
                             sheet = 'Ventilation';
                         end
                         range = 'N23:P100';
-                        [~, ~, data1] = xlsread(filename, sheet, range);
+                        [~, ~, data1] = xlsread1(filename, sheet, range);
                         index_raw_vdot = 57;
                         index_column_vdot = 3;
                         index_raw_eta = 78;
@@ -227,7 +242,7 @@ classdef HVAC
                             sheet = 'Heating load';
                         end
                         range = 'Q90';
-                        [~, ~, data2] = xlsread(filename, sheet, range);
+                        [~, ~, data2] = xlsread1(filename, sheet, range);
                         
                         if language
                             sheet = 'SommLuft';
@@ -235,7 +250,8 @@ classdef HVAC
                             sheet = 'SummVent';
                         end
                         range = 'L14:R57';
-                        [~, ~, data3] = xlsread(filename, sheet, range);
+                        [~, ~, data3] = xlsread1(filename, sheet, range);
+                        [~, ~, Vol_vent] = xlsread1(filename, sheet, 'L7'); %to be improved (include this in data3 and change the indexes)
                         index_raw_rate_s = 1;
                         index_column_rate_s = 1;
                         index_raw_vdot_s = 26;
@@ -251,10 +267,15 @@ classdef HVAC
                         else
                             sheet = 'Cooling load';
                         end
-                        range = 'Q66';
-                        [~, ~, data4] = xlsread(filename, sheet, range);
+                        range = 'Q66'; 
+                        [~, ~, data4] = xlsread1(filename, sheet, range);
                 end
                 
+            Excel.Quit
+            Excel.delete
+            clear Excel
+            warning('Excel file closed!')
+
             parameter.setpointwin = data{index_raw_setpointwin, index_column_setpointwin};
             parameter.setpointsum = data{index_raw_setpointsum, index_column_setpointsum};
             parameter.mechcool = data{index_raw_mechcool, index_column_mechcool};
@@ -263,12 +284,26 @@ classdef HVAC
             parameter.valves.Tn = 418.6787;
             parameter.valves.valve_up = 1;
             parameter.valves.valve_low = 0;
+
+            if iscell(data2(1,1))
+                HL = data2{1,1};
+            else
+                HL = data2(1,1);
+            end
+
+            if iscell(data4(1,1))
+                CL = data4{1,1};
+            else
+                CL = data4(1,1);
+            end
+
+
             if strcmp(choice_heatload, 'limited')
-                parameter.heatload = data2{1,1};
-                parameter.coolload = data4{1,1};
+                parameter.heatload = HL;
+                parameter.coolload = CL;
             elseif strcmp(choice_heatload, 'unlimited')
-                parameter.heatload = 2*data2{1,1};
-                parameter.coolload = 2*data4{1,1};
+                parameter.heatload = 2*HL;
+                parameter.coolload = 2*CL;
             end
 
             if isnan(parameter.mechcool)
@@ -276,15 +311,17 @@ classdef HVAC
             else
                 parameter.mechcool = 1;
             end
+            
+            data3(cellfun(@isempty,data3)) = {NaN};
 
             vdot_w = data1{index_raw_vdot, index_column_vdot};
             vdot_s = data3{index_raw_rate_s, index_column_rate_s}*data3{index_raw_vdot_s, index_column_vdot_s};
-
+            
             hr_1 = data3{index_raw_dec_no(1), index_column_dec};
             hr_2 = data3{index_raw_dec_no(2), index_column_dec};
             hr_3 = data3{index_raw_dec_no(3), index_column_dec};
             hr_4 = data3{index_raw_dec_yes, index_column_dec};
-            if ~isnan(hr_1) || ~isnan(hr_2) || ~isnan(hr_3) || (isnan(hr_1) & isnan(hr_2) &isnan(hr_3) & isnan(hr_4))
+            if ~isnan(hr_1) || ~isnan(hr_2) || ~isnan(hr_3) || (isnan(hr_1) & isnan(hr_2) & isnan(hr_3) & isnan(hr_4))
                 eta_s = 0;
             elseif ~isnan(hr_4)
                 eta_s = data1{index_raw_eta, index_column_eta};
@@ -314,7 +351,7 @@ classdef HVAC
                 add_2 = 0;
             end
             add = add_1 + add_2;
-            parameter.night_vent_s.value = [add 0 add];
+            parameter.night_vent_s.value = [add 0 add]*Vol_vent;
             obj.system = [obj.system SYSTEM_HVAC(name, number, parameter, 1)];
             end
         end
