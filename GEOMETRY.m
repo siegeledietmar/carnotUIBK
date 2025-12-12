@@ -493,6 +493,7 @@ classdef GEOMETRY
             % 4 ... flag to create excel file (optional)
 			
 			% bugfixing ongoing
+            % excel_create= 'structure';
             
             if nargin < 3
                 error('number of input not correct (at least 2)')
@@ -597,7 +598,7 @@ classdef GEOMETRY
                     for jk=1:length(name_XML.Campus.Building.Space)
                         walls_list = [];
                         
-                        name_XML.Campus.Building.Space
+                        name_XML.Campus.Building.Space;
                         
                         if length(name_XML.Campus.Building.Space) == 1
                             Space = name_XML.Campus.Building.Space;
@@ -992,6 +993,7 @@ classdef GEOMETRY
                                                         if nargin == 5
                                                             check = 0;
                                                             for ii = 1:size(raw_windoors_excel,1)
+                                                                try %%%% Mara 21 07 2025
                                                                 if strcmp(raw_windoors_excel{ii,53},name_wi)
                                                                     check = 1;
                                                                     model_cons_wi = raw_windoors_excel{ii,10};
@@ -1053,6 +1055,7 @@ classdef GEOMETRY
                                                                     xlRange = ['A' num2str(ii+3) ':BA' num2str(ii+3)];
                                                                     xlswrite1(name_xls,vector_window,'WinDoors',xlRange)
                                                                     break
+                                                                end
                                                                 end
                                                             end
                                                         end
@@ -1369,7 +1372,10 @@ classdef GEOMETRY
                             idx_fl=find(strcmp(data(:,1),{'Wärmebrückeneingabe'}))-3;
                         else
                             sheet = 'Areas';
-                            idx_fl=find(strcmp(data(:,1),{'Thermal bridge inputs'}))-3;
+                            idx_fl=find(strcmp(data(:,1),{'Thermal bridge input'}))-3;
+                            if isempty(idx_fl)
+                                idx_fl=find(strcmp(data(:,1),{'Thermal bridge inputs'}))-3;
+                            end
                         end
                         %reshape the data matrix to avoid to include the
                         %thermal bridges part
@@ -1431,7 +1437,7 @@ classdef GEOMETRY
                         else
                             sheet = 'Windows';
                         end
-                        range = 'L24:BQ175'; %EV, before: 'L24:BQ580';
+                        range = 'L24:BQ385'; %EV, before: 'L24:BQ580';
                         [~, ~, data1] = xlsread1(filename, sheet, range);
                         index_wall_wi = 8;
                         index_name_wi = 2;
@@ -1496,7 +1502,7 @@ classdef GEOMETRY
                             idx_fl=find(strcmp(data(:,1),{'Wärmebrückeneingabe'}))-3;
                         else
                             sheet = 'Areas';
-                            idx_fl=find(strcmp(data(:,1),{'Thermal bridge inputs'}))-3;
+                            idx_fl=find(strcmp(data(:,1),{'Thermal bridge input'}))-3;
                         end
                         %reshape the data matrix to avoid to include the
                         %thermal bridges part
@@ -1571,7 +1577,7 @@ classdef GEOMETRY
                         else
                             sheet = 'Windows';
                         end
-                        range = 'L23:ET169'; %EV, before: 'L24:BQ580';
+                        range = 'L23:ET1000'; %EV, before: 'L24:BQ580';
                         [~, ~, data1] = xlsread1(filename, sheet, range);
                         index_wall_wi = 9;
                         index_name_wi = 3;
@@ -1588,7 +1594,17 @@ classdef GEOMETRY
                         index_psiright_wi = 124;
                         index_constr1_wi = 10; % constr Glass
                         index_constr2_wi = 11; % constr Frame
+                        
+                        %clean the data eliminating the rows where we have
+                        %no windows (only at the end of the list not in the
+                        %middle)
+                        idx_win=min(find(cell2mat(cellfun(@isnan, data1(:,1)', 'UniformOutput', false))))-1;
+                        
+                        %reshape the data matrix to avoid to include empty
+                        %windows
+                        data1=data1(1:idx_win,:);
                         indicator_windows = ones(size(data1,1),1);
+                        
                         for ii = 1:size(data1,1)
                             if data1{ii,index_number_wi}==0 || isempty(data1{ii,index_number_wi}) || sum(isnan(data1{ii,index_number_wi})) 
                                 % strcmp(data1(ii,index_name_wi),'-') || sum(isnan(data1{ii,index_name_wi})) || isempty(data1{ii,index_name_wi})
@@ -1597,11 +1613,13 @@ classdef GEOMETRY
                         end
                         
                         
-                        ispos=find(not(sum(isspace(char(data1{:,2}))')));
-                        nopos=find(sum(isspace(char(data1{:,2}))'));
+                        % ispos=find(not(sum(isspace(char(data1{:,2}))')));
+                        % nopos=find(sum(isspace(char(data1{:,2}))'));
+                        ispos=find(not(isnan([data1{:,2}])'));
+                        nopos=find(isnan([data1{:,2}])');
                         
                         if not(isempty(ispos))
-                           data1(ispos,3)=cellstr([char(data1{ispos,2})  char(ones(length(data1(ispos,2)),1) * ' ') char(data1{ispos,3})]);
+                           data1(ispos,3)=cellstr([char(string(data1(ispos,2)))  char(ones(length(data1(ispos,2)),1) * ' ') char(data1{ispos,3})]);
                         end
                         if not(isempty(nopos))
                            data1(nopos,3)=cellstr([char(ones(length(data1(nopos,2)),1) * ' ') char(data1{nopos,3})]);
@@ -1970,9 +1988,9 @@ classdef GEOMETRY
             if ind
                 room = obj.room(ind);
             else
-%                 error(['room ' name ' not existing!'])
+                error(['room ' name{:} ' not existing!'])
                 name
-                error(['room not existing!'])
+                % error(['room not existing!' eval(name)])
             end
         end
         

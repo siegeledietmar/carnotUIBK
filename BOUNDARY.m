@@ -140,7 +140,9 @@ classdef BOUNDARY
             for ii = 1:12
             temp_ground(ii) = data{1,ii};
             end
-            temperature_time = [0 31 59 90 120 151 181 212 243 273 304 334]*24*3600;
+%             temperature_time = [0 31 59 90 120 151 181 212 243 273 304 334]*24*3600;
+            temperature_time = [31/2 31+(59-31)/2 59+(90-59)/2 90+(120-90)/2 120+(151-120)/2 151+(181-151)/2 181+(212-181)/2 212+(243-212)/2 243+(273-243)/2 273+(304-273)/2 304+(334-304)/2 334+(365-334)/2]*24*3600; % half month shift to match better PHPP that uses constant monthly values while we interporlate;
+
             temperature_value = temp_ground;
             obj = obj.add_ground_set_temperature(building, 1, 'ground_from_PHPP', 2, temperature_time, temperature_value);
             
@@ -175,7 +177,8 @@ classdef BOUNDARY
             for ii = 1:12
             temp_ground(ii) = data{1,ii};
             end
-            temperature_time = [0 31 59 90 120 151 181 212 243 273 304 334]*24*3600;
+%             temperature_time = [0 31 59 90 120 151 181 212 243 273 304 334]*24*3600;
+            temperature_time = [31/2 31+(59-31)/2 59+(90-59)/2 90+(120-90)/2 120+(151-120)/2 151+(181-151)/2 181+(212-181)/2 212+(243-212)/2 243+(273-243)/2 273+(304-273)/2 304+(334-304)/2 334+(365-334)/2]*24*3600; % half month shift to match better PHPP that uses constant monthly values while we interporlate;
             temperature_value = temp_ground;
             obj = obj.add_ground_set_temperature(building, 1, 'ground_from_PHPP', 2, temperature_time, temperature_value);
         end
@@ -263,7 +266,9 @@ classdef BOUNDARY
             end
             red_fac = data1{1,1};
             delta_t(1:12) = (teta_i-teta_e)*red_fac;
-            temperature_time = [0 31 59 90 120 151 181 212 243 273 304 334]*24*3600;
+%             temperature_time = [0 31 59 90 120 151 181 212 243 273 304 334]*24*3600;
+            temperature_time = [31/2 31+(59-31)/2 59+(90-59)/2 90+(120-90)/2 120+(151-120)/2 151+(181-151)/2 181+(212-181)/2 212+(243-212)/2 243+(273-243)/2 273+(304-273)/2 304+(334-304)/2 334+(365-334)/2]*24*3600; % half month shift to match better PHPP that uses constant monthly values while we interporlate;
+
             temperature_value(1:12) = teta_i(1:12) - delta_t(1:12);
             if sum(isnan(temperature_value))
                 warning('Neighbour temperature 4 set to 20°C')
@@ -352,19 +357,20 @@ classdef BOUNDARY
                     number = raw_ground{ii,1};
                     name = raw_ground{ii,2};
                     model = raw_ground{ii,3};
-                    temper_value = [];
+                    temperature_value = [];
                     if model == 0
-                        temper_value = raw_ground{ii,4};
+                        temperature_value = raw_ground{ii,4};
                         obj = obj.add_ground_set_temperature(building, number, name, model, temper_value);
                     elseif model == 1
-                        temper_value = [raw_ground{ii,4} raw_ground{ii,5}];
+                        temperature_value = [raw_ground{ii,4} raw_ground{ii,5}];
                         obj = obj.add_ground_set_temperature(building, number, name, model, temper_value);
                     elseif model == 2
-                        temper_time = [0 31 59 90 120 151 181 212 243 273 304 334]*24*3600;
+                 %             temperature_time = [0 31 59 90 120 151 181 212 243 273 304 334]*24*3600;
+                                temperature_time = [31/2 31+(59-31)/2 59+(90-59)/2 90+(120-90)/2 120+(151-120)/2 151+(181-151)/2 181+(212-181)/2 212+(243-212)/2 243+(273-243)/2 273+(304-273)/2 304+(334-304)/2 334+(365-334)/2]*24*3600; % half month shift to match better PHPP that uses constant monthly values while we interporlate;
                         for ll = 1:12
-                            temper_value(1,ll) = raw_ground{ii,ll+3};
+                             temperature_value(1,ll) = raw_ground{ii,ll+3};
                         end
-                        obj = obj.add_ground_set_temperature(building, number, name, model, temper_time, temper_value);
+                        obj = obj.add_ground_set_temperature(building, number, name, model, temperature_time, temperature_value);
                     end
                 end
             end
@@ -387,7 +393,7 @@ classdef BOUNDARY
                             obj = obj.add_neighbour_set_temperature(building, number, name, model, temper_value);
                         end
                     elseif model == 1
-                        temper_value = [raw_neighbour{ii,4} raw_neighbour{ii,5}];
+                        temperature_value = [raw_neighbour{ii,4} raw_neighbour{ii,5}];
                         
                         if sum(isnan(temper_value))
                             warning('Neighbour temperature with NaNs')
@@ -396,16 +402,16 @@ classdef BOUNDARY
                             obj = obj.add_neighbour_set_temperature(building, number, name, model, temper_value);
                         end
                     elseif model == 2
-                        temper_time = [0 31 59 90 120 151 181 212 243 273 304 334]*24*3600;
+                                temperature_time = [31/2 31+(59-31)/2 59+(90-59)/2 90+(120-90)/2 120+(151-120)/2 151+(181-151)/2 181+(212-181)/2 212+(243-212)/2 243+(273-243)/2 273+(304-273)/2 304+(334-304)/2 334+(365-334)/2]*24*3600; % half month shift to match better PHPP that uses constant monthly values while we interporlate;
                         for ll = 1:12
-                            temper_value(1,ll) = raw_neighbour{ii,ll+3};
+                            temperature_value(1,ll) = raw_neighbour{ii,ll+3};
                         end
                         
                         if sum(isnan(temper_value))
                             warning('Neighbour temperature with NaNs')
-                            obj = obj.add_neighbour_set_temperature(building, number, name, model, temper_time, ones(size(temper_value))*20);
+                            obj = obj.add_neighbour_set_temperature(building, number, name, model, temperature_time, ones(size(temperature_value))*20);
                         else
-                            obj = obj.add_neighbour_set_temperature(building, number, name, model, temper_time, temper_value);
+                            obj = obj.add_neighbour_set_temperature(building, number, name, model, temperature_time, temperature_value);
                         end
                     end
                 end

@@ -84,7 +84,9 @@ classdef NEIGHBOUR
                 obj.name = name;
                 obj.model = model;
                 temperature_value = temperature_time;
-                time_months = [0 31 59 90 120 151 181 212 243 273 304 334]*24*3600;
+%                 time_months = [0 31 59 90 120 151 181 212 243 273 304 334]*24*3600; 
+            time_months = [31/2 31+(59-31)/2 59+(90-59)/2 90+(120-90)/2 120+(151-120)/2 151+(181-151)/2 181+(212-181)/2 212+(243-212)/2 243+(273-243)/2 273+(304-273)/2 304+(334-304)/2 334+(365-334)/2]*24*3600; % half month shift to match better PHPP that uses constant monthly values while we interporlate;
+
                 temperature_time_ = [];
                 for ii = -1:building.maxruntime
                     if ii == building.maxruntime
